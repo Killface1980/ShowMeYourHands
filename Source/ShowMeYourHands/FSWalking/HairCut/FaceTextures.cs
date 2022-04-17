@@ -1,5 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ColorMine.ColorSpaces;
+using ColorMine.ColorSpaces.Comparisons;
+using ShowMeYourHands;
+using UnityEngine;
 using Verse;
+using static System.Byte;
 
 namespace FacialStuff.GraphicsFS
 {
@@ -26,6 +32,161 @@ namespace FacialStuff.GraphicsFS
         /*
                 private static Texture2D _maskTexAverageSide;
         */
+
+        public static Color32 AverageColorFromTexture(Texture2D texture)
+        {
+            RenderTexture renderTexture = RenderTexture.GetTemporary(
+                texture.width,
+                texture.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
+            Graphics.Blit(texture, renderTexture);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTexture;
+            Texture2D tex = new(texture.width, texture.height);
+            tex.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            tex.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTexture);
+            return AverageColorFromColors(tex.GetPixels32());
+        }
+        private static Color32 AverageColorFromColors(Color32[] colors)
+        {
+            Dictionary<Color32, int> shadeDictionary = new();
+            foreach (Color32 texColor in colors)
+            {
+                if (texColor.a < 50)
+                {
+                    // Ignore low transparency
+                    continue;
+                }
+
+                Rgb currentRgb = new() { B = texColor.b, G = texColor.b, R = texColor.r };
+
+                if (currentRgb.Compare(new Rgb { B = 0, G = 0, R = 0 }, new Cie1976Comparison()) < 2)
+                {
+                    // Ignore black pixels
+                    continue;
+                }
+
+                if (shadeDictionary.Count == 0)
+                {
+                    shadeDictionary[texColor] = 1;
+                    continue;
+                }
+
+                bool added = false;
+                foreach (Color32 rgb in shadeDictionary.Keys.Where(rgb =>
+                             currentRgb.Compare(new Rgb { B = rgb.b, G = rgb.b, R = rgb.r }, new Cie1976Comparison()) < 2))
+                {
+                    shadeDictionary[rgb]++;
+                    added = true;
+                    break;
+                }
+
+                if (!added)
+                {
+                    shadeDictionary[texColor] = 1;
+                }
+            }
+
+            if (shadeDictionary.Count == 0)
+            {
+                return new Color32(0, 0, 0, MaxValue);
+            }
+
+            Color32 greatestValue = shadeDictionary.Aggregate((rgb, max) => rgb.Value > max.Value ? rgb : max).Key;
+            greatestValue.a = MaxValue;
+            return greatestValue;
+        }
+
+
+        public static bool IsWeaponLong(ThingDef weapon, out Vector3 mainHand, out Vector3 secHand)
+        {
+            Texture texture = weapon.graphicData.Graphic.MatSingle.mainTexture;
+
+            // This is not allowed
+            //var icon = (Texture2D) texture;
+
+            // This is
+            RenderTexture renderTexture = RenderTexture.GetTemporary(
+                texture.width,
+                texture.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
+            Graphics.Blit(texture, renderTexture);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTexture;
+            Texture2D icon = new(texture.width, texture.height);
+            icon.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            icon.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTexture);
+
+
+            Color32[] pixels = icon.GetPixels32();
+            int width = icon.width;
+            int startPixel = width;
+            int endPixel = 0;
+
+            for (int i = 0; i < icon.height; i++)
+            {
+                for (int j = 0; j < startPixel; j++)
+                {
+                    if (pixels[j + (i * width)].a < 5)
+                    {
+                        continue;
+                    }
+
+                    startPixel = j;
+                    break;
+                }
+
+                for (int j = width - 1; j >= endPixel; j--)
+                {
+                    if (pixels[j + (i * width)].a < 5)
+                    {
+                        continue;
+                    }
+
+                    endPixel = j;
+                    break;
+                }
+            }
+
+
+            float percentWidth = (endPixel - startPixel) / (float)width;
+            float percentStart = 0f;
+            if (startPixel != 0)
+            {
+                percentStart = startPixel / (float)width;
+            }
+
+            float percentEnd = 0f;
+            if (width - endPixel != 0)
+            {
+                percentEnd = (width - endPixel) / (float)width;
+            }
+
+            ShowMeYourHandsMain.LogMessage(
+                $"{weapon.defName}: start {startPixel.ToString()}, percentstart {percentStart}, end {endPixel.ToString()}, percentend {percentEnd}, width {width}, percent {percentWidth}");
+
+            if (percentWidth > 0.7f)
+            {
+                mainHand = new Vector3(-0.3f + percentStart, 0.3f, -0.05f);
+                secHand = new Vector3(0.2f, -0.100f, -0.05f);
+            }
+            else
+            {
+                mainHand = new Vector3(-0.3f + percentStart, 0.3f, 0f);
+                secHand = Vector3.zero;
+            }
+
+            return percentWidth > 0.7f;
+        }
+
 
         private static readonly Texture2D _maskTexNarrowFrontBack;
         static FaceTextures()

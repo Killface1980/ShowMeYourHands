@@ -174,7 +174,7 @@ namespace FacialStuff
             // Basic values if pawn is carrying stuff
             float x  = 0;
             float x2 = -x;
-            float y  = Offsets.YOffset_HandsFeetOver;
+            float y  = Offsets.YOffset_HandsFeetOver ;
             float y2 = y;
             float z;
             float z2;
@@ -689,6 +689,28 @@ namespace FacialStuff
         public bool HasLeftHandPosition => this.SecondHandPosition != Vector3.zero;
 
         // unused since 1.3
+        public float CurrentHeadAngle
+        {
+            get
+            {
+                if (ShowMeYourHandsMod.instance.Settings.UseFeet)
+                {
+                    WalkCycleDef walkCycle = this.CurrentWalkCycle;
+                    if (walkCycle != null)
+                    {
+                        SimpleCurve curve = this.CurrentRotation.IsHorizontal ? walkCycle.HeadAngleX : walkCycle.HeadOffsetZ;
+                        if (curve.PointsCount > 0)
+                        {
+                            return curve.Evaluate(this.MovedPercent);
+                        }
+                    }
+                }
+
+                return 0f;
+            }
+        }
+
+
         public float HeadAngleX
         {
             get
@@ -1052,7 +1074,12 @@ namespace FacialStuff
                     y2 = -1f;
                 }
 
-                if (this.CurrentRotation.IsHorizontal)
+                if (this.CurrentRotation == Rot4.West)
+                {
+                  //  y2 *= -1f;
+                }
+
+                    if (this.CurrentRotation.IsHorizontal)
                 {
                     x2 += 0.01f;
                 }

@@ -1,12 +1,13 @@
 ﻿using JetBrains.Annotations;
 using System;
+using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 
 namespace FacialStuff
 {
-    [AttributeUsage(AttributeTargets.All)]
-    public abstract class BasicDrawer : Attribute
+    [ShowMeYourHandsMod.HotSwappable]
+    public abstract class BasicDrawer 
     {
         #region Protected Fields
 

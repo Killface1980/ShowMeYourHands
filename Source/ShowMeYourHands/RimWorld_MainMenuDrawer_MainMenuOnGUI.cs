@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FacialStuff.GraphicsFS;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -27,7 +28,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
         alreadyRun = true;
 
-        UpdateHandDefinitions();
+        LongEventHandler.ExecuteWhenFinished(UpdateHandDefinitions);
 
         MethodInfo original = typeof(PawnRenderer).GetMethod("DrawEquipmentAiming");
         Patches patches = Harmony.GetPatchInfo(original);
@@ -138,7 +139,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             }
             else
             {
-                compProps.SecHand = IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
+                compProps.SecHand = FaceTextures.IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
                     ? secHand
                     : Vector3.zero;
                 compProps.MainHand = mainHand;
@@ -154,7 +155,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             }
             else
             {
-                compProps.SecHand = IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
+                compProps.SecHand = FaceTextures.IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
                     ? secHand
                     : Vector3.zero;
                 compProps.MainHand = mainHand;
@@ -188,7 +189,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                 }
                 else
                 {
-                    compProps.SecHand = IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
+                    compProps.SecHand = FaceTextures.IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
                         ? secHand
                         : Vector3.zero;
                     compProps.MainHand = mainHand;
@@ -204,7 +205,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                 }
                 else
                 {
-                    compProps.SecHand = IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
+                    compProps.SecHand = FaceTextures.IsWeaponLong(weapon, out Vector3 mainHand, out Vector3 secHand)
                         ? secHand
                         : Vector3.zero;
                     compProps.MainHand = mainHand;
@@ -358,90 +359,5 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                 }
             }
         }
-    }
-
-    private static bool IsWeaponLong(ThingDef weapon, out Vector3 mainHand, out Vector3 secHand)
-    {
-        Texture texture = weapon.graphicData.Graphic.MatSingle.mainTexture;
-
-        // This is not allowed
-        //var icon = (Texture2D) texture;
-
-        // This is
-        RenderTexture renderTexture = RenderTexture.GetTemporary(
-            texture.width,
-            texture.height,
-            0,
-            RenderTextureFormat.Default,
-            RenderTextureReadWrite.Linear);
-        Graphics.Blit(texture, renderTexture);
-        RenderTexture previous = RenderTexture.active;
-        RenderTexture.active = renderTexture;
-        Texture2D icon = new(texture.width, texture.height);
-        icon.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-        icon.Apply();
-        RenderTexture.active = previous;
-        RenderTexture.ReleaseTemporary(renderTexture);
-
-
-        Color32[] pixels = icon.GetPixels32();
-        int width = icon.width;
-        int startPixel = width;
-        int endPixel = 0;
-
-        for (int i = 0; i < icon.height; i++)
-        {
-            for (int j = 0; j < startPixel; j++)
-            {
-                if (pixels[j + (i * width)].a < 5)
-                {
-                    continue;
-                }
-
-                startPixel = j;
-                break;
-            }
-
-            for (int j = width - 1; j >= endPixel; j--)
-            {
-                if (pixels[j + (i * width)].a < 5)
-                {
-                    continue;
-                }
-
-                endPixel = j;
-                break;
-            }
-        }
-
-
-        float percentWidth = (endPixel - startPixel) / (float)width;
-        float percentStart = 0f;
-        if (startPixel != 0)
-        {
-            percentStart = startPixel / (float)width;
-        }
-
-        float percentEnd = 0f;
-        if (width - endPixel != 0)
-        {
-            percentEnd = (width - endPixel) / (float)width;
-        }
-
-        ShowMeYourHandsMain.LogMessage(
-            $"{weapon.defName}: start {startPixel.ToString()}, percentstart {percentStart}, end {endPixel.ToString()}, percentend {percentEnd}, width {width}, percent {percentWidth}");
-
-        if (percentWidth > 0.7f)
-        {
-            mainHand = new Vector3(-0.3f + percentStart, 0.3f, -0.05f);
-            secHand = new Vector3(0.2f, -0.100f, -0.05f);
-        }
-        else
-        {
-            mainHand = new Vector3(-0.3f + percentStart, 0.3f, 0f);
-            secHand = Vector3.zero;
-        }
-
-        return percentWidth > 0.7f;
     }
 }

@@ -640,7 +640,7 @@ namespace FacialStuff.GraphicsFS
                                 Texture2D mainTexture = (Texture2D)outerApparel.Graphic.MatSingle.mainTexture;
                                 if (!mainTexture.NullOrBad())
                                 {
-                                    PawnExtensions.colorDictionary[outerApparel] = AverageColorFromTexture(mainTexture);
+                                    PawnExtensions.colorDictionary[outerApparel] = FaceTextures.AverageColorFromTexture(mainTexture);
                                 }
                             }
 
@@ -700,7 +700,7 @@ namespace FacialStuff.GraphicsFS
 
                                 if (!mainTexture.NullOrBad())
                                 {
-                                    PawnExtensions.colorDictionary[outerApparel] = AverageColorFromTexture(mainTexture);
+                                    PawnExtensions.colorDictionary[outerApparel] = FaceTextures.AverageColorFromTexture(mainTexture);
                                 }
                             }
 
@@ -714,25 +714,9 @@ namespace FacialStuff.GraphicsFS
                 }
             }
         }
-        private static Color32 AverageColorFromTexture(Texture2D texture)
-        {
-            RenderTexture renderTexture = RenderTexture.GetTemporary(
-                texture.width,
-                texture.height,
-                0,
-                RenderTextureFormat.Default,
-                RenderTextureReadWrite.Linear);
-            Graphics.Blit(texture, renderTexture);
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = renderTexture;
-            Texture2D tex = new(texture.width, texture.height);
-            tex.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-            tex.Apply();
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(renderTexture);
-            return AverageColorFromColors(tex.GetPixels32());
-        }
-        private List<bool> colorBody = new List<bool>{false,false,false,false};
+
+
+        private List<bool> colorBody = new List<bool> {false,false,false,false};
 
         private void SetHandColor(Color color )
         {
@@ -781,55 +765,6 @@ namespace FacialStuff.GraphicsFS
 
 
 
-        private static Color32 AverageColorFromColors(Color32[] colors)
-        {
-            Dictionary<Color32, int> shadeDictionary = new();
-            foreach (Color32 texColor in colors)
-            {
-                if (texColor.a < 50)
-                {
-                    // Ignore low transparency
-                    continue;
-                }
-
-                Rgb currentRgb = new() { B = texColor.b, G = texColor.b, R = texColor.r };
-
-                if (currentRgb.Compare(new Rgb { B = 0, G = 0, R = 0 }, new Cie1976Comparison()) < 2)
-                {
-                    // Ignore black pixels
-                    continue;
-                }
-
-                if (shadeDictionary.Count == 0)
-                {
-                    shadeDictionary[texColor] = 1;
-                    continue;
-                }
-
-                bool added = false;
-                foreach (Color32 rgb in shadeDictionary.Keys.Where(rgb =>
-                             currentRgb.Compare(new Rgb { B = rgb.b, G = rgb.b, R = rgb.r }, new Cie1976Comparison()) < 2))
-                {
-                    shadeDictionary[rgb]++;
-                    added = true;
-                    break;
-                }
-
-                if (!added)
-                {
-                    shadeDictionary[texColor] = 1;
-                }
-            }
-
-            if (shadeDictionary.Count == 0)
-            {
-                return new Color32(0, 0, 0, MaxValue);
-            }
-
-            Color32 greatestValue = shadeDictionary.Aggregate((rgb, max) => rgb.Value > max.Value ? rgb : max).Key;
-            greatestValue.a = MaxValue;
-            return greatestValue;
-        }
 
         #endregion Private Methods
     }

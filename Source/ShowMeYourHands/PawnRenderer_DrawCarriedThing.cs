@@ -45,7 +45,7 @@ public static class PawnRenderer_DrawCarriedThing
 
         if (behind || ___pawn.Rotation == Rot4.North)
         {
-            drawPos.y = ___pawn.DrawPos.y - Offsets.YOffset_CarriedThing;
+            drawPos.y -=  - Offsets.YOffset_CarriedThing;
         }
 
 		anim.DrawHands(Quaternion.identity, drawPos, carriedThing, flip);

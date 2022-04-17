@@ -7,6 +7,23 @@ using Verse;
 
 namespace ShowMeYourHands.FSWalking
 {
+    [HarmonyPatch(typeof(PawnRenderer), "DrawHeadHair")]
+    class DrawHeadHair_Patch
+    {
+        static void Postfix(PawnRenderer __instance, Vector3 rootLoc, Vector3 headOffset, ref float angle, Rot4 bodyFacing, Rot4 headFacing, RotDrawMode bodyDrawType, PawnRenderFlags flags, Pawn ___pawn)
+        {
+            if (___pawn == null || !___pawn.GetCompAnim(out CompBodyAnimator compAnim))
+            {
+                return;
+            }
+
+            if (compAnim.IsMoving)
+            {
+                angle += compAnim.CurrentHeadAngle;
+            }
+        }
+    }
+    
     [HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.BodyAngle))]
     class BodyAngle_Patch
     {
@@ -22,7 +39,6 @@ namespace ShowMeYourHands.FSWalking
                 __result += compAnim.BodyAngle;
             }
         }
-
     }
 
     [HarmonyPatch(typeof(PawnRenderer), "DrawDynamicParts")]

@@ -24,6 +24,7 @@ namespace FacialStuff
         #region Public Fields
 
         public readonly Vector3Tween[] Vector3Tweens = new Vector3Tween[(int)TweenThing.Max];
+        public readonly FloatTween[] FloatTweens = new FloatTween[(int)TweenThing.Max];
         [CanBeNull] public BodyAnimDef BodyAnim;
         public BodyPartStats BodyStat;
         public bool Deactivated;
@@ -518,6 +519,10 @@ namespace FacialStuff
             {
                 this.Vector3Tweens[i] = new Vector3Tween();
             }
+            for (int i = 0; i < this.FloatTweens.Length; i++)
+            {
+                this.FloatTweens[i] = new FloatTween();
+            }
 
             string bodyType = "Undefined";
 
@@ -626,7 +631,7 @@ namespace FacialStuff
 
         public bool IsRider = false;
 
-        public float LastAimAngle = 143f;
+        public readonly float[] LastAimAngle = new float[(int)TweenThing.Max];
 
         public Vector3 LastEqPos = Vector3.zero;
 

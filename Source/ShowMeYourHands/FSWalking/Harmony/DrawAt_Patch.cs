@@ -9,6 +9,7 @@ using Verse;
 
 namespace ShowMeYourHands.FSWalking;
 
+[ShowMeYourHandsMod.HotSwappable]
 [HarmonyPriority(0)]
 [HarmonyPatch(typeof(Pawn_DrawTracker), "DrawAt")]
 class DrawAt_Patch
@@ -47,6 +48,36 @@ class DrawAt_Patch
         __state = loc;
         animator?.ApplyBodyWobble(ref loc, ref __state);
         animator?.TickDrawers();
+     
+        if (!Find.TickManager.Paused)
+        {
+            float rateMultiplier = Find.TickManager.TickRateMultiplier;
+            float elapsedTime = 1f * rateMultiplier;
+
+            foreach (Vector3Tween tween in animator.Vector3Tweens)
+            {
+                if (tween is { State: TweenState.Running })
+                {
+                    tween.Update(elapsedTime);
+                }
+            }
+            foreach (FloatTween tween in animator.FloatTweens)
+            {
+                if (tween is { State: TweenState.Running })
+                {
+                    tween.Update(elapsedTime);
+                }
+            }
+
+
+            /*
+            if (angleTween.State == TweenState.Running)
+            {
+                compAnim.AimAngleTween.Update(3f * rateMultiplier);
+            }
+            */
+
+        }
 
     }
 
@@ -115,40 +146,7 @@ class DrawAt_Patch
             BodyAnimator.AnimatorTick();
         }
         */
-        // Tweener
-       // Vector3Tween eqTween = compAnim.Vector3Tweens[(int)TweenThing.Equipment];
 
-        // FloatTween angleTween = compAnim.AimAngleTween;
-        Vector3Tween leftHand = animator.Vector3Tweens[(int)TweenThing.HandLeft];
-        Vector3Tween rightHand = animator.Vector3Tweens[(int)TweenThing.HandRight];
-
-       // if (!Find.TickManager.Paused)
-        {
-            float rateMultiplier = Find.TickManager.TickRateMultiplier;
-            float elapsedTime = 1f * rateMultiplier;
-
-            if (leftHand.State == TweenState.Running)
-            {
-                leftHand.Update(elapsedTime);
-            }
-            if (rightHand.State == TweenState.Running)
-            {
-                rightHand.Update(elapsedTime);
-            }
-            /*
-            if (eqTween.State == TweenState.Running)
-            {
-                eqTween.Update(elapsedTime);
-            }
-            */
-            /*
-            if (angleTween.State == TweenState.Running)
-            {
-                compAnim.AimAngleTween.Update(3f * rateMultiplier);
-            }
-            */
-
-        }
 
 
 

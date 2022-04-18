@@ -163,7 +163,7 @@
         <MainHand>(-0.212, 0.100, -0.076)</MainHand>
         <SecHand>(0.180, -0.100, -0.050)</SecHand>
         <WeaponPositionOffset>
-          <x>0.08</x>
+          <x>0.00</x>
           <y>0</y>
           <z>-0.04</z>
         </WeaponPositionOffset>

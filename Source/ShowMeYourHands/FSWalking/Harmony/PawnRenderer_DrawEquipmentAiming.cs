@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FacialStuff;
+using FacialStuff.Tweener;
 using UnityEngine;
 using Verse;
 
@@ -47,7 +48,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
         // flips the weapon display
         if (compAnim.CurrentRotation == Rot4.North && !(pawn.stances.curStance is Stance_Busy stance_Busy &&
-                                                       !stance_Busy.neverAimWeapon && stance_Busy.focusTarg.IsValid))
+                                                        !stance_Busy.neverAimWeapon && stance_Busy.focusTarg.IsValid))
         {
             float baseAngle = aimAngle - 180f;
             aimAngle = 180f - baseAngle;
@@ -92,6 +93,7 @@ public class PawnRenderer_DrawEquipmentAiming
             return;
         }
 
+        bool isFirstHandWeapon = eq != pawn.equipment.Primary;
         bool flipped = (compAnim.CurrentRotation == Rot4.West || compAnim.CurrentRotation == Rot4.North);
 
         // ShowMeYourHandsMain.LogMessage($"Changing angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
@@ -102,27 +104,111 @@ public class PawnRenderer_DrawEquipmentAiming
 
         if (pawn?.equipment?.AllEquipmentListForReading != null && pawn.equipment.AllEquipmentListForReading.Count == 2)
         {
-                drawLoc.z += weaponOffset.z;
-        
-/*                ThingWithComps offHandWeapon = (from weapon in pawn.equipment.AllEquipmentListForReading
-                where weapon != pawn?.equipment?.Primary as ThingWithComps
-                select weapon).First();
-            WhandCompProps offhandComp = offHandWeapon?.def?.GetCompProperties<WhandCompProps>();
-            if (offhandComp != null)
-            {
-            //    drawLoc.z += weaponOffset.z;
-            }
-            else
-            {
-            //    drawLoc += weaponOffset;
-            }
-*/
+            drawLoc.z += weaponOffset.z;
         }
         else
         {
             drawLoc += weaponOffset;
         }
 
+        int equipment = isFirstHandWeapon ? (int)TweenThing.Equipment1 : (int)TweenThing.Equipment2;
+
+        bool noTween = false;
+        //if (pawn.pather != null && pawn.pather.MovedRecently(5))
+        //{
+        //    noTween = true;
+        //}
+
+        switch (compAnim.Vector3Tweens[equipment].State)
+        {
+            case TweenState.Running:
+                if (noTween || compAnim.IsMoving)
+                {
+                    compAnim.Vector3Tweens[equipment].Stop(StopBehavior.ForceComplete);
+                }
+
+                drawLoc = compAnim.Vector3Tweens[equipment].CurrentValue;
+                // Log.Message("running");
+                break;
+
+            case TweenState.Paused:
+                break;
+
+            case TweenState.Stopped:
+                if (noTween || (compAnim.IsMoving))
+                {
+                    break;
+                }
+
+                ScaleFunc scaleFunc = ScaleFuncs.SineEaseOut;
+
+                Vector3 start = compAnim.LastPosition[equipment];
+                float distance = Vector3.Distance(start, drawLoc);
+                if (distance > 0.05f)
+                {
+                     float duration = Mathf.Abs(distance * 50f);
+                     if (start != Vector3.zero && duration > 12f)
+                     {
+                    // Log.Message("Distance: " +distance.ToString("N2") + " - duration: " + duration);
+                         start.y = drawLoc.y;
+                         compAnim.Vector3Tweens[equipment].Start(start, drawLoc, duration, scaleFunc);
+                         drawLoc = start;
+                     }
+                }
+
+                if (distance > 0f) ;
+                {
+                   // Log.Message("Start: " + start + " - Ende: " + drawLoc);
+                }
+                break;
+        }
+     
+        switch (compAnim.FloatTweens[equipment].State)
+        {
+            case TweenState.Running:
+                if (noTween || compAnim.IsMoving)
+                {
+                    compAnim.FloatTweens[equipment].Stop(StopBehavior.ForceComplete);
+                }
+
+                aimAngle = compAnim.FloatTweens[equipment].CurrentValue;
+                // Log.Message("running");
+                break;
+
+            case TweenState.Paused:
+                break;
+
+            case TweenState.Stopped:
+                if (noTween || (compAnim.IsMoving))
+                {
+                    break;
+                }
+
+                ScaleFunc scaleFunc = ScaleFuncs.SineEaseOut;
+
+                float start = compAnim.LastAimAngle[equipment];
+                float angleDiff = start - aimAngle;
+              
+                if (Mathf.Abs(angleDiff) < 145f)
+                {
+                     float duration = Mathf.Abs(angleDiff * 0.35f);
+                     if (angleDiff > 3f)
+                     {
+                    // Log.Message("Distance: " +distance.ToString("N2") + " - duration: " + duration);
+                         compAnim.FloatTweens[equipment].Start(start, aimAngle, duration, scaleFunc);
+                         aimAngle = start;
+                     }
+                }
+
+                if (angleDiff > 0f) ;
+                {
+                   // Log.Message("Start: " + start + " - Ende: " + drawLoc);
+                }
+                break;
+        }
+        
+        compAnim.LastPosition[(int)equipment] = drawLoc;
+        compAnim.LastAimAngle[(int)equipment] = aimAngle;
 
         // ShowMeYourHandsMain.LogMessage($"New angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 

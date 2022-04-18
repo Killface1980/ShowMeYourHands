@@ -654,13 +654,13 @@ internal class ShowMeYourHandsMod : Mod
 
                 if (currentMainHand == Vector3.zero)
                 {
-                    currentMainHand = compProperties.MainHand;
-                    currentOffHand = compProperties.SecHand;
-                    currentHasOffHand = currentOffHand != Vector3.zero;
-                    currentMainBehind = compProperties.MainHand.y < 0;
-                    currentOffBehind = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
+                    currentMainHand      = compProperties.MainHand;
+                    currentOffHand       = compProperties.SecHand;
+                    currentHasOffHand    = currentOffHand != Vector3.zero;
+                    currentMainBehind    = compProperties.MainHand.y < 0;
+                    currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
                     currentMainHandAngle = compProperties.MainHandAngle;
-                    currentOffHandAngle = compProperties.SecHandAngle;
+                    currentOffHandAngle  = compProperties.SecHandAngle;
                 }
 
                 if (!DrawIcon(currentDef, weaponRect, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle))

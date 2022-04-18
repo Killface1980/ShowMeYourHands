@@ -771,30 +771,28 @@ namespace FacialStuff
             // Use y for the horizontal position. too lazy to add even more vectors
             bool isHorizontal = this.CurrentRotation.IsHorizontal;
             bool aiming = pawn.Aiming();
-            Vector3 extOffset;
             Vector3 o = extensions.WeaponPositionOffset;
             Vector3 d = extensions.AimedWeaponPositionOffset;
+
             if (isHorizontal)
             {
-                extOffset = new Vector3(o.y, 0, o.z);
+                weaponPosOffset = new Vector3(o.y, 0, o.z);
                 if (aiming)
                 {
-                    extOffset += new Vector3(d.y, 0, d.z);
+                    weaponPosOffset += new Vector3(d.y, 0, d.z);
                 }
             }
             else
             {
-                extOffset = new Vector3(o.x, 0, o.z);
+                weaponPosOffset = new Vector3(o.x, 0, o.z);
                 if (aiming)
                 {
-                    extOffset += new Vector3(d.x, 0, d.z);
+                    weaponPosOffset += new Vector3(d.x, 0, d.z);
                 }
             }
 
             if (flipped)
             {
-
-                weaponPosOffset += extOffset;
 
                 // flip x position offset
                 if (pawn.Rotation != Rot4.South)
@@ -802,10 +800,7 @@ namespace FacialStuff
                     weaponPosOffset.x *= -1;
                 }
             }
-            else
-            {
-                weaponPosOffset += extOffset;
-            }
+
         }
 
         public void CheckMovement()

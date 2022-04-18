@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FacialStuff;
 using UnityEngine;
 using Verse;
@@ -32,6 +33,11 @@ public class PawnRenderer_DrawEquipmentAiming
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(drawLoc, aimAngle);
 
+        if (!ShowMeYourHandsMod.instance.Settings.UseHands)
+        {
+            return;
+
+        }
 
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
         if (pawn == null || !pawn.GetCompAnim(out CompBodyAnimator compAnim))
@@ -43,14 +49,23 @@ public class PawnRenderer_DrawEquipmentAiming
         if (compAnim.CurrentRotation == Rot4.North && !(pawn.stances.curStance is Stance_Busy stance_Busy &&
                                                        !stance_Busy.neverAimWeapon && stance_Busy.focusTarg.IsValid))
         {
-            if (aimAngle > 20f && aimAngle < 160f)
-            {
-                aimAngle +=90f;
-            }
-            else if (aimAngle > 200f && aimAngle < 340f)
-            {
-                aimAngle -= 90f;
-            }
+            float baseAngle = aimAngle - 180f;
+            aimAngle = 180f - baseAngle;
+
+            //if (aimAngle > 20f && aimAngle < 160f) // right
+            //{
+            //    float baseAngle = aimAngle - 180f;
+            //    aimAngle = 180f - baseAngle;
+            //
+            //    // aimAngle +=90f;
+            //}
+            //else if (aimAngle > 200f && aimAngle < 340f) // left
+            //{
+            //    float baseAngle = aimAngle - 180f;
+            //    aimAngle = 180f - baseAngle;
+            //
+            //    // aimAngle -= 90f;
+            //}
         }
 
         // Log.ErrorOnce(aimAngle.ToString("N0"), Mathf.RoundToInt(aimAngle));
@@ -82,8 +97,33 @@ public class PawnRenderer_DrawEquipmentAiming
         // ShowMeYourHandsMain.LogMessage($"Changing angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 
         compAnim.CalculatePositionsWeapon(extensions, out Vector3 weaponOffset, flipped);
-        drawLoc += weaponOffset;
+        // Log.Message(eq.def + " - " + weaponOffset.x.ToString("N3") + "-" + weaponOffset.y.ToString("N3") + "-" +
+        //             weaponOffset.z.ToString("N3"));
+
+        if (pawn?.equipment?.AllEquipmentListForReading != null && pawn.equipment.AllEquipmentListForReading.Count == 2)
+        {
+                drawLoc.z += weaponOffset.z;
         
+/*                ThingWithComps offHandWeapon = (from weapon in pawn.equipment.AllEquipmentListForReading
+                where weapon != pawn?.equipment?.Primary as ThingWithComps
+                select weapon).First();
+            WhandCompProps offhandComp = offHandWeapon?.def?.GetCompProperties<WhandCompProps>();
+            if (offhandComp != null)
+            {
+            //    drawLoc.z += weaponOffset.z;
+            }
+            else
+            {
+            //    drawLoc += weaponOffset;
+            }
+*/
+        }
+        else
+        {
+            drawLoc += weaponOffset;
+        }
+
+
         // ShowMeYourHandsMain.LogMessage($"New angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(drawLoc, aimAngle);

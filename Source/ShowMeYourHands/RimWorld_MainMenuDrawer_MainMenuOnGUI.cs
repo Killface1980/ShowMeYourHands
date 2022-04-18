@@ -329,10 +329,10 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                             MainHand = weaponSets.MainHand,
                             SecHand = weaponSets.SecHand,
 
-                            WeaponPositionOffset = weaponSets.WeaponPositionOffset,
+                            WeaponPositionOffset      = weaponSets.WeaponPositionOffset,
                             AimedWeaponPositionOffset = weaponSets.AimedWeaponPositionOffset,
-                            MainHandAngle = weaponSets.MainHandAngle,
-                            SecHandAngle = weaponSets.SecHandAngle
+                            MainHandAngle             = weaponSets.MainHandAngle,
+                            SecHandAngle              = weaponSets.SecHandAngle
 
                     };
                         weapon.comps.Add(compProps);

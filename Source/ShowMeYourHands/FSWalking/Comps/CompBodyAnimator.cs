@@ -414,7 +414,7 @@ namespace FacialStuff
             return base.CompInspectStringExtra();
         }
 
-        public void DrawFeet(Quaternion bodyQuat, Vector3 rootLoc, Vector3 bodyLoc)
+        public void DrawFeet(float bodyAngle, Vector3 rootLoc, Vector3 bodyLoc)
         {
             if (!this.pawnBodyDrawers.NullOrEmpty())
             {
@@ -422,14 +422,14 @@ namespace FacialStuff
                 int count = this.pawnBodyDrawers.Count;
                 while (i < count)
                 {
-                    this.pawnBodyDrawers[i].DrawFeet(bodyQuat, rootLoc, bodyLoc);
+                    this.pawnBodyDrawers[i].DrawFeet(bodyAngle, rootLoc, bodyLoc);
                     i++;
                 }
             }
         }
 
         // off for now
-        public void DrawHands(Quaternion bodyQuat, Vector3 rootLoc, [CanBeNull] Thing carriedThing = null,
+        public void DrawHands(float bodyAngle, Vector3 rootLoc, [CanBeNull] Thing carriedThing = null,
             bool flip = false)
         {
             if (this.pawnBodyDrawers.NullOrEmpty())
@@ -441,7 +441,7 @@ namespace FacialStuff
             int count = this.pawnBodyDrawers.Count;
             while (i < count)
             {
-                this.pawnBodyDrawers[i].DrawHands(bodyQuat, rootLoc, carriedThing, flip);
+                this.pawnBodyDrawers[i].DrawHands(bodyAngle, rootLoc, carriedThing, flip);
                 i++;
             }
         }
@@ -758,7 +758,7 @@ namespace FacialStuff
             get => _movedPercent;
             private set => _movedPercent = value;
         }
-        public void CalculatePositionsWeapon(ref float weaponAngle, WhandCompProps extensions,
+        public void CalculatePositionsWeapon(WhandCompProps extensions,
                                              out Vector3 weaponPosOffset, bool flipped)
         {
             weaponPosOffset = Vector3.zero;

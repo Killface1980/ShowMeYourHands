@@ -7,13 +7,13 @@ namespace FacialStuff
     public class QuadrupedDrawer : HumanBipedDrawer
     {
 
-        public override void DrawFeet(Quaternion drawQuat, Vector3 rootLoc, Vector3 bodyLoc)
+        public override void DrawFeet(float drawAngle, Vector3 rootLoc, Vector3 bodyLoc)
         {
 
 
             if (this.compAnimator.IsMoving)
             {
-                drawQuat *= Quaternion.AngleAxis(-pawn.Drawer.renderer.BodyAngle(), Vector3.up);
+                drawAngle += -pawn.Drawer.renderer.BodyAngle();
             }
 
             // Fix the position, maybe needs new code in GetJointPositions()?
@@ -32,19 +32,19 @@ namespace FacialStuff
                 frontPawLoc.y += (_compAnimatorCurrentRotation == Rot4.North ? Offsets.YOffset_Behind : -Offsets.YOffset_Behind);
             }
 
-            this.DrawFrontPaws(drawQuat, frontPawLoc);
+            this.DrawFrontPaws(drawAngle, frontPawLoc);
 
-            base.DrawFeet(drawQuat, rearPawLoc, bodyLoc);
+            base.DrawFeet(drawAngle, rearPawLoc, bodyLoc);
         }
 
 
-        public override void DrawHands(Quaternion bodyQuat, Vector3 drawPos, Thing carriedThing = null,
+        public override void DrawHands(float bodyAngle, Vector3 drawPos, Thing carriedThing = null,
             bool flip = false)
         {
             // base.DrawHands(bodyQuat, drawPos, portrait, carrying, drawSide);
         }
 
-        protected virtual void DrawFrontPaws(Quaternion drawQuat, Vector3 rootLoc)
+        protected virtual void DrawFrontPaws(float drawQuat, Vector3 rootLoc)
         {
             if (!this.compAnimator.BodyAnim.quadruped)
             {
@@ -147,7 +147,7 @@ namespace FacialStuff
                     Graphics.DrawMesh(
                         footMeshLeft,
                         position,
-                        drawQuat * Quaternion.AngleAxis(footAngleLeft, Vector3.up),
+                        Quaternion.AngleAxis(drawQuat + footAngleLeft, Vector3.up),
                         matLeft,
                         0);
                 }
@@ -161,7 +161,7 @@ namespace FacialStuff
                     Graphics.DrawMesh(
                         footMeshRight,
                         position,
-                        drawQuat * Quaternion.AngleAxis(footAngleRight, Vector3.up),
+                        Quaternion.AngleAxis(drawQuat + footAngleRight, Vector3.up),
                         matRight,
                         0);
                 }

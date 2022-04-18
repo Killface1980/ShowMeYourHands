@@ -63,11 +63,11 @@ namespace FacialStuff
         {
         }
 
-        public virtual void DrawFeet(Quaternion drawQuat, Vector3 rootLoc, Vector3 bodyLoc)
+        public virtual void DrawFeet(float drawAngle, Vector3 rootLoc, Vector3 bodyLoc)
         {
         }
 
-        public virtual void DrawHands(Quaternion bodyQuat, Vector3 drawPos, Thing carriedThing = null,
+        public virtual void DrawHands(float bodyAngle, Vector3 drawPos, Thing carriedThing = null,
             bool flip = false)
         {
 

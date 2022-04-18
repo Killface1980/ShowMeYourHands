@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 using ShowMeYourHands;
 using UnityEngine;
 using Verse;
@@ -110,7 +111,7 @@ namespace FacialStuff
             return pawn.Drawer.renderer.graphics.flasher.GetDamagedMat(baseMat);
         }
 
-        public override void DrawFeet(Quaternion drawQuat, Vector3 rootLoc, Vector3 bodyLoc)
+        public override void DrawFeet(float drawAngle, Vector3 rootLoc, Vector3 bodyLoc)
         {
             if (this.ShouldBeIgnored())
             {
@@ -140,7 +141,7 @@ namespace FacialStuff
 
             if (pawn.GetPosture() == PawnPosture.Standing) // keep the feet straight while standing, ignore the bodyQuat
             {
-                drawQuat = Quaternion.AngleAxis(0f, Vector3.up);
+                drawAngle = 0f;
             }
 
             if (this.compAnimator.IsMoving)
@@ -257,15 +258,15 @@ namespace FacialStuff
             bool drawRight = matRight != null && this.compAnimator.BodyStat.FootRight != PartStatus.Missing;
             bool drawLeft = matLeft != null && this.compAnimator.BodyStat.FootLeft != PartStatus.Missing;
 
-            groundPos.LeftJoint = drawQuat * groundPos.LeftJoint;
-            groundPos.RightJoint = drawQuat * groundPos.RightJoint;
-            leftFootCycle = drawQuat * leftFootCycle;
-            rightFootCycle = drawQuat * rightFootCycle;
+            groundPos.LeftJoint = groundPos.LeftJoint.RotatedBy(drawAngle);
+            groundPos.RightJoint = groundPos.RightJoint.RotatedBy(drawAngle);
+            leftFootCycle = leftFootCycle.RotatedBy(drawAngle);
+            rightFootCycle = rightFootCycle.RotatedBy(drawAngle);
 
-            rootLoc.y -= Offsets.YOffset_CarriedThing; // feet pop out in front of other pawns
+            // rootLoc.y -= Offsets.YOffset_CarriedThing; // feet pop out in front of other pawns
 
 
-            Vector3 ground = rootLoc + drawQuat * new Vector3(0, 0, OffsetGroundZ) * bodysizeScaling;
+            Vector3 ground = rootLoc + new Vector3(0, 0, OffsetGroundZ).RotatedBy(drawAngle) * bodysizeScaling;
             
 
             if (drawLeft)
@@ -281,7 +282,7 @@ namespace FacialStuff
                     Graphics.DrawMesh(
                         footMeshLeft,
                         position, // tweener.TweenedPartsPos[(int)leftFoot],
-                        drawQuat * Quaternion.AngleAxis(footAngleLeft, Vector3.up),
+                        Quaternion.AngleAxis(footAngleLeft + drawAngle, Vector3.up),
                         matLeft,
                         0);
                 }
@@ -300,7 +301,7 @@ namespace FacialStuff
                 Graphics.DrawMesh(
                     footMeshRight,
                     position, // tweener.TweenedPartsPos[(int)rightFoot],
-                    drawQuat * Quaternion.AngleAxis(footAngleRight, Vector3.up),
+                     Quaternion.AngleAxis(footAngleRight + drawAngle, Vector3.up),
                     matRight,
                     0);
 
@@ -350,7 +351,7 @@ namespace FacialStuff
             */
         }
 
-        public override void DrawHands(Quaternion bodyQuat, Vector3 drawPos,
+        public override void DrawHands(float bodyAngle, Vector3 drawPos,
             Thing carriedThing = null, bool flip = false)
         {
             if (this.ShouldBeIgnored())
@@ -367,6 +368,8 @@ namespace FacialStuff
             {
                 return;
             }
+
+           
 
             float bodySizeScaling = compAnimator.GetBodysizeScaling();
 
@@ -398,7 +401,7 @@ namespace FacialStuff
             {
                 if (this.compAnimator.CurrentRotation != Rot4.North)
                 {
-                    drawPos.y += Offsets.YOffset_CarriedThing;
+                    //drawPos.y += Offsets.YOffset_CarriedThing;
                     drawPos.z -= 0.1f;
                 }
                 /*    this.compAnimator.DoHandOffsetsOnWeapon(carriedThing,
@@ -428,7 +431,7 @@ namespace FacialStuff
             if (animationAngle != 0f)
             {
                 animationAngle *= 3.8f;
-                bodyQuat *= Quaternion.AngleAxis(animationAngle, Vector3.up);
+                bodyAngle += animationAngle;
             }
 
             if (animationPosOffset != Vector3.zero)
@@ -472,9 +475,9 @@ namespace FacialStuff
                 }
                 else if (!this.compAnimator.IsMoving)
                 {
-                    float tesie = this.compAnimator.CurrentRotation.IsHorizontal ? 1.5f : 0.65f;
+                    float f = this.compAnimator.CurrentRotation.IsHorizontal ? 1.5f : 0.65f;
 
-                    while (Vector3.Distance(this.pawn.DrawPos, handVector) > body.armLength * bodySizeScaling * tesie)
+                    while (Vector3.Distance(this.pawn.DrawPos, handVector) > body.armLength * bodySizeScaling * f)
                     {
                         float step = 0.025f;
                         handVector = Vector3.MoveTowards(handVector, this.pawn.DrawPos, step);
@@ -488,7 +491,7 @@ namespace FacialStuff
                     DoAnimationHands(ref animationPosOffset, ref animationAngle);
                     animationPosOffset.y = 0f;
                     animationAngle *= 3.8f;
-                    bodyQuat *= Quaternion.AngleAxis(animationAngle, Vector3.up);
+                    bodyAngle += animationAngle;
                     drawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
                     shoulperPosLeftJoint.x -= animationPosOffset.z * 0.75f;
                     shoulperPosRightJoint.x -= animationPosOffset.z * 0.75f;
@@ -605,19 +608,19 @@ namespace FacialStuff
                 }
                 else
                 {
-                    shoulperPosLeftJoint = bodyQuat * shoulperPosLeftJoint;
-                    leftHandVector = bodyQuat * leftHandVector.RotatedBy(-handSwingAngle[0] - shoulderAngle + animationAngle);
+                    shoulperPosLeftJoint = shoulperPosLeftJoint.RotatedBy(bodyAngle);
+                    leftHandVector = leftHandVector.RotatedBy(bodyAngle - handSwingAngle[0] - shoulderAngle + animationAngle);
 
                     position = drawPos + (shoulperPosLeftJoint + leftHandVector) * bodySizeScaling;
                     if (carrying) // grabby angle
                     {
-                        quat = bodyQuat * Quaternion.AngleAxis(105f, Vector3.up);
+                        quat = Quaternion.AngleAxis(bodyAngle + 105f, Vector3.up);
                     }
                     else
                     {
-                        quat = bodyQuat * Quaternion.AngleAxis(-handSwingAngle[0] - shoulderAngle, Vector3.up);
+                        quat = Quaternion.AngleAxis(bodyAngle - handSwingAngle[0] - shoulderAngle, Vector3.up);
                     }
-                    quat *= Quaternion.AngleAxis(-animationAngle*1.25f, Vector3.up);
+                    quat *= Quaternion.AngleAxis(animationAngle*1.25f, Vector3.up);
 
                 }
 
@@ -652,17 +655,17 @@ namespace FacialStuff
                 }
                 else
                 {
-                    shoulperPosRightJoint = bodyQuat * shoulperPosRightJoint;
-                    rightHandVector = bodyQuat * rightHandVector.RotatedBy(handSwingAngle[1] - shoulderAngle + animationAngle);
+                    shoulperPosRightJoint = shoulperPosRightJoint.RotatedBy(bodyAngle);
+                    rightHandVector = rightHandVector.RotatedBy(bodyAngle + handSwingAngle[1] - shoulderAngle + animationAngle);
 
                     position = drawPos + (shoulperPosRightJoint + rightHandVector) * bodySizeScaling;
                     if (carrying) // grabby angle
                     {
-                        quat = bodyQuat * Quaternion.AngleAxis(-115f, Vector3.up);
+                        quat = Quaternion.AngleAxis(bodyAngle - 115f, Vector3.up);
                     }
                     else
                     {
-                        quat = bodyQuat * Quaternion.AngleAxis(handSwingAngle[1] - shoulderAngle, Vector3.up);
+                        quat = Quaternion.AngleAxis(bodyAngle  + handSwingAngle[1] - shoulderAngle, Vector3.up);
                     }
                     quat *= Quaternion.AngleAxis(animationAngle*1.25f, Vector3.up);
 

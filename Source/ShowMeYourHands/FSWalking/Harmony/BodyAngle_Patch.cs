@@ -7,10 +7,12 @@ using Verse;
 
 namespace ShowMeYourHands.FSWalking
 {
+    [ShowMeYourHandsMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), "DrawHeadHair")]
     class DrawHeadHair_Patch
     {
-        static void Postfix(PawnRenderer __instance, Vector3 rootLoc, Vector3 headOffset, ref float angle, Rot4 bodyFacing, Rot4 headFacing, RotDrawMode bodyDrawType, PawnRenderFlags flags, Pawn ___pawn)
+        [HarmonyPriority(0)]
+        static void Prefix(PawnRenderer __instance, Vector3 rootLoc, Vector3 headOffset, ref float angle, Rot4 bodyFacing, Rot4 headFacing, RotDrawMode bodyDrawType, PawnRenderFlags flags, Pawn ___pawn)
         {
             if (___pawn == null || !___pawn.GetCompAnim(out CompBodyAnimator compAnim))
             {
@@ -23,10 +25,12 @@ namespace ShowMeYourHands.FSWalking
             }
         }
     }
-    
+
+    [ShowMeYourHandsMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.BodyAngle))]
     class BodyAngle_Patch
     {
+        [HarmonyPriority(0)]
         static void Postfix(PawnRenderer __instance, ref float __result, Pawn ___pawn)
         {
             if (___pawn == null || !___pawn.GetCompAnim(out CompBodyAnimator compAnim))
@@ -41,6 +45,7 @@ namespace ShowMeYourHands.FSWalking
         }
     }
 
+    [ShowMeYourHandsMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), "DrawDynamicParts")]
     public class Patch_PawnRenderer_DrawDynamicParts
     {
@@ -60,6 +65,7 @@ namespace ShowMeYourHands.FSWalking
         }
     }
 
+    [ShowMeYourHandsMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), "RenderPawnInternal")]
     public class Patch_PawnRenderer_RenderPawnInternal
     {
@@ -84,6 +90,7 @@ namespace ShowMeYourHands.FSWalking
             }
         }
     }
+    [ShowMeYourHandsMod.HotSwappable]
     [HarmonyBefore("com.yayo.yayoAni")]
     [HarmonyPatch(typeof(PawnRenderer), "RenderCache")]
     public class Patch_PawnRenderer_RenderCache

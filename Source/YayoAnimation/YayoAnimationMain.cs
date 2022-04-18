@@ -12,7 +12,7 @@ public static class YayoAnimationMain
         Harmony harmony = new("Mlie.ShowMeYourHands.YayoAnimationCompatibility");
         MethodInfo original = AccessTools.Method("yayoAni.patch_DrawEquipmentAiming:Prefix");
         MethodInfo prefix =
-            typeof(PawnRenderer_DrawEquipmentAiming_DrawEquipmentAimingOverride).GetMethod("SaveWeaponLocation");
+            typeof(YayoAnimationCompatibility_DrawEquipmentAimingOverride).GetMethod(nameof(YayoAnimationCompatibility_DrawEquipmentAimingOverride.SaveWeaponLocation));
         harmony.Patch(original, new HarmonyMethod(prefix));
 
 

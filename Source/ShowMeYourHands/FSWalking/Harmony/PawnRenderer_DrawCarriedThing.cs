@@ -5,12 +5,13 @@ using Verse;
 
 namespace ShowMeYourHands;
 
+[ShowMeYourHandsMod.HotSwappable]
 [HarmonyPatch(typeof(PawnRenderer), "DrawCarriedThing")]
 public static class PawnRenderer_DrawCarriedThing
 {
-    public static void Postfix(Vector3 drawLoc, Pawn ___pawn)
+    public static void Prefix(ref Vector3 drawLoc, Pawn ___pawn)
     {
-        Thing carriedThing = ___pawn.carryTracker?.CarriedThing;
+        Thing carriedThing = ___pawn?.carryTracker?.CarriedThing;
         if (carriedThing == null)
         {
             return;
@@ -26,29 +27,31 @@ public static class PawnRenderer_DrawCarriedThing
             return;
         }
 
+        Vector3 handPos = Vector3.zero;
 
-        Vector3 drawPos = drawLoc;
         bool behind = false;
         bool flip = false;
-        if (___pawn.CurJob == null || !___pawn.jobs.curDriver.ModifyCarriedThingDrawPos(ref drawPos, ref behind, ref flip))
+        if (___pawn.CurJob == null || !___pawn.jobs.curDriver.ModifyCarriedThingDrawPos(ref handPos, ref behind, ref flip))
         {
             if (carriedThing is Pawn || carriedThing is Corpse)
             {
-                drawPos += new Vector3(0.44f, 0f, 0f);
+                handPos += new Vector3(0.44f, 0f, 0f);
             }
             else
             {
-                drawPos += new Vector3(0.18f, 0f, 0.05f);
+                handPos += new Vector3(0.18f, 0f, 0.05f);
             }
         }
 
-
-        if (behind || ___pawn.Rotation == Rot4.North)
+        if (!behind && anim.CurrentRotation == Rot4.North)
         {
-            drawPos.y -=  - Offsets.YOffset_CarriedThing;
+            drawLoc.y -= 2 * Offsets.YOffset_CarriedThing;
         }
 
-		anim.DrawHands(Quaternion.identity, drawPos, carriedThing, flip);
+        handPos += drawLoc;
+        handPos.y += Offsets.YOffset_CarriedThing  * (behind ? -1f : 1f);
+
+		anim.DrawHands(0f, handPos, carriedThing, flip);
 
     }
 }

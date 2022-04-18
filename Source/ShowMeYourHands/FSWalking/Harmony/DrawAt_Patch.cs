@@ -106,9 +106,8 @@ class DrawAt_Patch
         // Log.ErrorOnce("Scaled size: " + pawn + " - " + bodysizeScaling + " - " + loc + " - " + pos, Mathf.FloorToInt(bodysizeScaling * 100));
 
 
-        Quaternion footQuat = Quaternion.AngleAxis(isStanding ? 0f : handAngle, Vector3.up);
+        float footAngle = isStanding ? 0f : handAngle;
 
-        Quaternion handQuat = Quaternion.AngleAxis(handAngle, Vector3.up);
 
         // do the tweening now
         /*if (compAnim.BodyAnim.bipedWithHands)
@@ -158,11 +157,11 @@ class DrawAt_Patch
         // feet shouldn't rotate while standing. 
         if (ShowMeYourHandsMod.instance.Settings.UseFeet)
         {
-            animator?.DrawFeet(footQuat, __state, loc);
+            animator?.DrawFeet(footAngle, __state, loc);
         }
         if (ShowMeYourHandsMod.instance.Settings.UseHands && pawn.carryTracker?.CarriedThing == null)
         {
-            animator?.DrawHands(handQuat, loc);
+            animator?.DrawHands(handAngle, loc);
         }
 #pragma warning restore CS0162
     }

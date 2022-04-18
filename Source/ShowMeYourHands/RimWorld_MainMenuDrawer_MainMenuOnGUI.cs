@@ -30,13 +30,14 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
         LongEventHandler.ExecuteWhenFinished(UpdateHandDefinitions);
 
-        MethodInfo original = typeof(PawnRenderer).GetMethod("DrawEquipmentAiming");
-        Patches patches = Harmony.GetPatchInfo(original);
-        MethodInfo prefix = typeof(PawnRenderer_DrawEquipmentAiming).GetMethod("SaveWeaponLocation");
-        if (patches is null)
+        MethodInfo original                 = typeof(PawnRenderer).GetMethod("DrawEquipmentAiming");
+        Patches drawEquipmentAimingPatches  = Harmony.GetPatchInfo(original);
+        MethodInfo saveWeaponLocationMethod = typeof(PawnRenderer_DrawEquipmentAiming).GetMethod(nameof(PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingPrefix));
+
+        if (drawEquipmentAimingPatches is null)
         {
             ShowMeYourHandsMain.LogMessage("There seem to be no patches for DrawEquipmentAiming");
-                ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(prefix, Priority.High));
+                ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.High));
             return;
         }
 
@@ -48,21 +49,21 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             "com.github.automatic1111.rimlaser"
         };
 
-        ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(prefix, Priority.First));
+        ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.First));
 
-        foreach (HarmonyLib.Patch patch in patches.Prefixes.Where(patch => modifyingPatches.Contains(patch.owner)))
+        foreach (HarmonyLib.Patch patch in drawEquipmentAimingPatches.Prefixes.Where(patch => modifyingPatches.Contains(patch.owner)))
         {
-            ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(prefix, -1, null, new[] { patch.owner }));
+            ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, -1, null, new[] { patch.owner }));
         }
 
-        ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(prefix, Priority.Last));
+        ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.Last));
 
-        patches = Harmony.GetPatchInfo(original);
+        drawEquipmentAimingPatches = Harmony.GetPatchInfo(original);
 
-        if (patches.Prefixes.Count > 0)
+        if (drawEquipmentAimingPatches.Prefixes.Count > 0)
         {
-            ShowMeYourHandsMain.LogMessage($"{patches.Prefixes.Count} current active prefixes");
-            foreach (HarmonyLib.Patch patch in patches.Prefixes.OrderByDescending(patch => patch.priority))
+            ShowMeYourHandsMain.LogMessage($"{drawEquipmentAimingPatches.Prefixes.Count} current active prefixes");
+            foreach (HarmonyLib.Patch patch in drawEquipmentAimingPatches.Prefixes.OrderByDescending(patch => patch.priority))
             {
                 if (ShowMeYourHandsMain.knownPatches.Contains(patch.owner))
                 {
@@ -78,13 +79,13 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             }
         }
 
-        if (patches.Transpilers.Count <= 0)
+        if (drawEquipmentAimingPatches.Transpilers.Count <= 0)
         {
             return;
         }
 
-        ShowMeYourHandsMain.LogMessage($"{patches.Transpilers.Count} current active transpilers");
-        foreach (HarmonyLib.Patch patch in patches.Transpilers.OrderByDescending(patch => patch.priority))
+        ShowMeYourHandsMain.LogMessage($"{drawEquipmentAimingPatches.Transpilers.Count} current active transpilers");
+        foreach (HarmonyLib.Patch patch in drawEquipmentAimingPatches.Transpilers.OrderByDescending(patch => patch.priority))
         {
             if (ShowMeYourHandsMain.knownPatches.Contains(patch.owner))
             {

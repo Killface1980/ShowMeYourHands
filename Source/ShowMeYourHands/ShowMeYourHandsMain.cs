@@ -309,7 +309,7 @@ public static class ShowMeYourHandsMain
 
         northOffsets[weapon] = graphicData.drawOffsetNorth ?? baseOffset;
         southOffsets[weapon] = graphicData.drawOffsetSouth ?? baseOffset;
-        eastOffsets[weapon] = graphicData.drawOffsetEast ?? baseOffset;
-        westOffsets[weapon] = graphicData.drawOffsetWest ?? baseOffset;
+        eastOffsets[weapon]  = graphicData.drawOffsetEast ?? baseOffset;
+        westOffsets[weapon]  = graphicData.drawOffsetWest ?? baseOffset;
     }
 }

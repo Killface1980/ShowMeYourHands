@@ -21,7 +21,7 @@
             <!--needed for everything with hands-->
             <bipedWithHands>true</bipedWithHands>
             <!--which hand texture?-->
-            <handType>Human</handType>
+            <!--<handType>Human</handType>-->
             <!--custom drawers can be used here-->
             <bodyDrawers>
               <li Class ="FacialStuff.HumanBipedDrawer"/>

@@ -391,6 +391,7 @@ namespace FacialStuff
                     this.compAnimator.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
                 }
             }
+
             bool carrying = carriedThing != null;
             if (this.compAnimator.CurrentRotation != Rot4.North)
             {
@@ -458,6 +459,7 @@ namespace FacialStuff
             Vector3 shoulperPosRightJoint = shoulperPos.RightJoint;
             Vector3 MainHandPosition      = this.compAnimator.MainHandPosition;
             Vector3 offHandPosition       = this.compAnimator.SecondHandPosition;
+            float mainHandAngle = 0f;
             if (carrying)
             {
                 // this.ApplyEquipmentWobble(ref drawPos);
@@ -468,12 +470,16 @@ namespace FacialStuff
                 //handVector.y += Offsets.YOffset_CarriedThing;
                 // Arms too far away from body
 
+                /*
                 var props = carriedThing.def?.GetCompProperties<WhandCompProps>();
                 if ( props != null)
                 {
                     MainHandPosition = props.MainHand;
+                    mainHandAngle = props.MainHandAngle + carriedThing.def.equippedAngleOffset;
                 }
-                else if (!this.compAnimator.IsMoving)
+
+                else */
+                if (!this.compAnimator.IsMoving)
                 {
                     float f = this.compAnimator.CurrentRotation.IsHorizontal ? 1.5f : 0.65f;
 
@@ -640,7 +646,7 @@ namespace FacialStuff
                 bool noTween = false;
                 if (MainHandPosition != Vector3.zero)
                 {
-                    quat = Quaternion.AngleAxis(this.compAnimator.MainHandAngle - 90f, Vector3.up);
+                    quat = Quaternion.AngleAxis(this.compAnimator.MainHandAngle - 90f + mainHandAngle, Vector3.up);
                     position = MainHandPosition;
                     if (compAnimator.CurrentRotation == Rot4.West) // put the second hand behind while turning right
                     {
@@ -1210,15 +1216,15 @@ namespace FacialStuff
             float pawnSpeedPerTick = moves / currentCellCostTotal; // 
             pawnSpeedPerTick *= Mathf.InverseLerp(100, -100,  currentCellCostTotal) * 2.25f;
 
-            if (pawnSpeedPerTick > 0.95f)
+            if (pawnSpeedPerTick > 1f)
             {
                 locomotionUrgency = LocomotionUrgency.Sprint;
             }
-            else if (pawnSpeedPerTick > 0.7f)
+            else if (pawnSpeedPerTick > 0.75f)
             {
                 locomotionUrgency = LocomotionUrgency.Jog;
             }
-            else if (pawnSpeedPerTick > 0.45f)
+            else if (pawnSpeedPerTick > 0.5f)
             {
                 locomotionUrgency = LocomotionUrgency.Walk;
             }

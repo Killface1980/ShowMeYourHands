@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FacialStuff.FaceEditor;
 using JetBrains.Annotations;
 using Mlie;
 using RimWorld;
@@ -55,6 +56,8 @@ internal class ShowMeYourHandsMod : Mod
 
     private static Vector2 summaryScrollPosition;
 
+    private static Vector2 generalScrollPosition;
+
     private static List<ThingDef> allWeapons;
 
     private static List<string> selectedHasManualDefs;
@@ -67,7 +70,7 @@ internal class ShowMeYourHandsMod : Mod
 
     private static Dictionary<string, int> fixedWeaponsByMod = new();
 
-    public static HashSet<string> DefinedByDef;
+    [NotNull] public static HashSet<string> DefinedByDef = new HashSet<string>();
 
     private static string selectedDef = "Settings";
 
@@ -252,9 +255,11 @@ internal class ShowMeYourHandsMod : Mod
     {
         totalWeaponsByMod = new Dictionary<string, int>();
         fixedWeaponsByMod = new Dictionary<string, int>();
+        if (AllWeapons.NullOrEmpty()) return;
+
         foreach (ThingDef currentWeapon in AllWeapons)
         {
-            string weaponModName = currentWeapon.modContentPack?.Name;
+            string weaponModName = currentWeapon?.modContentPack?.Name;
             if (string.IsNullOrEmpty(weaponModName))
             {
                 weaponModName = "SMYH.unknown".Translate();
@@ -269,7 +274,7 @@ internal class ShowMeYourHandsMod : Mod
                 totalWeaponsByMod[weaponModName] = 1;
             }
 
-            if (!DefinedByDef.Contains(currentWeapon.defName) &&
+            if (!DefinedByDef.Contains(currentWeapon?.defName) &&
                 !instance.Settings.ManualMainHandPositions.ContainsKey(currentWeapon.defName))
             {
                 continue;
@@ -330,7 +335,7 @@ internal class ShowMeYourHandsMod : Mod
         Rect offHandRect = new(rect.x + offHandCoords.x, rect.y + offHandCoords.y,
             handSize.x,
             handSize.y);
-
+        Rect bodyRect = new(rect);
         if (currentMainBehind)
         {
             DrawTextureRotatedLocal(mainHandRect, HandTex.MatEast.mainTexture, mainHandAngle);
@@ -360,6 +365,12 @@ internal class ShowMeYourHandsMod : Mod
         {
             DrawTextureRotatedLocal(offHandRect, HandTex.MatSouth.mainTexture, offHandAngle);
         }
+
+        // Graphic bodyTex = GraphicDatabase.Get<Graphic_Multi>("Things/Pawn/Humanlike/Bodies/Naked_Male", ShaderDatabase.CutoutSkin,
+        //     new Vector2(1.5f, 1.5f),
+        //     PawnSkinColors.GetSkinColor(0.5f), PawnSkinColors.GetSkinColor(0.5f));
+        // 
+        // GUI.DrawTexture(bodyRect, bodyTex.MatSouth.mainTexture);
 
         return true;
     }
@@ -415,22 +426,36 @@ internal class ShowMeYourHandsMod : Mod
 
         GUI.DrawTexture(rect, texture2D);
     }
-
+    private float scrollViewHeight;
     private void DrawOptions(Rect rect)
     {
-        Rect optionsOuterContainer = rect.ContractedBy(10);
-        optionsOuterContainer.x += leftSideWidth + columnSpacer;
+        Rect optionsOuterContainer   = rect.ContractedBy(10);
+        optionsOuterContainer.x     += leftSideWidth + columnSpacer;
         optionsOuterContainer.width -= leftSideWidth + columnSpacer;
+
         Widgets.DrawBoxSolid(optionsOuterContainer, Color.grey);
         Rect optionsInnerContainer = optionsOuterContainer.ContractedBy(1);
         Widgets.DrawBoxSolid(optionsInnerContainer, new ColorInt(42, 43, 44).ToColor);
         Rect frameRect = optionsInnerContainer.ContractedBy(10);
-        frameRect.x = leftSideWidth + columnSpacer + 20;
+        frameRect.x = leftSideWidth + columnSpacer + 25;
         frameRect.y += 15;
         frameRect.height -= 15;
+        
+        int tabHeadRectHeight = 80;
+        float extraweaponsHeight = (totalWeaponsByMod.Count * 24f) + 15;
+        
+        Rect settingsRect = frameRect;
+        settingsRect.height -= extraweaponsHeight +tabHeadRectHeight;
+      
         Rect contentRect = frameRect;
         contentRect.x = 0;
         contentRect.y = 0;
+        contentRect.width -= 24;
+    
+        contentRect.height = scrollViewHeight;
+
+        float lineSpacing = Text.LineHeight;
+        float curY = 0f;
 
         switch (SelectedDef)
         {
@@ -438,21 +463,31 @@ internal class ShowMeYourHandsMod : Mod
                 return;
             case "Settings":
             {
-                listing_Standard.Begin(frameRect);
+                Widgets.BeginScrollView(settingsRect, ref generalScrollPosition, contentRect);
+                listing_Standard.Begin(contentRect);
+
                 Text.Font = GameFont.Medium;
+                lineSpacing = Text.LineHeight;
                 listing_Standard.Label("SMYH.settings".Translate());
+                curY += lineSpacing;
                 Text.Font = GameFont.Small;
+                lineSpacing = Text.LineHeight;
                 listing_Standard.Gap();
+                curY += lineSpacing;
 
                     //  fs
                     listing_Standard.CheckboxLabeled("usehands.label".Translate(), ref Settings.UseHands,
                         "usehands.tooltip".Translate());
+                curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("usefeet.label".Translate(), ref Settings.UseFeet,
                         "usefeet.tooltip".Translate());
+                curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("usepaws.label".Translate(), ref Settings.UsePaws,
                         "usepaws.tooltip".Translate());
+                curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("cuthair.label".Translate(), ref Settings.CutHair,
                         "cuthair.tooltip".Translate());
+                    curY += lineSpacing;
 
                     // fs end
 
@@ -463,7 +498,9 @@ internal class ShowMeYourHandsMod : Mod
                         "SMYH.uiscale.label".Translate(),
                         -1F,
                         "SMYH.uiscale.tooltip".Translate());
+                curY += lineSpacing;
                     listing_Standard.Gap();
+                curY += lineSpacing;
                     GUI.color = Color.white;
                 }
 
@@ -473,8 +510,11 @@ internal class ShowMeYourHandsMod : Mod
                         "SMYH.copy.tooltip".Translate());
                     DrawButton(() => { CopyChangedWeapons(); }, "SMYH.copy.button".Translate(),
                         new Vector2(copyPoint.position.x + buttonSpacer, copyPoint.position.y));
+                curY += lineSpacing;
                     listing_Standard.Gap();
-                    Rect labelPoint = listing_Standard.Label("SMYH.resetall.label".Translate(), -1F,
+                curY += lineSpacing;
+                
+                Rect labelPoint = listing_Standard.Label("SMYH.resetall.label".Translate(), -1F,
                         "SMYH.resetall.tooltip".Translate());
                     DrawButton(() =>
                         {
@@ -487,11 +527,14 @@ internal class ShowMeYourHandsMod : Mod
                                 }));
                         }, "SMYH.resetall.button".Translate(),
                         new Vector2(labelPoint.position.x + buttonSpacer, labelPoint.position.y));
-                    if (!string.IsNullOrEmpty(selectedSubDef) && selectedHasManualDefs.Count > 0)
+                    curY += lineSpacing;
+
+                        if (!string.IsNullOrEmpty(selectedSubDef) && selectedHasManualDefs.Count > 0)
                     {
                         DrawButton(() => { CopyChangedWeapons(true); }, "SMYH.copyselected.button".Translate(),
                             new Vector2(copyPoint.position.x + buttonSpacer + buttonSize.x + 10,
                                 copyPoint.position.y));
+                curY += lineSpacing;
                         DrawButton(() =>
                             {
                                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
@@ -515,42 +558,84 @@ internal class ShowMeYourHandsMod : Mod
                             }, "SMYH.resetselected.button".Translate(),
                             new Vector2(labelPoint.position.x + buttonSpacer + buttonSize.x + 10,
                                 labelPoint.position.y));
+                        curY += lineSpacing;
+
                     }
-                }
+                    }
                 else
                 {
                     listing_Standard.Gap((buttonSize.y * 2) + 12);
+                curY += lineSpacing;
                 }
 
                 listing_Standard.CheckboxLabeled("SMYH.logging.label".Translate(), ref Settings.VerboseLogging,
                     "SMYH.logging.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.matcharmor.label".Translate(), ref Settings.MatchArmorColor,
                     "SMYH.matcharmor.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.matchartificiallimb.label".Translate(),
                     ref Settings.MatchArtificialLimbColor,
                     "SMYH.matchartificiallimb.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.matchhandamounts.label".Translate(),
                     ref Settings.MatchHandAmounts,
                     "SMYH.matchhandamounts.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.resizehands.label".Translate(), ref Settings.ResizeHands,
                     "SMYH.resizehands.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.repositionhands.label".Translate(),
                     ref Settings.RepositionHands,
                     "SMYH.repositionhands.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.showwhencarry.label".Translate(),
                     ref Settings.ShowWhenCarry,
                     "SMYH.showwhencarry.tooltip".Translate());
+                curY += lineSpacing;
                 listing_Standard.CheckboxLabeled("SMYH.showothertimes.label".Translate(),
                     ref Settings.ShowOtherTmes,
                     "SMYH.showothertimes.tooltip".Translate());
-                if (currentVersion != null)
+                curY += lineSpacing;
+                listing_Standard.End();
+
+                if (Event.current.type == EventType.Layout)
+                {
+                    scrollViewHeight = curY + 15f;
+                }
+                Widgets.EndScrollView();
+
+
+                Rect tabFrameRect    = frameRect;
+                tabFrameRect.y       = settingsRect.yMax;
+                tabFrameRect.height -= settingsRect.height;
+                
+                Rect tabHeadRect = tabFrameRect;
+                tabHeadRect.height = tabHeadRectHeight;
+
+                tabFrameRect.y += 80;
+                tabFrameRect.height -= 80;
+                
+                Rect tabContentRect   = tabFrameRect;
+                tabContentRect.x      = 0;
+                tabContentRect.y      = 0;
+                tabContentRect.width -= 24;
+                tabContentRect.height -= 24;
+                if (totalWeaponsByMod.Count == 0)
+                {
+                    UpdateWeaponStatistics();
+                }
+
+
+                listing_Standard.Begin(tabHeadRect);
+
+                    if (currentVersion != null)
                 {
                     listing_Standard.Gap();
                     GUI.contentColor = Color.gray;
                     listing_Standard.Label("SMYH.version.label".Translate(currentVersion));
                     GUI.contentColor = Color.white;
                 }
-
                 listing_Standard.GapLine();
                 Text.Font = GameFont.Medium;
                 listing_Standard.Label("SMYH.summary".Translate(), -1F, "SMYH.summary.tooltip".Translate());
@@ -558,20 +643,12 @@ internal class ShowMeYourHandsMod : Mod
                 listing_Standard.Gap();
                 listing_Standard.End();
 
-                Rect tabFrameRect = frameRect;
-                tabFrameRect.y += 375;
-                tabFrameRect.height -= 375;
-                Rect tabContentRect = tabFrameRect;
-                tabContentRect.x = 0;
-                tabContentRect.y = 0;
-                if (totalWeaponsByMod.Count == 0)
-                {
-                    UpdateWeaponStatistics();
-                }
-
-                tabContentRect.height = (totalWeaponsByMod.Count * 25f) + 15;
+                tabContentRect.height = extraweaponsHeight-15;
                 Widgets.BeginScrollView(tabFrameRect, ref summaryScrollPosition, tabContentRect);
+            
                 listing_Standard.Begin(tabContentRect);
+                
+
                 foreach (KeyValuePair<string, int> keyValuePair in totalWeaponsByMod)
                 {
                     int fixedWeapons = 0;
@@ -604,181 +681,218 @@ internal class ShowMeYourHandsMod : Mod
 
             default:
             {
-                ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
-                listing_Standard.Begin(frameRect);
-                if (currentDef == null)
+
+                List<TabRecord> list = new();
+
+                TabRecord item = new(
+                    "HandPosition".Translate(), this.SetTabFaceStyle(Dialog_FaceStyling.FaceStyleTab.HandPositionOnWeapon),
+                    this.Tab == Dialog_FaceStyling.FaceStyleTab.HandPositionOnWeapon);
+                list.Add(item);
+                TabRecord item2 = new(
+                    "WeaponPosition".Translate(), this.SetTabFaceStyle(Dialog_FaceStyling.FaceStyleTab.WeaponPositionOnPawn),
+                    this.Tab == Dialog_FaceStyling.FaceStyleTab.WeaponPositionOnPawn);
+                list.Add(item2);
+                var tabRect = new Rect(frameRect.x, frameRect.y+10, frameRect.width, TabDrawer.TabHeight); 
+                TabDrawer.DrawTabs(tabRect, list, (tabRect.width )/2);
+
+                frameRect.y += tabRect.height;
+                frameRect.height -= tabRect.height;
+
+                if (Tab == Dialog_FaceStyling.FaceStyleTab.HandPositionOnWeapon)
                 {
-                    listing_Standard.Label("SMYH.error.weapon".Translate(SelectedDef));
-                    listing_Standard.End();
-                    break;
+                    DoSettingsWindowHandOnWeapon(frameRect);
+
                 }
-
-                WhandCompProps compProperties = currentDef.GetCompProperties<WhandCompProps>();
-                if (compProperties == null)
-                {
-                    listing_Standard.Label("SMYH.error.hands".Translate(SelectedDef));
-                    listing_Standard.End();
-                    break;
-                }
-
-                Text.Font = GameFont.Medium;
-                Rect labelPoint = listing_Standard.Label(currentDef.label.CapitalizeFirst(), -1F,
-                    currentDef.defName);
-                Text.Font = GameFont.Small;
-                string modName = currentDef.modContentPack?.Name;
-                string modId = currentDef.modContentPack?.PackageId;
-                if (currentDef.modContentPack != null)
-                {
-                    listing_Standard.Label($"{modName}", -1F, modId);
-                }
-                else
-                {
-                    listing_Standard.Gap();
-                }
-
-                string description = currentDef.description;
-                if (!string.IsNullOrEmpty(description))
-                {
-                    if (description.Length > 250)
-                    {
-                        description = description.Substring(0, 250) + "...";
-                    }
-
-                    Widgets.Label(new Rect(labelPoint.x, labelPoint.y + 50, 250, 150), description);
-                }
-
-                listing_Standard.Gap(150);
-
-                Rect weaponRect = new(labelPoint.x + 270, labelPoint.y + 5, weaponSize.x,
-                    weaponSize.y);
-
-                if (currentMainHand == Vector3.zero)
-                {
-                    currentMainHand      = compProperties.MainHand;
-                    currentOffHand       = compProperties.SecHand;
-                    currentHasOffHand    = currentOffHand != Vector3.zero;
-                    currentMainBehind    = compProperties.MainHand.y < 0;
-                    currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
-                    currentMainHandAngle = compProperties.MainHandAngle;
-                    currentOffHandAngle  = compProperties.SecHandAngle;
-                }
-
-                if (!DrawIcon(currentDef, weaponRect, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle))
-                {
-                    listing_Standard.Label("SMYH.error.texture".Translate(SelectedDef));
-                    listing_Standard.End();
-                    break;
-                }
-
-
-                listing_Standard.Gap(20);
-                listing_Standard.CheckboxLabeled("SMYH.twohands.label".Translate(), ref currentHasOffHand);
-                listing_Standard.GapLine();
-                listing_Standard.ColumnWidth = 230;
-                listing_Standard.Label("SMYH.mainhandhorizontal.label".Translate());
-                currentMainHand.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                    currentMainHand.x, -0.5f, 0.5f, false,
-                    currentMainHand.x.ToString(), null, null, 0.001f);
-                Rect lastMainLabel = listing_Standard.Label("SMYH.mainhandvertical.label".Translate());
-                currentMainHand.z = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                    currentMainHand.z, -0.5f, 0.5f, false,
-                    currentMainHand.z.ToString(), null, null, 0.001f);
-
-                listing_Standard.Label("SMYH.mainhandAngle.label".Translate());
-                currentMainHandAngle = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                    currentMainHandAngle, -180f, 180f, false,
-                    currentMainHandAngle.ToString(), null, null, 0.001f);
-
-                listing_Standard.Gap();
-                listing_Standard.CheckboxLabeled("SMYH.renderbehind.label".Translate(), ref currentMainBehind);
-
-                if (currentHasOffHand)
-                {
-                    listing_Standard.NewColumn();
-                    listing_Standard.Gap(262);
-                    listing_Standard.Label("SMYH.offhandhorizontal.label".Translate());
-                    currentOffHand.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                        currentOffHand.x, -0.5f, 0.5f, false,
-                        currentOffHand.x.ToString(), null, null, 0.001f);
-                    listing_Standard.Label("SMYH.offhandvertical.label".Translate());
-                    currentOffHand.z = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                        currentOffHand.z, -0.5f, 0.5f, false,
-                        currentOffHand.z.ToString(), null, null, 0.001f);
-
-                    listing_Standard.Label("SMYH.offhandAngle.label".Translate());
-                    currentOffHandAngle = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                        currentOffHandAngle, -180f, 180f, false,
-                        currentOffHandAngle.ToString(), null, null, 0.001f);
-                    
-                    listing_Standard.Gap();
-                    listing_Standard.CheckboxLabeled("SMYH.renderbehind.label".Translate(), ref currentOffBehind);
-                }
-
-                if (instance.Settings.ManualMainHandPositions.ContainsKey(currentDef.defName))
-                {
-                    DrawButton(() =>
-                    {
-                        Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
-                            "SMYH.resetsingle.confirm".Translate(), delegate
-                            {
-                                ResetOneWeapon(currentDef, ref compProperties);
-                                currentMainHand = compProperties.MainHand;
-                                currentOffHand = compProperties.SecHand;
-                                currentHasOffHand = currentOffHand != Vector3.zero;
-                                currentMainBehind = compProperties.MainHand.y < 0;
-                                currentOffBehind = compProperties.SecHand.y < 0;
-                                currentMainHandAngle = compProperties.MainHandAngle;
-                                currentOffHandAngle = compProperties.SecHandAngle;
-
-                            }));
-                    }, "SMYH.reset.button".Translate(), lastMainLabel.position + new Vector2(350, 170));
-                }
-
-                if (currentMainHand != compProperties.MainHand ||
-                    currentOffHand != compProperties.SecHand ||
-                    currentHasOffHand != (currentOffHand != Vector3.zero) ||
-                    currentMainBehind != compProperties.MainHand.y < 0 ||
-                    currentOffBehind != compProperties.SecHand.y < 0 ||
-                    currentMainHandAngle != compProperties.MainHandAngle ||
-                    currentOffHandAngle != compProperties.SecHandAngle)
-                {
-                    DrawButton(() =>
-                    {
-                        currentMainHand = compProperties.MainHand;
-                        currentOffHand = compProperties.SecHand;
-                        currentHasOffHand = currentOffHand != Vector3.zero;
-                        currentMainBehind = compProperties.MainHand.y < 0;
-                        currentOffBehind = compProperties.SecHand.y < 0;
-
-                        currentMainHandAngle = compProperties.MainHandAngle;
-                        currentOffHandAngle = compProperties.SecHandAngle;
-                    }, "SMYH.undo.button".Translate(), lastMainLabel.position + new Vector2(190, 170));
-                    DrawButton(() =>
-                    {
-                        currentMainHand.y = currentMainBehind ? -0.1f : 0.1f;
-                        currentOffHand.y = currentOffBehind ? -0.1f : 0.1f;
-                        if (!currentHasOffHand)
-                        {
-                            currentOffHand = Vector3.zero;
-                        }
-
-                        compProperties.MainHand = currentMainHand;
-                        compProperties.SecHand = currentOffHand;
-                        compProperties.MainHandAngle = currentMainHandAngle;
-                        compProperties.SecHandAngle = currentOffHandAngle;
-
-                        instance.Settings.ManualMainHandPositions[currentDef.defName] =
-                            new SaveableVector3(compProperties.MainHand, compProperties.MainHandAngle);
-                        instance.Settings.ManualOffHandPositions[currentDef.defName] =
-                            new SaveableVector3(compProperties.SecHand, compProperties.SecHandAngle);
-
-                    }, "SMYH.save.button".Translate(), lastMainLabel.position + new Vector2(25, 170));
-                }
-
-                listing_Standard.End();
                 break;
             }
         }
+    }
+
+    private void DoSettingsWindowHandOnWeapon(Rect frameRect)
+    {
+        ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
+        listing_Standard.Begin(frameRect);
+        if (currentDef == null)
+        {
+            listing_Standard.Label("SMYH.error.weapon".Translate(SelectedDef));
+            listing_Standard.End();
+            return;
+        }
+
+        WhandCompProps compProperties = currentDef.GetCompProperties<WhandCompProps>();
+        if (compProperties == null)
+        {
+            listing_Standard.Label("SMYH.error.hands".Translate(SelectedDef));
+            listing_Standard.End();
+            return;
+        }
+
+        Text.Font = GameFont.Medium;
+        Rect labelPoint = listing_Standard.Label(currentDef.label.CapitalizeFirst(), -1F,
+            currentDef.defName);
+        Text.Font = GameFont.Small;
+        string modName = currentDef.modContentPack?.Name;
+        string modId = currentDef.modContentPack?.PackageId;
+        if (currentDef.modContentPack != null)
+        {
+            listing_Standard.Label($"{modName}", -1F, modId);
+        }
+        else
+        {
+            listing_Standard.Gap();
+        }
+
+        string description = currentDef.description;
+        if (!string.IsNullOrEmpty(description))
+        {
+            if (description.Length > 250)
+            {
+                description = description.Substring(0, 250) + "...";
+            }
+
+            Widgets.Label(new Rect(labelPoint.x, labelPoint.y + 50, 250, 150), description);
+        }
+
+        listing_Standard.Gap(150);
+
+        Rect weaponRect = new(labelPoint.x + 270, labelPoint.y + 5, weaponSize.x,
+            weaponSize.y);
+
+        if (currentMainHand == Vector3.zero)
+        {
+            currentMainHand      = compProperties.MainHand;
+            currentOffHand       = compProperties.SecHand;
+            currentHasOffHand    = currentOffHand != Vector3.zero;
+            currentMainBehind    = compProperties.MainHand.y < 0;
+            currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
+            currentMainHandAngle = compProperties.MainHandAngle;
+            currentOffHandAngle  = compProperties.SecHandAngle;
+        }
+
+        if (!DrawIcon(currentDef, weaponRect, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle))
+        {
+            listing_Standard.Label("SMYH.error.texture".Translate(SelectedDef));
+            listing_Standard.End();
+            return;
+        }
+
+
+
+        listing_Standard.Gap(20);
+        listing_Standard.CheckboxLabeled("SMYH.twohands.label".Translate(), ref currentHasOffHand);
+        listing_Standard.GapLine();
+        var colWidth = listing_Standard.ColumnWidth;
+        listing_Standard.ColumnWidth = 230;
+        listing_Standard.Label("SMYH.mainhandhorizontal.label".Translate());
+        currentMainHand.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+            currentMainHand.x, -0.5f, 0.5f, false,
+            currentMainHand.x.ToString(), null, null, 0.001f);
+
+        listing_Standard.Label("SMYH.mainhandvertical.label".Translate());
+        currentMainHand.z = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+            currentMainHand.z, -0.5f, 0.5f, false,
+            currentMainHand.z.ToString(), null, null, 0.001f);
+
+        listing_Standard.Label("SMYH.mainhandAngle.label".Translate());
+        currentMainHandAngle = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+            currentMainHandAngle, -180f, 180f, false,
+            currentMainHandAngle.ToString(), null, null, 0.001f);
+
+        listing_Standard.Gap();
+        listing_Standard.CheckboxLabeled("SMYH.renderbehind.label".Translate(), ref currentMainBehind);
+
+        if (currentHasOffHand)
+        {
+            listing_Standard.NewColumn();
+            listing_Standard.Gap(262);
+            listing_Standard.Label("SMYH.offhandhorizontal.label".Translate());
+            currentOffHand.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentOffHand.x, -0.5f, 0.5f, false,
+                currentOffHand.x.ToString(), null, null, 0.001f);
+            listing_Standard.Label("SMYH.offhandvertical.label".Translate());
+            currentOffHand.z = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentOffHand.z, -0.5f, 0.5f, false,
+                currentOffHand.z.ToString(), null, null, 0.001f);
+
+            listing_Standard.Label("SMYH.offhandAngle.label".Translate());
+            currentOffHandAngle = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentOffHandAngle, -180f, 180f, false,
+                currentOffHandAngle.ToString(), null, null, 0.001f);
+
+            listing_Standard.Gap(12f);
+            listing_Standard.CheckboxLabeled("SMYH.renderbehind.label".Translate(), ref currentOffBehind);
+        }
+
+        float yPosButtons = frameRect.height - Text.LineHeight * 1.5f;
+        if (instance.Settings.ManualMainHandPositions.ContainsKey(currentDef.defName))
+        {
+            DrawButton(() =>
+            {
+                Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
+                    "SMYH.resetsingle.confirm".Translate(), delegate
+                    {
+                        ResetOneWeapon(currentDef, ref compProperties);
+                        currentMainHand      = compProperties.MainHand;
+                        currentOffHand       = compProperties.SecHand;
+                        currentHasOffHand    = currentOffHand != Vector3.zero;
+                        currentMainBehind    = compProperties.MainHand.y < 0;
+                        currentOffBehind     = compProperties.SecHand.y < 0;
+                        currentMainHandAngle = compProperties.MainHandAngle;
+                        currentOffHandAngle  = compProperties.SecHandAngle;
+                    }));
+            }, "SMYH.reset.button".Translate(), new Vector2(350, yPosButtons));
+        }
+
+        if (currentMainHand      != compProperties.MainHand ||
+            currentOffHand       != compProperties.SecHand ||
+            currentHasOffHand    != (currentOffHand != Vector3.zero) ||
+            currentMainBehind    != compProperties.MainHand.y < 0 ||
+            currentOffBehind     != compProperties.SecHand.y < 0 ||
+            currentMainHandAngle != compProperties.MainHandAngle ||
+            currentOffHandAngle  != compProperties.SecHandAngle)
+        {
+            DrawButton(() =>
+            {
+                currentMainHand   = compProperties.MainHand;
+                currentOffHand    = compProperties.SecHand;
+                currentHasOffHand = currentOffHand != Vector3.zero;
+                currentMainBehind = compProperties.MainHand.y < 0;
+                currentOffBehind  = compProperties.SecHand.y < 0;
+
+                currentMainHandAngle = compProperties.MainHandAngle;
+                currentOffHandAngle = compProperties.SecHandAngle;
+            }, "SMYH.undo.button".Translate(), new Vector2(190, yPosButtons));
+            DrawButton(() =>
+            {
+                currentMainHand.y = currentMainBehind ? -0.1f : 0.1f;
+                currentOffHand.y = currentOffBehind ? -0.1f : 0.1f;
+                if (!currentHasOffHand)
+                {
+                    currentOffHand = Vector3.zero;
+                }
+
+                compProperties.MainHand      = currentMainHand;
+                compProperties.SecHand       = currentOffHand;
+                compProperties.MainHandAngle = currentMainHandAngle;
+                compProperties.SecHandAngle  = currentOffHandAngle;
+
+                instance.Settings.ManualMainHandPositions[currentDef.defName] =
+                    new SaveableVector3(compProperties.MainHand, compProperties.MainHandAngle);
+                instance.Settings.ManualOffHandPositions[currentDef.defName] =
+                    new SaveableVector3(compProperties.SecHand, compProperties.SecHandAngle);
+            }, "SMYH.save.button".Translate(), new Vector2(25, yPosButtons));
+        }
+
+        listing_Standard.End();
+        listing_Standard.ColumnWidth = colWidth;
+
+    }
+
+    public Dialog_FaceStyling.FaceStyleTab Tab;
+
+    public Action SetTabFaceStyle(Dialog_FaceStyling.FaceStyleTab tab)
+    {
+        return delegate { this.Tab = tab; };
     }
 
     private void CopyChangedWeapons(bool onlySelected = false)
@@ -854,7 +968,7 @@ internal class ShowMeYourHandsMod : Mod
         Rect tabContentRect = tabFrameRect;
         tabContentRect.x = 0;
         tabContentRect.y = 0;
-        tabContentRect.width -= 20;
+        tabContentRect.width -= 24;
         List<ThingDef> weaponsToShow = AllWeapons;
         int listAddition = 24;
         if (!string.IsNullOrEmpty(selectedSubDef))
@@ -906,11 +1020,11 @@ internal class ShowMeYourHandsMod : Mod
                     out Vector2 position,
                     SelectedDef == thingDef.defName, false, toolTip.Translate()))
             {
-                SelectedDef = SelectedDef == thingDef.defName ? null : thingDef.defName;
-                currentMainHand = Vector3.zero;
-                currentOffHand = Vector3.zero;
+                SelectedDef          = SelectedDef == thingDef.defName ? null : thingDef.defName;
+                currentMainHand      = Vector3.zero;
+                currentOffHand       = Vector3.zero;
                 currentMainHandAngle = 0f;
-                currentOffHandAngle = 0f;
+                currentOffHandAngle  = 0f;
             }
 
             GUI.color = Color.white;

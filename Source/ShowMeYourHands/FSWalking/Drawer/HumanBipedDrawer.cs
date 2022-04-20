@@ -9,6 +9,7 @@ using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace FacialStuff
 {
@@ -1232,8 +1233,26 @@ namespace FacialStuff
             {
                 locomotionUrgency = LocomotionUrgency.Amble;
             }
+            if (false)
+            {
+                if (this.compAnimator.sustainer is { Ended: false })
+                {
+                    float number = Mathf.Lerp(1.1f, 3f, pawnSpeedPerTick);
 
-            float rangeAmble = 0f;
+                    if (Find.Selector.SelectedPawns.Contains(pawn))
+                    {
+                        // if (Find.Selector.SelectedPawns.FirstOrDefault() == pawn)
+                        {
+                            Log.Message(pawn + " - " + pawnSpeedPerTick + " - " + number);
+                        }
+
+                        List<SubSoundDef> subSounds = this.compAnimator.sustainer?.def?.subSounds;
+                        if (!subSounds.NullOrEmpty())
+                            subSounds.FirstOrDefault().pitchRange =
+                                new(number, number);
+                    }
+                }
+            }            float rangeAmble = 0f;
             float rangeWalk = 0.45f;
             float rangeJog = 0.65f;
             float rangeSprint = 0.85f;

@@ -5,15 +5,9 @@
 
         #region Public Enums
 
-        public enum FaceStyleTab : byte
-        {
-            HandPositionOnWeapon,
 
-            WeaponPositionOnPawn,
-        }
 
         #endregion Public Enums
-
     }
 
 }

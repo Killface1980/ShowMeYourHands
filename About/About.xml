@@ -2,7 +2,7 @@
 <ModMetaData>
   <name>Show Me Your Hands</name>
   <packageId>Mlie.ShowMeYourHands</packageId>
-  <author>Mlie</author>
+  <author>Mlie, Killface</author>
   <url>https://github.com/emipa606/ShowMeYourHands</url>
   <supportedVersions>
     <li>1.1</li>
@@ -24,60 +24,46 @@
   <incompatibleWith>
     <li>Mlie.ClutterWeaponHands</li>
   </incompatibleWith>
-  <description>[img]https://i.imgur.com/buuPQel.png[/img]
+  <description>
 
 Pawns show their hands on their weapon when drafted. 
 Should work with most weapons, vanilla and modded.
 
-Based on [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2171708109]Clutter Weapon Hands[/url] but dynamically sets the hands based on the graphics of the weapon. It will however still use the old hand-definitions if they exist.
+Based on &lt;b&gt;Clutter Weapon Hands&lt;/b&gt; but dynamically sets the hands based on the graphics of the weapon. It will however still use the old hand-definitions if they exist.
 
 There is also mod-settings where you can modify the settings for each weapon. These settings can be exported and included in a mod to add native support.
 All my "Continued"-mods should have native support.
 
-There is also support for [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2543371889]Enable Oversized Weapons[/url], [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2038409475]Yayo's Combat 3[/url], [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2513695736]Yayo's Combat 3 [Adopted][/url], [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2575938407]Yayo's Animation[/url], [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1204108550]RunAndGun[/url] and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1628211313]Dual Wield[/url]. Hands will follow the weapons even during the extra animations. 
-Verified to work with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1631756268]Combat Extended[/url]
-Also shows hands when using [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2355912467]Grab your Tool[/url]
+There is also support for &lt;b&gt;Enable Oversized Weapons, Yayo's Combat 3, Yayo's Combat 3 Adopted, Yayo's Animation, RunAndGun&lt;/b&gt; and &lt;b&gt;Dual Wield.&lt;/b&gt; Hands will follow the weapons even during the extra animations. 
+Verified to work with &lt;b&gt;Combat Extended&lt;/b&gt;
+Also shows hands when using &lt;b&gt;Grab your Tool&lt;/b&gt;
 
-Settings
-[list]
-[*] Coloring the hands based on apparel/armor color
-[*] Coloring the hands based on artificial limbs
-[*] Resizing the hands based on the bodysize of the pawn, this also works with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2373187996]Children[/url]
-[*] Repositioning the hands based on the weaponsize, to support oversized weapons
-[*] Showing the hands when pawns carry stuff
-[*] Showing only one hand if the pawn is missing one
-[*] Showing the hands at all times
-[/list]
+&lt;size=24&gt;Settings&lt;/size&gt;
+· Coloring the hands based on apparel/armor color
+· Coloring the hands based on artificial limbs
+· Resizing the hands based on the bodysize of the pawn, this also works with &lt;b&gt;Children&lt;/b&gt;
+· Repositioning the hands based on the weaponsize, to support oversized weapons
+· Showing the hands when pawns carry stuff
+· Showing only one hand if the pawn is missing one
+· Showing the hands at all times
 
-[h2]Credits[/h2]
-Arcanant for providing hand-definitions for a lot of mods.
-Telefonmast for the support with the texture-code.
-qux for the updated hand-texture.
-shiuanyue for the Chinese translation.
-Preview-image includes armor and weapons from the excellent XCOM-mods by velcroboy333
-[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2317335843]XCOM Armor[/url]
-[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2062766405]XCOM Weapons[/url]
+&lt;size=24&gt;Credits&lt;/size&gt;
+&lt;color=orange&gt;Arcanant&lt;/color&gt; for providing hand-definitions for a lot of mods.
+&lt;color=orange&gt;Telefonmast&lt;/color&gt; for the support with the texture-code.
+&lt;color=orange&gt;qux&lt;/color&gt; for the updated hand-texture.
+&lt;color=orange&gt;shiuanyue&lt;/color&gt; for the Chinese translation.
+Preview-image includes armor and weapons from the excellent XCOM-mods by &lt;color=orange&gt;velcroboy333&lt;/color&gt; - XCOM Armor · XCOM Weapons
 
-[table]
-	[tr]
-		[td][url=https://invite.gg/Mlie][img]https://i.imgur.com/zdzzBrc.png[/img][/url][/td]
-		[td][url=https://github.com/emipa606/ShowMeYourHands][img]https://i.imgur.com/kTkpTOE.png[/img][/url][/td]
-	[/tr]
-[/table]
 
-[img]https://i.imgur.com/O0IIlYj.png[/img]
-Since modding is just a hobby for me I expect no donations to keep modding. If you still want to show your support you can gift me anything from my [url=https://store.steampowered.com/wishlist/id/Mlie]Wishlist[/url] or buy me a cup of tea.
+Since modding is just a hobby for me I expect no donations to keep modding. If you still want to show your support you can gift me anything from my store.steampowered.com/wishlist/id/Mlie &lt;b&gt;Wishlist&lt;/b&gt;or buy me a cup of tea.
 
-[url=https://ko-fi.com/G2G55DDYD][img]https://i.imgur.com/Utx6OIH.png[/img][/url]
 
-[img]https://i.imgur.com/PwoNOj4.png[/img]
-[list]
-[*] See if the the error persists if you just have this mod and its requirements active.
-[*] If not, try adding your other mods until it happens again.
-[*] Post your error-log using [url=https://steamcommunity.com/workshop/filedetails/?id=818773962]HugsLib[/url] and command Ctrl+F12
-[*] For best support, please use the Discord-channel for error-reporting.
-[*] Do not report errors by making a discussion-thread, I get no notification of that.
-[*] If you have the solution for a problem, please post it to the GitHub repository.
-[/list]
+&lt;size=24&gt;Troubleshooting&lt;/size&gt;
+· See if the the error persists if you just have this mod and its requirements active.
+· If not, try adding your other mods until it happens again.
+· Post your error-log using &lt;b&gt;HugsLib&lt;/b&gt; and command Ctrl+F12
+· For best support, please use the Discord-channel for error-reporting.
+· Do not report errors by making a discussion-thread, I get no notification of that.
+· If you have the solution for a problem, please post it to the GitHub repository.
 </description>
 </ModMetaData>

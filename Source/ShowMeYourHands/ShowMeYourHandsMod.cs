@@ -28,7 +28,6 @@ internal class ShowMeYourHandsMod : Mod
 
     private static readonly Vector2 iconSize = new(24f, 24f);
 
-    private static readonly Vector2 handSize = new(44f, 44f);
 
     private static readonly int buttonSpacer = 200;
 
@@ -38,19 +37,29 @@ internal class ShowMeYourHandsMod : Mod
 
     private static Listing_Standard listing_Standard;
 
+    private static Listing_Standard listing_WeaponSettings;
+
     private static Vector3 currentMainHand;
 
     private static Vector3 currentOffHand;
 
+    private static Vector3 currentWeaponPositionOffset;
+
+    private static Vector3 currentAimedWeaponPositionOffset;
+
     public static float currentMainHandAngle;
 
     public static float currentOffHandAngle;
+   
+    public static float currentAimAngle = 143f;
 
     private static bool currentHasOffHand;
 
     private static bool currentMainBehind;
 
     private static bool currentOffBehind;
+
+    private static bool currentShowAiming;
 
     private static Vector2 tabsScrollPosition;
 
@@ -65,6 +74,9 @@ internal class ShowMeYourHandsMod : Mod
     private static string currentVersion;
 
     private static Graphic handTex;
+    private static Graphic footTex;
+    private static Graphic bodyTex;
+    private static Graphic headTex;
 
     private static Dictionary<string, int> totalWeaponsByMod = new();
 
@@ -141,10 +153,14 @@ internal class ShowMeYourHandsMod : Mod
         {
             if (allWeapons == null || allWeapons.Count == 0)
             {
-                allWeapons = (from weapon in DefDatabase<ThingDef>.AllDefsListForReading
-                    where weapon.IsWeapon && !weapon.destroyOnDrop && !IsShield(weapon)
-                    orderby weapon.label
-                    select weapon).ToList();
+                List<ThingDef> allDefsListForReading = DefDatabase<ThingDef>.AllDefsListForReading;
+                if (!allDefsListForReading.NullOrEmpty())
+                {
+                    allWeapons = (from weapon in allDefsListForReading
+                        where weapon.IsWeapon && !weapon.destroyOnDrop && !IsShield(weapon)
+                        orderby weapon.label
+                        select weapon).ToList();
+                }
             }
 
             return allWeapons;
@@ -166,6 +182,51 @@ internal class ShowMeYourHandsMod : Mod
             return handTex;
         }
         set => handTex = value;
+    }
+    private Graphic FootTex
+    {
+        get
+        {
+            if (footTex == null)
+            {
+                footTex = GraphicDatabase.Get<Graphic_Multi>("FootIcon", ShaderDatabase.CutoutSkin,
+                    new Vector2(1.25f, 1.25f),
+                    PawnSkinColors.GetSkinColor(0.5f), PawnSkinColors.GetSkinColor(0.5f));
+            }
+
+            return footTex;
+        }
+        set => footTex = value;
+    }
+    private Graphic BodyTex
+    {
+        get
+        {
+            if (bodyTex == null)
+            {
+                Color skinColor = PawnSkinColors.GetSkinColor(0.5f);
+                bodyTex = GraphicDatabase.Get<Graphic_Multi>("Things/Pawn/Humanlike/Bodies/Naked_Male", ShaderDatabase.CutoutSkin,
+                    new Vector2(1.5f, 1.5f),
+                    skinColor, skinColor);
+            }
+
+            return bodyTex;
+        }
+        set => bodyTex = value;
+    }
+    private Graphic HeadTex
+    {
+        get
+        {
+            if (headTex == null)
+            {
+                Color skinColor = PawnSkinColors.GetSkinColor(0.5f);
+                headTex = GraphicDatabaseHeadRecords.GetHeadRandom(Gender.Male, skinColor, CrownType.Average, false);
+            }
+
+            return headTex;
+        }
+        set => headTex = value;
     }
 
     /// <summary>
@@ -319,23 +380,154 @@ internal class ShowMeYourHandsMod : Mod
         Rect rectLine = rect.ExpandedBy(2);
         Widgets.DrawBoxSolid(rectOuter, Color.grey);
         Widgets.DrawBoxSolid(rectLine, new ColorInt(42, 43, 44).ToColor);
-        const int handPositionFactor = 200;
-        float weaponMiddle = weaponSize.x / 2;
+        float weaponAngle = 0f;
+        if (thing.IsRangedWeapon)
+        {
+            weaponAngle = thing.equippedAngleOffset;
+        }
+        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, weaponAngle);
+
+        return true;
+    }
+
+    private bool DrawIconPawnWeapon(ThingDef thing, Rect rect, Vector3 mainHandPosition, Vector3 offHandPosition, float mainHandAngle, float offHandAngle, Rot4 drawRotation)
+    {
+        if (thing == null)
+        {
+            return false;
+        }
+
+        Texture texture = thing.graphicData?.Graphic?.MatSingle?.mainTexture;
+        if (thing.graphicData?.graphicClass == typeof(Graphic_Random))
+        {
+            texture = ((Graphic_Random)thing.graphicData.Graphic)?.FirstSubgraphic().MatSingle.mainTexture;
+        }
+
+        if (thing.graphicData?.graphicClass == typeof(Graphic_StackCount))
+        {
+            texture = ((Graphic_StackCount)thing.graphicData.Graphic)?.SubGraphicForStackCount(1, thing).MatSingle
+                .mainTexture;
+        }
+
+        if (texture == null)
+        {
+            return false;
+        }
+
+        Rect rectOuter = rect.ExpandedBy(5);
+        Rect rectLine = rect.ExpandedBy(2);
+        Widgets.DrawBoxSolid(rectOuter, Color.grey);
+        Widgets.DrawBoxSolid(rectLine, new ColorInt(42, 43, 44).ToColor);
+        
+        rect.y -= 5f;
+
+        Rect bodyRect = new(rect.x, rect.y, rect.width, rect.height);
+        GUI.DrawTexture(bodyRect, BodyTex.MatAt(drawRotation).mainTexture);
+    
+        Rect headRect = new(rect.x , rect.y- (0.34f/1.5f* rect.width), rect.width, rect.height);
+
+        Rect footRect1 = new(rect.x + rect.width /2 - rect.width/8, rect.y + rect.height /2 + (0.34f * rect.width), rect.width/4, rect.height/4);
+        Rect footRect2 = footRect1;
+        footRect1.x -= footRect1.width/3;
+        footRect2.x += footRect1.width / 3;
+        // rect.x - (0.04f * rect.width), rect.y+ (0.34f* rect.width), rect.width, rect.height);
+        GUI.DrawTexture(headRect, HeadTex.MatAt(drawRotation).mainTexture);
+        GUI.DrawTexture(footRect1, FootTex.MatAt(drawRotation).mainTexture);
+        GUI.DrawTexture(footRect2, FootTex.MatAt(drawRotation).mainTexture);
+
+        float weaponRectSize = bodyRect.width / 1.5f;
+        float middlePosWeapon = ((rect.width - weaponRectSize) / 2);
+        float posXmodifier = 0f;
+        float posYmodifier = 0f;
+
+        // y is the posX modifier when turning east
+
+        Vector3 positionOffset = currentShowAiming ? currentAimedWeaponPositionOffset : currentWeaponPositionOffset;
+        if (drawRotation == Rot4.South)
+        {
+            posXmodifier += positionOffset.x;
+            if (currentShowAiming) posXmodifier += 0.2f;
+            posYmodifier -= 0.22f;
+        }
+        else if (drawRotation == Rot4.North)
+        {
+            posXmodifier -= positionOffset.x;
+            posYmodifier -= 0.11f;
+        }
+        else if (drawRotation == Rot4.East)
+        {
+            posXmodifier += positionOffset.y + 0.2f;
+            posYmodifier -= 0.22f;
+        }
+        else if (drawRotation == Rot4.West)
+        {
+            posXmodifier -= positionOffset.y + 0.2f;
+            posXmodifier -= 0.2f;
+            posYmodifier -= 0.22f;
+        }
+        
+        posYmodifier += positionOffset.z;
+
+        if (currentShowAiming)
+        {
+            posYmodifier += 0.4f / weaponRectSize;
+        }
+
+
+        Rect weaponRect = new(rect.x  + middlePosWeapon + (posXmodifier * weaponRectSize),
+            rect.y + middlePosWeapon - (posYmodifier * weaponRectSize), weaponRectSize, weaponRectSize);
+
+        float weaponAngle = 0f;
+        if (drawRotation == Rot4.West) // TODO: + angle for aime position offsets
+        {
+            weaponAngle = 217f - 90f;
+        }
+        else
+        {
+            weaponAngle = 143f - 90f;
+        }
+
+        weaponAngle = currentAimAngle - 90;
+        weaponAngle += thing.equippedAngleOffset;
+
+        if (thing.IsMeleeWeapon)
+        {
+            // weaponAngle -= 135f;
+        }
+        mainHandAngle   += weaponAngle;
+        offHandAngle    += weaponAngle;
+        mainHandPosition = mainHandPosition.RotatedBy(weaponAngle);
+        offHandPosition  = offHandPosition.RotatedBy(weaponAngle);
+        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, weaponRect, texture, weaponAngle);
+
+
+        return true;
+    }
+
+    private void DrawWeaponWithHands(ThingDef thing, float mainHandAngle, float offHandAngle, Vector3 mainHandPosition, Vector3 offHandPosition, Rect rect,
+        Texture texture, float weaponAngle)
+    {
+        float scaling = rect.width / weaponSize.x;
+        float handSize = rect.width / 4;
+
+        float weaponMiddle = rect.width / 2;
 
         Vector2 mainHandCoords = new(
-            weaponMiddle + (mainHandPosition.x * handPositionFactor) - (handSize.x / 2),
-            weaponMiddle - (mainHandPosition.z * handPositionFactor) - (handSize.y / 2));
+            weaponMiddle + (mainHandPosition.x * rect.width) - (handSize / 2),
+            weaponMiddle - (mainHandPosition.z * rect.width) - (handSize / 2));
         Vector2 offHandCoords = new(
-            weaponMiddle + (offHandPosition.x * handPositionFactor) - (handSize.x / 2),
-            weaponMiddle - (offHandPosition.z * handPositionFactor) - (handSize.y / 2));
+            weaponMiddle + (offHandPosition.x * rect.width) - (handSize / 2),
+            weaponMiddle - (offHandPosition.z * rect.width) - (handSize / 2));
 
         Rect mainHandRect = new(rect.x + mainHandCoords.x, (rect.y + mainHandCoords.y),
-            handSize.x,
-            handSize.y);
+            handSize,
+            handSize);
         Rect offHandRect = new(rect.x + offHandCoords.x, rect.y + offHandCoords.y,
-            handSize.x,
-            handSize.y);
-        Rect bodyRect = new(rect);
+            handSize,
+            handSize);
+
+
+
         if (currentMainBehind)
         {
             DrawTextureRotatedLocal(mainHandRect, HandTex.MatEast.mainTexture, mainHandAngle);
@@ -346,15 +538,8 @@ internal class ShowMeYourHandsMod : Mod
             DrawTextureRotatedLocal(offHandRect, HandTex.MatEast.mainTexture, offHandAngle);
         }
 
-        if (thing.IsRangedWeapon)
-        {
-            DrawTextureRotatedLocal(rect, texture,
-                thing.equippedAngleOffset);
-        }
-        else
-        {
-            GUI.DrawTexture(rect, texture);
-        }
+
+        DrawTextureRotatedLocal(rect, texture, weaponAngle);
 
         if (!currentMainBehind)
         {
@@ -365,15 +550,8 @@ internal class ShowMeYourHandsMod : Mod
         {
             DrawTextureRotatedLocal(offHandRect, HandTex.MatSouth.mainTexture, offHandAngle);
         }
-
-        // Graphic bodyTex = GraphicDatabase.Get<Graphic_Multi>("Things/Pawn/Humanlike/Bodies/Naked_Male", ShaderDatabase.CutoutSkin,
-        //     new Vector2(1.5f, 1.5f),
-        //     PawnSkinColors.GetSkinColor(0.5f), PawnSkinColors.GetSkinColor(0.5f));
-        // 
-        // GUI.DrawTexture(bodyRect, bodyTex.MatSouth.mainTexture);
-
-        return true;
     }
+
 
     public void DrawTextureRotatedLocal(Rect rect, Texture texture, float angle)
     {
@@ -685,22 +863,27 @@ internal class ShowMeYourHandsMod : Mod
                 List<TabRecord> list = new();
 
                 TabRecord item = new(
-                    "HandPosition".Translate(), this.SetTabFaceStyle(Dialog_FaceStyling.FaceStyleTab.HandPositionOnWeapon),
-                    this.Tab == Dialog_FaceStyling.FaceStyleTab.HandPositionOnWeapon);
+                    (string)"HandPosition".Translate(), SetTabFaceStyle(WeaponeStyleTab.HandPositionOnWeapon),
+                    (bool)(Tab == WeaponeStyleTab.HandPositionOnWeapon));
                 list.Add(item);
                 TabRecord item2 = new(
-                    "WeaponPosition".Translate(), this.SetTabFaceStyle(Dialog_FaceStyling.FaceStyleTab.WeaponPositionOnPawn),
-                    this.Tab == Dialog_FaceStyling.FaceStyleTab.WeaponPositionOnPawn);
+                    (string)"WeaponPosition".Translate(), SetTabFaceStyle(WeaponeStyleTab.WeaponPositionOnPawn),
+                    (bool)(Tab == WeaponeStyleTab.WeaponPositionOnPawn));
                 list.Add(item2);
-                var tabRect = new Rect(frameRect.x, frameRect.y+10, frameRect.width, TabDrawer.TabHeight); 
+                Rect tabRect = new Rect(frameRect.x, frameRect.y+10, frameRect.width, TabDrawer.TabHeight); 
                 TabDrawer.DrawTabs(tabRect, list, (tabRect.width )/2);
 
                 frameRect.y += tabRect.height;
                 frameRect.height -= tabRect.height;
 
-                if (Tab == Dialog_FaceStyling.FaceStyleTab.HandPositionOnWeapon)
+                if (Tab == WeaponeStyleTab.HandPositionOnWeapon)
                 {
                     DoSettingsWindowHandOnWeapon(frameRect);
+                }
+
+                if (Tab == WeaponeStyleTab.WeaponPositionOnPawn)
+                {
+                    DoSettingsWindowWeaponOnPawn(frameRect);
 
                 }
                 break;
@@ -708,8 +891,16 @@ internal class ShowMeYourHandsMod : Mod
         }
     }
 
+    public enum WeaponeStyleTab : byte
+    {
+        HandPositionOnWeapon,
+
+        WeaponPositionOnPawn,
+    }
+
     private void DoSettingsWindowHandOnWeapon(Rect frameRect)
     {
+
         ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
         listing_Standard.Begin(frameRect);
         if (currentDef == null)
@@ -781,7 +972,6 @@ internal class ShowMeYourHandsMod : Mod
         listing_Standard.Gap(20);
         listing_Standard.CheckboxLabeled("SMYH.twohands.label".Translate(), ref currentHasOffHand);
         listing_Standard.GapLine();
-        var colWidth = listing_Standard.ColumnWidth;
         listing_Standard.ColumnWidth = 230;
         listing_Standard.Label("SMYH.mainhandhorizontal.label".Translate());
         currentMainHand.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
@@ -824,6 +1014,20 @@ internal class ShowMeYourHandsMod : Mod
         }
 
         float yPosButtons = frameRect.height - Text.LineHeight * 1.5f;
+        DrawAllButtons(currentDef, yPosButtons);
+
+        listing_Standard.End();
+        //listing_Standard.ColumnWidth = frameRect.width;
+
+    }
+
+    private void DrawAllButtons(ThingDef currentDef, float yPosButtons)
+    {
+        WhandCompProps compProperties = currentDef?.GetCompProperties<WhandCompProps>();
+        if (compProperties == null)
+        {
+            return;
+        }
         if (instance.Settings.ManualMainHandPositions.ContainsKey(currentDef.defName))
         {
             DrawButton(() =>
@@ -832,24 +1036,29 @@ internal class ShowMeYourHandsMod : Mod
                     "SMYH.resetsingle.confirm".Translate(), delegate
                     {
                         ResetOneWeapon(currentDef, ref compProperties);
-                        currentMainHand      = compProperties.MainHand;
-                        currentOffHand       = compProperties.SecHand;
-                        currentHasOffHand    = currentOffHand != Vector3.zero;
-                        currentMainBehind    = compProperties.MainHand.y < 0;
-                        currentOffBehind     = compProperties.SecHand.y < 0;
-                        currentMainHandAngle = compProperties.MainHandAngle;
-                        currentOffHandAngle  = compProperties.SecHandAngle;
+                        currentMainHand                  = compProperties.MainHand;
+                        currentOffHand                   = compProperties.SecHand;
+                        currentHasOffHand                = currentOffHand != Vector3.zero;
+                        currentMainBehind                = compProperties.MainHand.y < 0;
+                        currentOffBehind                 = compProperties.SecHand.y < 0;
+                        currentMainHandAngle             = compProperties.MainHandAngle;
+                        currentOffHandAngle              = compProperties.SecHandAngle;
+                        currentWeaponPositionOffset      = compProperties.WeaponPositionOffset;
+                        currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
+                        currentAimAngle                  = 143f;
                     }));
             }, "SMYH.reset.button".Translate(), new Vector2(350, yPosButtons));
         }
 
-        if (currentMainHand      != compProperties.MainHand ||
-            currentOffHand       != compProperties.SecHand ||
-            currentHasOffHand    != (currentOffHand != Vector3.zero) ||
-            currentMainBehind    != compProperties.MainHand.y < 0 ||
-            currentOffBehind     != compProperties.SecHand.y < 0 ||
-            currentMainHandAngle != compProperties.MainHandAngle ||
-            currentOffHandAngle  != compProperties.SecHandAngle)
+        if (currentMainHand                  != compProperties.MainHand ||
+            currentOffHand                   != compProperties.SecHand ||
+            currentHasOffHand                != (currentOffHand != Vector3.zero) ||
+            currentMainBehind                != compProperties.MainHand.y < 0 ||
+            currentOffBehind                 != compProperties.SecHand.y < 0 ||
+            currentMainHandAngle             != compProperties.MainHandAngle ||
+            currentOffHandAngle              != compProperties.SecHandAngle ||
+            currentWeaponPositionOffset      != compProperties.WeaponPositionOffset ||
+            currentAimedWeaponPositionOffset != compProperties.AimedWeaponPositionOffset)
         {
             DrawButton(() =>
             {
@@ -859,8 +1068,10 @@ internal class ShowMeYourHandsMod : Mod
                 currentMainBehind = compProperties.MainHand.y < 0;
                 currentOffBehind  = compProperties.SecHand.y < 0;
 
-                currentMainHandAngle = compProperties.MainHandAngle;
-                currentOffHandAngle = compProperties.SecHandAngle;
+                currentMainHandAngle             = compProperties.MainHandAngle;
+                currentOffHandAngle              = compProperties.SecHandAngle;
+                currentWeaponPositionOffset      = compProperties.WeaponPositionOffset;
+                currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
             }, "SMYH.undo.button".Translate(), new Vector2(190, yPosButtons));
             DrawButton(() =>
             {
@@ -876,23 +1087,162 @@ internal class ShowMeYourHandsMod : Mod
                 compProperties.MainHandAngle = currentMainHandAngle;
                 compProperties.SecHandAngle  = currentOffHandAngle;
 
+                compProperties.WeaponPositionOffset      = currentWeaponPositionOffset;
+                compProperties.AimedWeaponPositionOffset = currentAimedWeaponPositionOffset;
+
                 instance.Settings.ManualMainHandPositions[currentDef.defName] =
                     new SaveableVector3(compProperties.MainHand, compProperties.MainHandAngle);
                 instance.Settings.ManualOffHandPositions[currentDef.defName] =
                     new SaveableVector3(compProperties.SecHand, compProperties.SecHandAngle);
             }, "SMYH.save.button".Translate(), new Vector2(25, yPosButtons));
         }
+    }
+
+    private void DoSettingsWindowWeaponOnPawn(Rect frameRect)
+    {
+        ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
+        listing_Standard.Begin(frameRect);
+        if (currentDef == null)
+        {
+            listing_Standard.Label("SMYH.error.weapon".Translate(SelectedDef));
+            listing_Standard.End();
+            return;
+        }
+
+        WhandCompProps compProperties = currentDef.GetCompProperties<WhandCompProps>();
+        if (compProperties == null)
+        {
+            listing_Standard.Label("SMYH.error.hands".Translate(SelectedDef));
+            listing_Standard.End();
+            return;
+        }
+
+        Rect labelPoint = listing_Standard.Label("");
+        Rect weaponRectSouth = new(labelPoint.x+10, labelPoint.y + 5, weaponSize.x,
+            weaponSize.y);
+        Rect weaponRectEast = new(weaponRectSouth.xMax + 50, weaponRectSouth.y, weaponRectSouth.width,
+            weaponRectSouth.height);
+
+        if (currentMainHand == Vector3.zero)
+        {
+            currentMainHand      = compProperties.MainHand;
+            currentOffHand       = compProperties.SecHand;
+            currentHasOffHand    = currentOffHand != Vector3.zero;
+            currentMainBehind    = compProperties.MainHand.y < 0;
+            currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
+            currentMainHandAngle = compProperties.MainHandAngle;
+            currentOffHandAngle  = compProperties.SecHandAngle;
+
+            currentWeaponPositionOffset      = compProperties.WeaponPositionOffset;
+            currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
+        }
+
+        if (!DrawIconPawnWeapon(currentDef, weaponRectSouth, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle, Rot4.South))
+        {
+            listing_Standard.Label("SMYH.error.texture".Translate(SelectedDef));
+            listing_Standard.End();
+            return;
+        }
+
+        DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
+            currentOffHandAngle, Rot4.East);
+        listing_Standard.End();
+
+        Rect settingsRect = new(frameRect.x, frameRect.y + weaponRectSouth.height + 24f, frameRect.width,
+            frameRect.height - weaponRectSouth.height - 24f);
+        listing_Standard.Begin(settingsRect);
+
+        listing_Standard.ColumnWidth = 230;
+
+        listing_Standard.CheckboxLabeled("SMYH.aimingDesc.label".Translate(), ref currentShowAiming);
+
+        listing_Standard.Label("SMYH.weaponPositionHorizontal.label".Translate());
+        currentWeaponPositionOffset.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+            currentWeaponPositionOffset.x, -0.5f, 0.5f, false,
+            currentWeaponPositionOffset.x.ToString(), null, null, 0.001f);
+
+        listing_Standard.Label("SMYH.aimedPositionHorizontal.label".Translate());
+        currentAimedWeaponPositionOffset.x = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+            currentAimedWeaponPositionOffset.x, -0.5f, 0.5f, false,
+            currentAimedWeaponPositionOffset.x.ToString(), null, null, 0.001f);
+
+        listing_Standard.Label("SMYH.weaponPositionVertical.label".Translate());
+        currentWeaponPositionOffset.z = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+            currentWeaponPositionOffset.z, -0.5f, 0.5f, false,
+            currentWeaponPositionOffset.z.ToString(), null, null, 0.001f);
+
+
+        listing_Standard.Gap();
+
+      //  if (currentHasOffHand)
+        {
+            listing_Standard.NewColumn();
+
+            listing_Standard.Label("SMYH.aimAngle.label".Translate());
+            currentAimAngle = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentAimAngle, 20, 160, false,
+                currentAimAngle.ToString(), null, null, 0.001f);
+
+
+            listing_Standard.Label("SMYH.weaponPositionHorizontalEast.label".Translate());
+            currentWeaponPositionOffset.y = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentWeaponPositionOffset.y, -0.5f, 0.5f, false,
+                currentWeaponPositionOffset.y.ToString(), null, null, 0.001f);
+
+
+            listing_Standard.Label("SMYH.aimedPositionHorizontalEast.label".Translate());
+            currentAimedWeaponPositionOffset.y = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentAimedWeaponPositionOffset.y, -0.5f, 0.5f, false,
+                currentAimedWeaponPositionOffset.y.ToString(), null, null, 0.001f);
+
+            listing_Standard.Label("SMYH.aimedPositionVertical.label".Translate());
+            currentAimedWeaponPositionOffset.z = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
+                currentAimedWeaponPositionOffset.z, -0.5f, 0.5f, false,
+                currentAimedWeaponPositionOffset.z.ToString(), null, null, 0.001f);
+
+
+        }
+
+        float yPosButtons = frameRect.height - Text.LineHeight * 1.5f;
+      
+        DrawAllButtons(currentDef, yPosButtons);
 
         listing_Standard.End();
-        listing_Standard.ColumnWidth = colWidth;
 
     }
 
-    public Dialog_FaceStyling.FaceStyleTab Tab;
-
-    public Action SetTabFaceStyle(Dialog_FaceStyling.FaceStyleTab tab)
+    private void DrawResetButton(ThingDef currentDef, float yPosButtons)
     {
-        return delegate { this.Tab = tab; };
+        DrawButton(() =>
+        {
+            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
+                "SMYH.resetsingle.confirm".Translate(), delegate
+                {
+                    WhandCompProps compProperties = currentDef?.GetCompProperties<WhandCompProps>();
+                    if (compProperties == null)
+                    {
+                        return;
+                    }
+                    ResetOneWeapon(currentDef, ref compProperties);
+                    currentMainHand                  = compProperties.MainHand;
+                    currentOffHand                   = compProperties.SecHand;
+                    currentHasOffHand                = currentOffHand != Vector3.zero;
+                    currentMainBehind                = compProperties.MainHand.y < 0;
+                    currentOffBehind                 = compProperties.SecHand.y < 0;
+                    currentMainHandAngle             = compProperties.MainHandAngle;
+                    currentOffHandAngle              = compProperties.SecHandAngle;
+                    currentWeaponPositionOffset      = compProperties.WeaponPositionOffset;
+                    currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
+                }));
+        }, "SMYH.reset.button".Translate(), new Vector2(350, yPosButtons));
+    }
+
+
+    public WeaponeStyleTab Tab;
+
+    public Action SetTabFaceStyle(WeaponeStyleTab tab)
+    {
+        return delegate { Tab = tab; };
     }
 
     private void CopyChangedWeapons(bool onlySelected = false)
@@ -957,6 +1307,7 @@ internal class ShowMeYourHandsMod : Mod
 
     private void DrawTabsList(Rect rect)
     {
+
         Rect scrollContainer = rect.ContractedBy(10);
         scrollContainer.width = leftSideWidth;
         Widgets.DrawBoxSolid(scrollContainer, Color.grey);
@@ -983,6 +1334,7 @@ internal class ShowMeYourHandsMod : Mod
 
         tabContentRect.height = (weaponsToShow.Count * 25f) + listAddition;
         Widgets.BeginScrollView(tabFrameRect, ref tabsScrollPosition, tabContentRect);
+        listing_Standard.ColumnWidth = tabContentRect.width;
         listing_Standard.Begin(tabContentRect);
         //Text.Font = GameFont.Tiny;
         if (listing_Standard.ListItemSelectable("SMYH.settings".Translate(), Color.yellow,

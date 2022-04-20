@@ -13,7 +13,7 @@ namespace FacialStuff
         public const float YOffset_Head = 0.02734375f;
 
         // bodyoffset + appareloffset
-        public const float YOffset_HandsFeetOver = 0.01158301067f; // FS
+        public const float YOffset_HandsFeetOver = 0.0289575271f; // FS
         //public const float YOffset_HandsFeetOver = 0.01447876334f; // FS
         public const float YOffset_Behind = 0.00289575267f;
 

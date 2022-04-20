@@ -7,14 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ShowMeYourHands.FSWalking;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace FacialStuff
 {
-
     [ShowMeYourHandsMod.HotSwappable]
     [StaticConstructorOnStartup]
     public class CompBodyAnimator : ThingComp
@@ -67,8 +66,8 @@ namespace FacialStuff
             }
 
             WalkCycleDef currentCycle = this.CurrentWalkCycle;
-            WalkCycleDef lastCycle    = this.lastWalkCycle;
-            float lerpFactor          = 1f;
+            WalkCycleDef lastCycle = this.lastWalkCycle;
+            float lerpFactor = 1f;
 
             if (currentCycle != lastCycle && lastCycle != null)
             {
@@ -93,25 +92,23 @@ namespace FacialStuff
                 GetWalkCycleOffsetsFeet(out Vector3 rightFootLerp, out Vector3 leftFootLerp, ref footAngleRightLerp,
                     ref footAngleLeftLerp, ref offsetJointLerp, offsetX, offsetZ, angle, percent, rot, percentInverse);
 
-                rightFoot      = Vector3.Lerp(rightFootLerp, rightFoot, lerpFactor);
-                leftFoot       = Vector3.Lerp(leftFootLerp, leftFoot, lerpFactor);
+                rightFoot = Vector3.Lerp(rightFootLerp, rightFoot, lerpFactor);
+                leftFoot = Vector3.Lerp(leftFootLerp, leftFoot, lerpFactor);
                 footAngleRight = Mathf.Lerp(footAngleRightLerp, footAngleRight, lerpFactor);
-                footAngleLeft  = Mathf.Lerp(footAngleLeftLerp, footAngleLeft, lerpFactor);
-                offsetJoint    = Mathf.Lerp(offsetJointLerp, offsetJoint, lerpFactor);
-
-
+                footAngleLeft = Mathf.Lerp(footAngleLeftLerp, footAngleLeft, lerpFactor);
+                offsetJoint = Mathf.Lerp(offsetJointLerp, offsetJoint, lerpFactor);
             }
 
             // smaller steps for smaller pawns
             if (bodysizeScaling < 1f)
             {
                 SimpleCurve curve = new() { new CurvePoint(0f, 0.5f), new CurvePoint(1f, 1f) };
-              
-                float mod    = curve.Evaluate(bodysizeScaling);
+
+                float mod = curve.Evaluate(bodysizeScaling);
                 rightFoot.x *= mod;
                 rightFoot.z *= mod;
-                leftFoot.x  *= mod;
-                leftFoot.z  *= mod;
+                leftFoot.x *= mod;
+                leftFoot.z *= mod;
             }
         }
 
@@ -142,11 +139,11 @@ namespace FacialStuff
 
                 if (rot == Rot4.West)
                 {
-                    rightFoot.x    *= -1f;
-                    leftFoot.x     *= -1f;
-                    footAngleLeft  *= -1f;
+                    rightFoot.x *= -1f;
+                    leftFoot.x *= -1f;
+                    footAngleLeft *= -1f;
                     footAngleRight *= -1f;
-                    offsetJoint    *= -1;
+                    offsetJoint *= -1;
                 }
             }
             else
@@ -173,9 +170,9 @@ namespace FacialStuff
             Rot4 rot = this.CurrentRotation;
 
             // Basic values if pawn is carrying stuff
-            float x  = 0;
+            float x = 0;
             float x2 = -x;
-            float y  = Offsets.YOffset_HandsFeetOver ;
+            float y = Offsets.YOffset_HandsFeetOver;
             float y2 = y;
             float z;
             float z2;
@@ -206,9 +203,9 @@ namespace FacialStuff
             if (this.IsMoving)
             {
                 WalkCycleDef currentCycle = this.CurrentWalkCycle;
-                WalkCycleDef lastCycle    = this.lastWalkCycle;
-                float percent             = this.MovedPercent;
-                float lerpFactor          = 1f;
+                WalkCycleDef lastCycle = this.lastWalkCycle;
+                float percent = this.MovedPercent;
+                float lerpFactor = 1f;
 
                 if (currentCycle != lastCycle && lastCycle != null)
                 {
@@ -232,25 +229,24 @@ namespace FacialStuff
                 {
                     GetWalkCycleOffsetsHands(handSwingAngle, offsetJoint, rot, lastCycle, percent, out float lerpShoulderAngle, ref lerpShoulderPos, ref lerpZ, ref lerpZ2);
 
-                    shoulderAngle          = Mathf.Lerp(lerpShoulderAngle, shoulderAngle, lerpFactor);
-                    shoulderPos.LeftJoint  = Vector3.Lerp(lerpShoulderPos.LeftJoint, shoulderPos.LeftJoint, lerpFactor);
+                    shoulderAngle = Mathf.Lerp(lerpShoulderAngle, shoulderAngle, lerpFactor);
+                    shoulderPos.LeftJoint = Vector3.Lerp(lerpShoulderPos.LeftJoint, shoulderPos.LeftJoint, lerpFactor);
                     shoulderPos.RightJoint = Vector3.Lerp(lerpShoulderPos.RightJoint, shoulderPos.RightJoint, lerpFactor);
-                    z                      = Mathf.Lerp(lerpZ, z, lerpFactor);
-                    z2                     = Mathf.Lerp(lerpZ2, z2, lerpFactor);
-
+                    z = Mathf.Lerp(lerpZ, z, lerpFactor);
+                    z2 = Mathf.Lerp(lerpZ2, z2, lerpFactor);
                 }
             }
 
             if (/*MainTabWindow_BaseAnimator.Panic || */ this.pawn.Fleeing() || this.pawn.IsBurning())
             {
-                float offset       = 1f + armLength;
-                x                 *= offset;
-                z                 *= offset;
-                x2                *= offset;
-                z2                *= offset;
+                float offset = 1f + armLength;
+                x *= offset;
+                z *= offset;
+                x2 *= offset;
+                z2 *= offset;
                 handSwingAngle[0] += 180f;
                 handSwingAngle[1] += 180f;
-                shoulderAngle      = 0f;
+                shoulderAngle = 0f;
             }
 
             rightHand = new Vector3(x, y, z) * bodysizeScaling;
@@ -266,7 +262,7 @@ namespace FacialStuff
             if (rot.IsHorizontal)
             {
                 float lookie = rot == Rot4.West ? -1f : 1f;
-                float f      = lookie * offsetJoint;
+                float f = lookie * offsetJoint;
 
                 shoulderAngle = lookie * currentCycle?.shoulderAngle ?? 0f;
 
@@ -393,14 +389,13 @@ namespace FacialStuff
 
         public override string CompInspectStringExtra()
         {
-           // if (this.CurrentWalkCycle == null || pawn.pather == null)
+            // if (this.CurrentWalkCycle == null || pawn.pather == null)
             {
                 return base.CompInspectStringExtra();
             }
             float numbie = pawn.TicksPerMoveCardinal / pawn.pather.nextCellCostTotal;
 
             numbie *= Mathf.InverseLerp(100, -100, pawn.pather.nextCellCostTotal) * 2.25f;
-
 
             string text = "Walkcycle: " + this.CurrentWalkCycle.defName + ", MoveSpeed: " + numbie.ToString("N2") + "\nTicksPerMoveCardinal: " +
                           pawn.TicksPerMoveCardinal + " nextCellCostTotal: " + pawn.pather.nextCellCostTotal;
@@ -576,15 +571,18 @@ namespace FacialStuff
                 {
                     this.BodyAngle = (currentRotation == Rot4.West ? -1 : 1)
                                      * walkCycle.BodyAngle.Evaluate(movedPercent);
-                }            }
+                }
+            }
             else
             {
                 if (walkCycle.BodyAngleVertical.PointsCount > 0)
-            {
+                {
                     this.BodyAngle = (currentRotation == Rot4.South ? -1 : 1)
                                  * walkCycle.BodyAngleVertical.Evaluate(movedPercent);
-            }            }
+                }
+            }
         }
+
         public void TickDrawers()
         {
             if (!this._initialized)
@@ -606,7 +604,6 @@ namespace FacialStuff
                 i++;
             }
         }
-
 
         #endregion Public Methods
 
@@ -664,7 +661,6 @@ namespace FacialStuff
         //private BodyAnimator _bodyAnimator;
         private List<PawnBodyDrawer> _pawnBodyDrawers;
 
-
         public float BodyOffsetZ
         {
             get
@@ -715,7 +711,6 @@ namespace FacialStuff
             }
         }
 
-
         public float HeadAngleX
         {
             get
@@ -763,6 +758,7 @@ namespace FacialStuff
             get => _movedPercent;
             private set => _movedPercent = value;
         }
+
         public void CalculatePositionsWeapon(WhandCompProps extensions,
                                              out Vector3 weaponPosOffset, bool flipped)
         {
@@ -774,38 +770,36 @@ namespace FacialStuff
             }
 
             // Use y for the horizontal position. too lazy to add even more vectors
-            bool isHorizontal = this.CurrentRotation.IsHorizontal;
-            bool aiming = pawn.Aiming();
-            Vector3 o = extensions.WeaponPositionOffset;
-            Vector3 d = extensions.AimedWeaponPositionOffset;
+            bool isHorizontal                 = this.CurrentRotation.IsHorizontal;
+            bool aiming                       = pawn.Aiming();
+            Vector3 weaponPositionOffset      = extensions.WeaponPositionOffset;
+            Vector3 aimedWeaponPositionOffset = extensions.AimedWeaponPositionOffset;
 
             if (isHorizontal)
             {
-                weaponPosOffset = new Vector3(o.y, 0, o.z);
+                weaponPosOffset = new Vector3(weaponPositionOffset.y, 0, weaponPositionOffset.z);
                 if (aiming)
                 {
-                    weaponPosOffset += new Vector3(d.y, 0, d.z);
+                    weaponPosOffset += new Vector3(aimedWeaponPositionOffset.y, 0, aimedWeaponPositionOffset.z);
                 }
             }
             else
             {
-                weaponPosOffset = new Vector3(o.x, 0, o.z);
+                weaponPosOffset = new Vector3(weaponPositionOffset.x, 0, weaponPositionOffset.z);
                 if (aiming)
                 {
-                    weaponPosOffset += new Vector3(d.x, 0, d.z);
+                    weaponPosOffset += new Vector3(aimedWeaponPositionOffset.x, 0, aimedWeaponPositionOffset.z);
                 }
             }
 
             if (flipped)
             {
-
                 // flip x position offset
                 if (pawn.Rotation != Rot4.South)
                 {
                     weaponPosOffset.x *= -1;
                 }
             }
-
         }
 
         public void CheckMovement()
@@ -831,22 +825,20 @@ namespace FacialStuff
         public void DoHandOffsetsOnWeapon(ThingWithComps eq, out bool hasSecondWeapon, out bool leftBehind,
             out bool rightBehind, out bool mainHandFlipped, out bool offHandFlipped)
         {
-            leftBehind                = rightBehind = mainHandFlipped = offHandFlipped = false;
-            hasSecondWeapon           = false;
+            leftBehind = rightBehind = mainHandFlipped = offHandFlipped = false;
+            hasSecondWeapon = false;
             WhandCompProps extensions = eq?.def?.GetCompProperties<WhandCompProps>();
 
             Pawn ___pawn = this.pawn;
 
             ThingWithComps mainHandWeapon = eq;
-            
+
             if (___pawn == null || extensions == null || mainHandWeapon == null)
             {
                 return;
             }
 
-
             // Prepare everything for DrawHands, but don't draw
-
 
             if (!ShowMeYourHandsMain.weaponLocations.ContainsKey(mainHandWeapon))
             {
@@ -877,8 +869,8 @@ namespace FacialStuff
             if (___pawn?.equipment?.AllEquipmentListForReading != null && ___pawn.equipment.AllEquipmentListForReading.Count == 2)
             {
                 offHandWeapon = (from weapon in ___pawn.equipment.AllEquipmentListForReading
-                    where weapon != mainHandWeapon
-                    select weapon).First();
+                                 where weapon != mainHandWeapon
+                                 select weapon).First();
                 offhandComp = offHandWeapon?.def?.GetCompProperties<WhandCompProps>();
 
                 if (offhandComp != null)
@@ -921,9 +913,8 @@ namespace FacialStuff
             }
 
             Vector3 mainWeaponLocation = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item1;
-            float mainHandAngle        = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item2 ;
+            float mainHandAngle = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item2;
             float mainMeleeExtra = 0f;
-
 
             DoOffsets(mainHandWeapon, mainHandAngle, stance_Busy, out mainHandAngle, out bool mainMelee, out bool facingWestAiming, out bool showWeapon, out mainHandFlipped);
 
@@ -934,12 +925,11 @@ namespace FacialStuff
 
             offHandFlipped = mainHandFlipped;
 
-
             Vector3 offhandWeaponLocation = mainWeaponLocation;
-            float offHandAngle            = mainHandAngle;
-            float offMeleeExtra           = 0f;
+            float offHandAngle = mainHandAngle;
+            float offMeleeExtra = 0f;
 
-            bool offMelee                 = false;
+            bool offMelee = false;
 
             if (offHandWeapon != null)
             {
@@ -955,23 +945,19 @@ namespace FacialStuff
                 else
                 {
                     offhandWeaponLocation = ShowMeYourHandsMain.weaponLocations[offHandWeapon].Item1;
-                    offHandAngle          = ShowMeYourHandsMain.weaponLocations[offHandWeapon].Item2;
+                    offHandAngle = ShowMeYourHandsMain.weaponLocations[offHandWeapon].Item2;
 
                     DoOffsets(offHandWeapon, offHandAngle, stance_Busy, out offHandAngle, out offMelee, out bool _, out bool _, out offHandFlipped);
                     if (offMelee)
                     {
                         offMeleeExtra = 0.0001f;
                     }
-
                 }
             }
-
 
             /*            bool mainHandFlipped = this.CurrentRotation == Rot4.West || aimAngle is > 200f and < 340f;
             bool offHandFlipped = this.CurrentRotation == Rot4.West || aimAngle is > 200f and < 340f;
             */
-
-
 
             float drawSize = 1f;
             LastDrawn = GenTicks.TicksAbs;
@@ -990,12 +976,11 @@ namespace FacialStuff
                 float z = MainHand.z * drawSize;
                 float y = MainHand.y < 0 ? -0.0001f : 0.001f;
 
-
                 //rotation = mainHandFlipped ? Rot4.West : Rot4.East;
 
                 if (rotation == Rot4.North && !mainMelee && !aiming)
                 {
-             //       z += 0.1f;
+                    //       z += 0.1f;
                 }
                 if (this.CurrentRotation == Rot4.West || this.CurrentRotation == Rot4.North)
                 {
@@ -1011,19 +996,17 @@ namespace FacialStuff
                     x *= -1;
                 }
 
-                
                 this.MainHandPosition = mainWeaponLocation +
                                          AdjustRenderOffsetFromDir(rotation, mainHandWeapon as ThingWithComps) +
                                          new Vector3(x, y + mainMeleeExtra, z).RotatedBy(mainHandAngle);
-                float propertiesMainHandAngle = compProperties.MainHandAngle; 
+                float propertiesMainHandAngle = compProperties.MainHandAngle;
                 propertiesMainHandAngle *= mainHandFlipped ? -1f : 1f;
                 propertiesMainHandAngle += mainHandFlipped ? 180f : 0f;
-             //   propertiesMainHandAngle += mainMelee && mainHandFlipped ? 180f : 0f;
+                //   propertiesMainHandAngle += mainMelee && mainHandFlipped ? 180f : 0f;
                 propertiesMainHandAngle %= 360f;
 
                 this.MainHandAngle = mainHandAngle + propertiesMainHandAngle;
                 rightBehind = y <= 0f;
-
             }
             else
             {
@@ -1040,9 +1023,9 @@ namespace FacialStuff
 
                 if (offHandWeapon != null)
                 {
-                    drawSize        = 1f;
+                    drawSize = 1f;
                     secondHandThing = offHandWeapon;
-                    propsOffHandAngle       = offhandComp.MainHandAngle;
+                    propsOffHandAngle = offhandComp.MainHandAngle;
                     //rotation        = offHandFlipped ? Rot4.West : Rot4.East;
 
                     if (ShowMeYourHandsMod.instance.Settings.RepositionHands && offHandWeapon.def.graphicData != null &&
@@ -1066,9 +1049,8 @@ namespace FacialStuff
                         }
                     }
                     */
-                    
                 }
-                
+
                 if (this.CurrentRotation == Rot4.East || this.CurrentRotation == Rot4.North)
                 {
                     y2 = -1f;
@@ -1076,10 +1058,10 @@ namespace FacialStuff
 
                 if (this.CurrentRotation == Rot4.West)
                 {
-                  //  y2 *= -1f;
+                    //  y2 *= -1f;
                 }
 
-                    if (this.CurrentRotation.IsHorizontal)
+                if (this.CurrentRotation.IsHorizontal)
                 {
                     x2 += 0.01f;
                 }
@@ -1089,19 +1071,17 @@ namespace FacialStuff
                     x2 *= -1;
                 }
 
-                this.SecondHandPosition = offhandWeaponLocation + 
+                this.SecondHandPosition = offhandWeaponLocation +
                                           AdjustRenderOffsetFromDir(rotation, secondHandThing as ThingWithComps) +
                                           new Vector3(x2, y2 + offMeleeExtra, z2).RotatedBy(offHandAngle);
-                
-                propsOffHandAngle *= (offHandFlipped ? -1f:1f);
+
+                propsOffHandAngle *= (offHandFlipped ? -1f : 1f);
                 propsOffHandAngle += (offHandFlipped ? 180f : 0f);
                 propsOffHandAngle %= 360f;
 
                 this.OffHandAngle = offHandAngle + propsOffHandAngle;
 
-
                 leftBehind = y2 <= 0f;
-
             }
             else
             {
@@ -1116,11 +1096,6 @@ namespace FacialStuff
                 num += angleOffset;
             }
             */
-
-
-
-
-
         }
 
         private void DoOffsets(ThingWithComps eq, float baseAngle, Stance_Busy stance_Busy, out float handAngle,
@@ -1237,8 +1212,6 @@ namespace FacialStuff
             this.CurrentWalkCycle = newWalkCycleDef;
         }
 
-
-
         private Vector3 AdjustRenderOffsetFromDir(Rot4 rotation, ThingWithComps weapon)
         {
             if (!ShowMeYourHandsMain.OversizedWeaponLoaded && !ShowMeYourHandsMain.EnableOversizedLoaded)
@@ -1317,6 +1290,7 @@ namespace FacialStuff
             // Determine the shortest direction.
             return ((left <= right) ? left : (right * -1));
         }
+
         private float CostToPayThisTick(float nextCellCostTotal)
         {
             float num = 1f;
@@ -1330,37 +1304,68 @@ namespace FacialStuff
             }
             return num;
         }
+
         private static bool doSmoothWalk = false;
+        public Sustainer sustainer;
+
         private float PawnMovedPercent(Pawn pawn)
         {
             this.IsMoving = false;
             Pawn_PathFollower pather = pawn?.pather;
             if (pather == null)
             {
+                this.sustainer?.End();
                 return 0f;
             }
 
-            if (!pather.Moving) return 0f;
+            if (!pather.Moving)
+            {
+                this.sustainer?.End();
+                return 0f;
+            }
 
             if (pawn.stances.FullBodyBusy)
             {
+                this.sustainer?.End();
                 return 0f;
             }
 
             if (pather.BuildingBlockingNextPathCell() != null)
             {
+                this.sustainer?.End();
                 return 0f;
             }
 
             if (pather.NextCellDoorToWaitForOrManuallyOpen() != null)
             {
+                this.sustainer?.End();
                 return 0f;
             }
 
             if (pather.WillCollideWithPawnOnNextPathCell())
             {
+                this.sustainer?.End();
                 return 0f;
             }
+            if (false)
+            {
+                if (this.sustainer == null || this.sustainer.Ended)
+                {
+                    if (Find.Selector.SelectedPawns.Contains(pawn))
+                    {
+                        this.sustainer = DefDatabase<SoundDef>.GetNamedSilentFail("Sound_Walking_Snow")
+                            .TrySpawnSustainer(SoundInfo.InMap(pawn, MaintenanceType.PerTick));
+                        this.sustainer.def.maxVoices = 20;
+                        this.sustainer.def.maxSimultaneous = 20;
+                    }
+                    // DefDatabase<SoundDef>.GetNamedSilentFail("Sound_Walking_Snow").TrySpawnSustainer(SoundInfo.InMap(pawn, MaintenanceType.PerTick));
+                }
+                else
+                {
+                    this.sustainer?.Maintain();
+                }
+            }
+
             /*
             PawnExtensions.cellCostMin = Mathf.Min(pather.nextCellCostTotal, PawnExtensions.cellCostMin);
             PawnExtensions.cellCostMax = Mathf.Max(pather.nextCellCostTotal, PawnExtensions.cellCostMax);
@@ -1405,6 +1410,9 @@ namespace FacialStuff
             this.IsMoving = true;
             // revert the walkcycle for drafted shooters
             float cellCostFactor = pather.nextCellCostLeft / pather.nextCellCostTotal;
+
+            // sustainer.def.subSounds.FirstOrDefault().pitchRange = new FloatRange(cellCostFactor, cellCostFactor);
+
             bool invert = false;
             if (CurrentRotation.IsHorizontal && CurrentRotation.FacingCell != pather.nextCell)
             {
@@ -1437,7 +1445,6 @@ namespace FacialStuff
                 cellCostFactor = EasingFunction.EaseOutCubic(0.5f, 1f, Mathf.Lerp(0.5f, 1f, cellCostFactor));
             }
 
-
             if (doSmoothWalk)
             {
                 if (pather.Destination.Cell == pather.nextCell)
@@ -1458,6 +1465,7 @@ namespace FacialStuff
             {
                 cellCostFactor = 1f - cellCostFactor;
             }
+
             return cellCostFactor;
         }
     }

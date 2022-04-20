@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Defs>
+
+
+  <SoundDef>
+    <defName>Sound_Walking_Snow</defName>  
+    <sustain>True</sustain>  
+    <context>MapOnly</context>
+    <priorityMode>PrioritizeNearest</priorityMode>  
+    <subSounds>
+      <li>
+        <muteWhenPaused>True</muteWhenPaused>      
+        <grains>
+          <li Class="AudioGrain_Folder">
+            <clipFolderPath>Snow_Jogging</clipFolderPath>
+          </li>
+        </grains>      
+        <volumeRange>10~10</volumeRange>      
+        <pitchRange>0.9541177~1.091765</pitchRange>      
+        <sustainLoop>true</sustainLoop>
+        <tempoAffectedByGameSpeed>true</tempoAffectedByGameSpeed>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+
+</Defs>

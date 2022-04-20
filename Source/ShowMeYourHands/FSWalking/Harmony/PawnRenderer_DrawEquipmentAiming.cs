@@ -117,7 +117,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
         int equipment = isFirstHandWeapon ? (int)TweenThing.Equipment1 : (int)TweenThing.Equipment2;
 
-        bool noTween = false;
+        bool noTween = pawn.Drafted;
         //if (pawn.pather != null && pawn.pather.MovedRecently(5))
         //{
         //    noTween = true;

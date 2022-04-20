@@ -884,9 +884,9 @@ namespace FacialStuff
 
             bool aiming = false;
 
-            Stance_Busy stance_Busy = ___pawn.stances.curStance as Stance_Busy;
 
-            if (stance_Busy is { neverAimWeapon: false, focusTarg.IsValid: true })
+                Stance_Busy stance_Busy = ___pawn.stances.curStance as Stance_Busy;
+            if (pawn.Aiming())
             {
                 Vector3 a = stance_Busy.focusTarg.HasThing
                     ? stance_Busy.focusTarg.Thing.DrawPos
@@ -1058,8 +1058,10 @@ namespace FacialStuff
 
                 if (this.CurrentRotation == Rot4.West)
                 {
-                    //  y2 *= -1f;
-                }
+                    if (offHandWeapon == null)
+                    {
+                          y2 *= -1f;
+                    }                }
 
                 if (this.CurrentRotation.IsHorizontal)
                 {

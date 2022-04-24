@@ -103,8 +103,10 @@ internal class ShowMeYourHandsMod : Mod
         ParseHelper.Parsers<SaveableVector3>.Register(SaveableVector3.FromString);
         if (instance.Settings.ManualMainHandPositions == null)
         {
-            instance.Settings.ManualMainHandPositions = new Dictionary<string, SaveableVector3>();
-            instance.Settings.ManualOffHandPositions = new Dictionary<string, SaveableVector3>();
+            instance.Settings.ManualMainHandPositions    = new Dictionary<string, SaveableVector3>();
+            instance.Settings.ManualOffHandPositions     = new Dictionary<string, SaveableVector3>();
+            instance.Settings.ManualWeaponPositions      = new Dictionary<string, SaveableVector3>();
+            instance.Settings.ManualAimedWeaponPositions = new Dictionary<string, SaveableVector3>();
         }
 
         currentVersion =
@@ -386,17 +388,26 @@ internal class ShowMeYourHandsMod : Mod
         {
             weaponAngle = thing.equippedAngleOffset;
         }
-        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, weaponAngle);
+        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, weaponAngle, false);
 
         return true;
     }
 
-    private bool DrawIconPawnWeapon(ThingDef thing, Rect rect, Vector3 mainHandPosition, Vector3 offHandPosition, float mainHandAngle, float offHandAngle, Rot4 drawRotation)
+    private bool DrawIconPawnWeapon(ThingDef thing, Rect rect, Vector3 mainHandPosition, Vector3 offHandPosition,
+        float mainHandAngle, float offHandAngle, float drawAngle, Rot4? rotOverride = null)
     {
+        if (drawAngle < 0)
+        {
+            drawAngle += 360f;
+        } 
         if (thing == null)
         {
             return false;
         }
+        
+        Rot4 drawRotation = rotOverride ?? (currentShowAiming
+            ? Pawn_RotationTracker.RotFromAngleBiased(drawAngle)
+            : Rot4.South);
 
         Texture texture = thing.graphicData?.Graphic?.MatSingle?.mainTexture;
         if (thing.graphicData?.graphicClass == typeof(Graphic_Random))
@@ -421,14 +432,20 @@ internal class ShowMeYourHandsMod : Mod
         Widgets.DrawBoxSolid(rectLine, new ColorInt(42, 43, 44).ToColor);
 
         rect.y -= 10f;
-        rect.x -= 12f;
+        // rect.x -= 12f;
 
-        Rect bodyRect = new(rect.x, rect.y, rect.width, rect.height);
+        bool flipped = drawAngle > 200f && drawAngle < 340f;
+
+        float rectX = flipped ? rect.xMax : rect.x;
+        float rectWidth = rect.width * (flipped ? -1f : 1f);
+
+        Rect bodyRect = new(rectX, rect.y, rectWidth, rect.height);
+
         GUI.DrawTexture(bodyRect, BodyTex.MatAt(drawRotation).mainTexture);
 
-        Rect headRect = new(rect.x, rect.y - (0.34f / 1.5f * rect.width), rect.width, rect.height);
+        Rect headRect = new(rectX, rect.y - (0.34f / 1.5f * rect.height), rectWidth, rect.height);
 
-        Rect footRect1 = new(rect.x + rect.width / 2 - rect.width / 8, rect.y + rect.height / 2 + (0.34f * rect.width), rect.width / 4, rect.height / 4);
+        Rect footRect1 = new(rectX + rectWidth / 2 - rectWidth / 8, rect.y + rect.height / 2 + (0.34f * rect.height), rectWidth / 4, rect.height / 4);
         Rect footRect2 = footRect1;
         footRect1.x -= footRect1.width / 3;
         footRect2.x += footRect1.width / 3;
@@ -437,7 +454,7 @@ internal class ShowMeYourHandsMod : Mod
         GUI.DrawTexture(footRect1, FootTex.MatAt(drawRotation).mainTexture);
         GUI.DrawTexture(footRect2, FootTex.MatAt(drawRotation).mainTexture);
 
-        float weaponRectSize = bodyRect.width / 1.5f;
+        float weaponRectSize = Mathf.Abs(bodyRect.width / 1.5f);
         float middlePosWeapon = ((rect.width - weaponRectSize) / 2);
         float posXmodifier = 0f;
         float posYmodifier = 0f;
@@ -459,26 +476,35 @@ internal class ShowMeYourHandsMod : Mod
         else if (drawRotation == Rot4.East)
         {
             posXmodifier += positionOffset.y;
-            if (!currentShowAiming) posYmodifier -= 0.22f;
+            if (!currentShowAiming)
+            {
+                posYmodifier -= 0.22f;
+                posXmodifier += 0.2f;
+            }
         }
         else if (drawRotation == Rot4.West)
         {
+            
             posXmodifier -= positionOffset.y;
-            if (!currentShowAiming) posYmodifier -= 0.22f;
+            if (!currentShowAiming)
+            {
+                posYmodifier -= 0.22f;
+                posXmodifier -= 0.2f;
+            }
         }
         posYmodifier += positionOffset.z;
 
         float weaponAngle = 0f;
-        weaponAngle = currentAimAngle - 90;
-       // if (thing.IsMeleeWeapon)
+        weaponAngle = drawAngle - 90;
+        // if (thing.IsMeleeWeapon)
         {
-            weaponAngle += thing.equippedAngleOffset;
+            weaponAngle += thing.equippedAngleOffset * (flipped?-1f: 1f);
 
         }
 
         if (currentShowAiming)
         {
-            var veccie = new Vector2(0, 0.4f).RotatedBy(currentAimAngle);
+            var veccie = new Vector2(0, 0.4f).RotatedBy(drawAngle);
             posXmodifier -= veccie.x;
             posYmodifier += veccie.y;
         }
@@ -501,62 +527,103 @@ internal class ShowMeYourHandsMod : Mod
         {
 
         }
-        mainHandAngle   += weaponAngle;
-        offHandAngle    += weaponAngle;
+
+
+        if (flipped)
+        {
+            weaponRect.width *= -1;
+            weaponRect.x -= weaponRect.width;
+            weaponAngle -= 180f;
+
+                mainHandPosition.x *= -1f;
+                offHandPosition.x *= -1f;
+            
+        }
+
+
+        if (flipped)
+        {
+            mainHandAngle *=  - 1f;
+            offHandAngle *=  - 1f;
+            mainHandAngle -= 180f;
+            offHandAngle -= 180f;
+        }
+        mainHandAngle += weaponAngle;
+        offHandAngle += weaponAngle;
+
         float newAngle = weaponAngle;
         if (!thing.IsMeleeWeapon) // oversized weapon
         {
-            newAngle -= thing.equippedAngleOffset;
-            mainHandAngle -= thing.equippedAngleOffset;
-            offHandAngle -= thing.equippedAngleOffset;
+            newAngle      -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
+            mainHandAngle -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
+            offHandAngle  -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
         }
         mainHandPosition = mainHandPosition.RotatedBy(newAngle);
         offHandPosition  = offHandPosition.RotatedBy(newAngle);
-        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, weaponRect, texture, weaponAngle);
+
+
+
+
+        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, weaponRect, texture, weaponAngle, flipped);
 
         return true;
     }
 
     private void DrawWeaponWithHands(ThingDef thing, float mainHandAngle, float offHandAngle, Vector3 mainHandPosition, Vector3 offHandPosition, Rect rect,
-        Texture texture, float weaponAngle)
+        Texture texture, float weaponAngle, bool flipped)
     {
-        float scaling = rect.width / weaponSize.x;
-        float handSize = rect.width / 4;
 
-        float weaponMiddle = rect.width / 2;
+        float rectWidthAbs = Mathf.Abs(rect.width);
+        float rectWidth = rect.width;
+
+        float scaling = rectWidthAbs / weaponSize.x;
+        float handSize = rectWidthAbs / 4;
+
+        float weaponMiddle = rectWidthAbs / 2;
 
         Vector2 mainHandCoords = new(
-            weaponMiddle + (mainHandPosition.x * rect.width) - (handSize / 2),
-            weaponMiddle - (mainHandPosition.z * rect.width) - (handSize / 2));
+            weaponMiddle + (mainHandPosition.x * rectWidthAbs) - (handSize / 2),
+            weaponMiddle - (mainHandPosition.z * rectWidthAbs) - (handSize / 2));
         Vector2 offHandCoords = new(
-            weaponMiddle + (offHandPosition.x * rect.width) - (handSize / 2),
-            weaponMiddle - (offHandPosition.z * rect.width) - (handSize / 2));
+            weaponMiddle + (offHandPosition.x * rectWidthAbs) - (handSize / 2),
+            weaponMiddle - (offHandPosition.z * rectWidthAbs) - (handSize / 2));
 
-        Rect mainHandRect = new(rect.x + mainHandCoords.x, (rect.y + mainHandCoords.y),
-            handSize,
+        float rectX = flipped ? rect.xMax  : rect.x;
+        float rectY = rect.y;
+        Rect mainHandRect = new(rectX + mainHandCoords.x, (rectY + mainHandCoords.y),
+            flipped ? handSize : handSize,
             handSize);
-        Rect offHandRect = new(rect.x + offHandCoords.x, rect.y + offHandCoords.y,
-            handSize,
+        Rect offHandRect = new(rectX + offHandCoords.x, rectY + offHandCoords.y,
+            flipped ? handSize : handSize,
             handSize);
 
-        if (currentMainBehind)
+        bool mainBehind = currentMainBehind;
+        bool offBehind = currentOffBehind;
+
+        if (flipped)
+        {
+            mainBehind = !mainBehind;
+            offBehind = !offBehind;
+        }
+
+        if (mainBehind)
         {
             DrawTextureRotatedLocal(mainHandRect, HandTex.MatEast.mainTexture, mainHandAngle);
         }
 
-        if (currentHasOffHand && currentOffBehind)
+        if (currentHasOffHand && offBehind)
         {
             DrawTextureRotatedLocal(offHandRect, HandTex.MatEast.mainTexture, offHandAngle);
         }
 
         DrawTextureRotatedLocal(rect, texture, weaponAngle);
 
-        if (!currentMainBehind)
+        if (!mainBehind)
         {
             DrawTextureRotatedLocal(mainHandRect, HandTex.MatSouth.mainTexture, mainHandAngle);
         }
 
-        if (currentHasOffHand && !currentOffBehind)
+        if (currentHasOffHand && !offBehind)
         {
             DrawTextureRotatedLocal(offHandRect, HandTex.MatSouth.mainTexture, offHandAngle);
         }
@@ -704,7 +771,7 @@ internal class ShowMeYourHandsMod : Mod
                         GUI.color = Color.white;
                     }
 
-                    if (instance.Settings.ManualMainHandPositions?.Count > 0)
+                    if (!instance.Settings.ManualMainHandPositions.NullOrEmpty())
                     {
                         Rect copyPoint = listing_Standard.Label("SMYH.copy.label".Translate(), -1F,
                             "SMYH.copy.tooltip".Translate());
@@ -894,14 +961,39 @@ internal class ShowMeYourHandsMod : Mod
                     frameRect.y      += tabRect.height;
                     frameRect.height -= tabRect.height;
 
+
+                    ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
+                    WhandCompProps compProperties = currentDef.GetCompProperties<WhandCompProps>();
+                    if (compProperties == null)
+                    {
+                        listing_Standard.Begin(frameRect);
+                        listing_Standard.Label("SMYH.error.hands".Translate(SelectedDef));
+                        listing_Standard.End();
+                        break;
+                    }
+
+                    if (currentMainHand == Vector3.zero)
+                    {
+                        currentMainHand      = compProperties.MainHand;
+                        currentOffHand       = compProperties.SecHand;
+                        currentHasOffHand    = currentOffHand != Vector3.zero;
+                        currentMainBehind    = compProperties.MainHand.y < 0;
+                        currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
+                        currentMainHandAngle = compProperties.MainHandAngle;
+                        currentOffHandAngle  = compProperties.SecHandAngle;
+
+                        currentWeaponPositionOffset = compProperties.WeaponPositionOffset;
+                        currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
+                    }
+
                     if (Tab == WeaponeStyleTab.HandPositionOnWeapon)
                     {
-                        DoSettingsWindowHandOnWeapon(frameRect);
+                        DoSettingsWindowHandOnWeapon(frameRect, currentDef);
                     }
 
                     if (Tab == WeaponeStyleTab.WeaponPositionOnPawn)
                     {
-                        DoSettingsWindowWeaponOnPawn(frameRect);
+                        DoSettingsWindowWeaponOnPawn(frameRect, currentDef);
                     }
                     break;
                 }
@@ -915,24 +1007,9 @@ internal class ShowMeYourHandsMod : Mod
         WeaponPositionOnPawn,
     }
 
-    private void DoSettingsWindowHandOnWeapon(Rect frameRect)
+    private void DoSettingsWindowHandOnWeapon(Rect frameRect, ThingDef currentDef )
     {
-        ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
         listing_Standard.Begin(frameRect);
-        if (currentDef == null)
-        {
-            listing_Standard.Label("SMYH.error.weapon".Translate(SelectedDef));
-            listing_Standard.End();
-            return;
-        }
-
-        WhandCompProps compProperties = currentDef.GetCompProperties<WhandCompProps>();
-        if (compProperties == null)
-        {
-            listing_Standard.Label("SMYH.error.hands".Translate(SelectedDef));
-            listing_Standard.End();
-            return;
-        }
 
         Text.Font = GameFont.Medium;
         Rect labelPoint = listing_Standard.Label(currentDef.label.CapitalizeFirst(), -1F,
@@ -965,16 +1042,6 @@ internal class ShowMeYourHandsMod : Mod
         Rect weaponRect = new(labelPoint.x + 270, labelPoint.y + 5, weaponSize.x,
             weaponSize.y);
 
-        if (currentMainHand == Vector3.zero)
-        {
-            currentMainHand      = compProperties.MainHand;
-            currentOffHand       = compProperties.SecHand;
-            currentHasOffHand    = currentOffHand != Vector3.zero;
-            currentMainBehind    = compProperties.MainHand.y < 0;
-            currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
-            currentMainHandAngle = compProperties.MainHandAngle;
-            currentOffHandAngle  = compProperties.SecHandAngle;
-        }
 
         if (!DrawIcon(currentDef, weaponRect, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle))
         {
@@ -1068,7 +1135,7 @@ internal class ShowMeYourHandsMod : Mod
             currentOffHand                   != compProperties.SecHand ||
             currentHasOffHand                != (currentOffHand != Vector3.zero) ||
             currentMainBehind                != compProperties.MainHand.y < 0 ||
-            currentOffBehind                 != compProperties.SecHand.y < 0 ||
+            //currentOffBehind                 != compProperties.SecHand.y < 0 ||
             currentMainHandAngle             != compProperties.MainHandAngle ||
             currentOffHandAngle              != compProperties.SecHandAngle ||
             currentWeaponPositionOffset      != compProperties.WeaponPositionOffset ||
@@ -1104,22 +1171,28 @@ internal class ShowMeYourHandsMod : Mod
 
                 instance.Settings.ManualMainHandPositions[currentDef.defName] =
                     new SaveableVector3(compProperties.MainHand, compProperties.MainHandAngle);
+
+                //instance.Settings.ManualMainHandPositionsList[currentDef.defName][1] =
+                //    new SaveableVector3(compProperties.WeaponPositionOffset);
+                //
+                //instance.Settings.ManualMainHandPositionsList[currentDef.defName][2] =
+                //    new SaveableVector3(compProperties.AimedWeaponPositionOffset);
+                //
                 instance.Settings.ManualOffHandPositions[currentDef.defName] =
                     new SaveableVector3(compProperties.SecHand, compProperties.SecHandAngle);
+                instance.Settings.ManualWeaponPositions[currentDef.defName] =
+                    new SaveableVector3(compProperties.WeaponPositionOffset, 0f);
+                instance.Settings.ManualAimedWeaponPositions[currentDef.defName] =
+                    new SaveableVector3(compProperties.AimedWeaponPositionOffset,0f);
+
             }, "SMYH.save.button".Translate(), new Vector2(xPosButton, yPosButtons));
         }
     }
 
-    private void DoSettingsWindowWeaponOnPawn(Rect frameRect)
+    private void DoSettingsWindowWeaponOnPawn(Rect frameRect, ThingDef currentDef)
     {
-        ThingDef currentDef = DefDatabase<ThingDef>.GetNamedSilentFail(SelectedDef);
         listing_Standard.Begin(frameRect);
-        if (currentDef == null)
-        {
-            listing_Standard.Label("SMYH.error.weapon".Translate(SelectedDef));
-            listing_Standard.End();
-            return;
-        }
+
 
         WhandCompProps compProperties = currentDef.GetCompProperties<WhandCompProps>();
         if (compProperties == null)
@@ -1136,29 +1209,24 @@ internal class ShowMeYourHandsMod : Mod
         Rect weaponRectEast = new(weaponRectSouth.xMax + 30, weaponRectSouth.y, weaponRectSouth.width,
             weaponRectSouth.height);
 
-        if (currentMainHand == Vector3.zero)
-        {
-            currentMainHand      = compProperties.MainHand;
-            currentOffHand       = compProperties.SecHand;
-            currentHasOffHand    = currentOffHand != Vector3.zero;
-            currentMainBehind    = compProperties.MainHand.y < 0;
-            currentOffBehind     = compProperties.SecHand.y < 0 || currentOffHand == Vector3.zero;
-            currentMainHandAngle = compProperties.MainHandAngle;
-            currentOffHandAngle  = compProperties.SecHandAngle;
 
-            currentWeaponPositionOffset      = compProperties.WeaponPositionOffset;
-            currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
-        }
 
-        if (!DrawIconPawnWeapon(currentDef, weaponRectSouth, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle, Rot4.South))
+        if (!DrawIconPawnWeapon(currentDef, weaponRectSouth, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle, (currentAimAngle)))
         {
             listing_Standard.Label("SMYH.error.texture".Translate(SelectedDef));
             listing_Standard.End();
             return;
         }
-
-        DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
-            currentOffHandAngle, Rot4.East);
+        if (currentShowAiming)
+        {
+            DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
+                currentOffHandAngle, (currentAimAngle - 90f));
+        }        
+        if (!currentShowAiming)
+        {
+            DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
+                currentOffHandAngle, (currentAimAngle), Rot4.East);
+        }        
         listing_Standard.End();
 
         Rect vieweEditorRect = new(frameRect.x, frameRect.y + weaponRectSouth.height + 24f, frameRect.width,
@@ -1175,7 +1243,7 @@ internal class ShowMeYourHandsMod : Mod
         {
             listing_Standard.Label(aimingAngleLabel);
             currentAimAngle = Widgets.HorizontalSlider(listing_Standard.GetRect(20),
-                currentAimAngle, 20, 160, false,
+                currentAimAngle, 0, 360, false,
                 currentAimAngle.ToString(), null, null, 0.001f);
         }
 
@@ -1279,22 +1347,42 @@ internal class ShowMeYourHandsMod : Mod
                                                           selectedSubDef == "SMYH.unknown".Translate() ||
                                                           weapon.modContentPack?.Name == selectedSubDef
                                                     select weapon.defName).ToList();
+
             handPositionsToIterate = new Dictionary<string, SaveableVector3>(
-                from position in instance.Settings.ManualMainHandPositions
-                where weaponsDefsToSelectFrom.Contains(position.Key)
-                select position);
+                from valuePair in instance.Settings.ManualMainHandPositions
+                where weaponsDefsToSelectFrom.Contains(valuePair.Key)
+                select valuePair);
         }
 
         foreach (KeyValuePair<string, SaveableVector3> settingsManualMainHandPosition in handPositionsToIterate)
         {
             stringBuilder.AppendLine("          <li>");
             stringBuilder.AppendLine($"              <MainHand>{settingsManualMainHandPosition.Value}</MainHand>");
+          
             if (instance.Settings.ManualOffHandPositions.ContainsKey(settingsManualMainHandPosition.Key))
             {
                 SaveableVector3 secHand = instance.Settings.ManualOffHandPositions[settingsManualMainHandPosition.Key];
                 if (secHand.ToVector3() != Vector3.zero || secHand.ToAngleFloat() != 0f)
                 {
                     stringBuilder.AppendLine($"              <SecHand>{secHand}</SecHand>");
+                }
+            }
+            if (instance.Settings.ManualWeaponPositions.ContainsKey(settingsManualMainHandPosition.Key))
+            {
+                SaveableVector3 wepOff = instance.Settings.ManualWeaponPositions[settingsManualMainHandPosition.Key];
+                if (wepOff.ToVector3() != Vector3.zero)
+                {
+                    stringBuilder.AppendLine($"              <WeaponPositionOffset>{wepOff}</WeaponPositionOffset>");
+                }
+            }            
+            if (instance.Settings.ManualAimedWeaponPositions.ContainsKey(settingsManualMainHandPosition.Key))
+            {
+                SaveableVector3 aimedOff =
+                    instance.Settings.ManualAimedWeaponPositions[settingsManualMainHandPosition.Key];
+                if (aimedOff.ToVector3() != Vector3.zero)
+                {
+                    stringBuilder.AppendLine(
+                        $"              <AimedWeaponPositionOffset>{aimedOff}</AimedWeaponPositionOffset>");
                 }
             }
 
@@ -1410,17 +1498,19 @@ internal class ShowMeYourHandsMod : Mod
     {
         instance.Settings.ManualMainHandPositions.Remove(currentDef.defName);
         instance.Settings.ManualOffHandPositions.Remove(currentDef.defName);
+        instance.Settings.ManualWeaponPositions.Remove(currentDef.defName);
+        instance.Settings.ManualAimedWeaponPositions.Remove(currentDef.defName);
         if (compProperties == null)
         {
             compProperties = currentDef.GetCompProperties<WhandCompProps>();
         }
 
-        compProperties.MainHand = Vector3.zero;
-        compProperties.SecHand = Vector3.zero;
-        compProperties.WeaponPositionOffset = Vector3.zero;
+        compProperties.MainHand                  = Vector3.zero;
+        compProperties.SecHand                   = Vector3.zero;
+        compProperties.MainHandAngle             = 0f;
+        compProperties.SecHandAngle              = 0f;
+        compProperties.WeaponPositionOffset      = Vector3.zero;
         compProperties.AimedWeaponPositionOffset = Vector3.zero;
-        compProperties.MainHandAngle = 0f;
-        compProperties.SecHandAngle = 0f;
 
         RimWorld_MainMenuDrawer_MainMenuOnGUI.LoadFromDefs(currentDef);
         if (compProperties.MainHand == Vector3.zero)

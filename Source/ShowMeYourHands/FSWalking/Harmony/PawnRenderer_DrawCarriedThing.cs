@@ -27,7 +27,7 @@ public static class PawnRenderer_DrawCarriedThing
             return;
         }
 
-        Vector3 handPos = Vector3.zero;
+        Vector3 handPos = drawLoc;
 
         bool behind = false;
         bool flip = false;
@@ -48,7 +48,6 @@ public static class PawnRenderer_DrawCarriedThing
             drawLoc.y -= 2 * Offsets.YOffset_CarriedThing;
         }
 
-        handPos += drawLoc;
         handPos.y += 2 * Offsets.YOffset_CarriedThing * (behind ? -1f : 1f);// + 2* Offsets.YOffset_HandsFeetOver;
 
 		anim.DrawHands(0f, handPos, carriedThing, flip);

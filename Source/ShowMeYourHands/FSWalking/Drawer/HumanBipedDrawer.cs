@@ -118,6 +118,7 @@ namespace FacialStuff
             {
                 return;
             }
+            /*
             /// No feet while sitting at a table
             Job curJob = this.pawn.CurJob;
             if (curJob != null)
@@ -138,6 +139,7 @@ namespace FacialStuff
                     }
                 }
             }
+            */
             // Color unused = this.CompAnimator.FootColor;
 
             if (pawn.GetPosture() == PawnPosture.Standing) // keep the feet straight while standing, ignore the bodyQuat
@@ -392,20 +394,34 @@ namespace FacialStuff
                     this.compAnimator.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
                 }
             }
+            var curJob = pawn?.CurJob;
 
             bool carrying = carriedThing != null;
+            bool isEating = false;
+            
+            if (curJob != null && carrying && !this.compAnimator.IsMoving && curJob.def == JobDefOf.Ingest && curJob.targetB.IsValid)
+            {
+                if (this.pawn.Position != curJob.targetB)
+                {
+                    isEating = true;
+                    drawPos = pawn.Drawer.DrawPos;
+                }
+            }
+            
+
             if (this.compAnimator.CurrentRotation != Rot4.North)
             {
                 // drawPos.y += 0.03474903f;
 
             }
-            if (carrying)
+            if (carrying && !isEating)
             {
                 if (this.compAnimator.CurrentRotation != Rot4.North)
                 {
                     //drawPos.y += Offsets.YOffset_CarriedThing;
                     drawPos.z -= 0.1f;
                 }
+                
                 /*    this.compAnimator.DoHandOffsetsOnWeapon(carriedThing,
                         this.compAnimator.CurrentRotation == Rot4.West ? 217f : 143f, out _, out _,
                         out _);*/
@@ -424,7 +440,7 @@ namespace FacialStuff
             float animationAngle = 0f;
             Vector3 animationPosOffset = Vector3.zero;
             
-            if (!carrying && !compAnimator.IsMoving)
+            if ((!carrying && !compAnimator.IsMoving) || isEating)
             {
                 DoAnimationHands(ref animationPosOffset, ref animationAngle);
                 animationPosOffset.y = 0f;
@@ -445,23 +461,18 @@ namespace FacialStuff
                 poschanged = true;
             }
 
-            if (!carrying)
-            {
-                //drawPos.y -= 0.0001f; // feet pop out in front of other pawns
-
-            }
 
             JointLister shoulperPos = this.GetJointPositions(JointType.Shoulder,
                 body.shoulderOffsets[rot.AsInt],
                 body.shoulderOffsets[Rot4.North.AsInt].x,
-                carrying, this.pawn.ShowWeaponOpenly());
+                carrying && !isEating, this.pawn.ShowWeaponOpenly());
 
             Vector3 shoulperPosLeftJoint  = shoulperPos.LeftJoint;
             Vector3 shoulperPosRightJoint = shoulperPos.RightJoint;
             Vector3 MainHandPosition      = this.compAnimator.MainHandPosition;
             Vector3 offHandPosition       = this.compAnimator.SecondHandPosition;
             float mainHandAngle = 0f;
-            if (carrying)
+            if (carrying && !isEating)
             {
                 // this.ApplyEquipmentWobble(ref drawPos);
 
@@ -490,26 +501,27 @@ namespace FacialStuff
                         handVector = Vector3.MoveTowards(handVector, this.pawn.DrawPos, step);
                     }
 
+
+
                     // carriedThing.DrawAt(drawPos, flip);
                     handVector.y = drawPos.y;
 
                     drawPos = handVector;
 
-                    DoAnimationHands(ref animationPosOffset, ref animationAngle);
-                    animationPosOffset.y = 0f;
-                    animationAngle *= 3.8f;
-                    bodyAngle += animationAngle;
-                    drawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
-                    shoulperPosLeftJoint.x -= animationPosOffset.z * 0.75f;
+                    // DoAnimationHands(ref animationPosOffset, ref animationAngle);
+                    animationPosOffset.y     = 0f;
+                    animationAngle          *= 3.8f;
+                    bodyAngle               += animationAngle*2;
+                    drawPos                 += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
+                    shoulperPosLeftJoint.x  -= animationPosOffset.z * 0.75f;
                     shoulperPosRightJoint.x -= animationPosOffset.z * 0.75f;
+                    
                 }
-
-
-
                 if (isFacingNorth) // put the hands behind the pawn
                 {
                     drawPos.y = Offsets.YOffset_Behind;
                 }
+
             }
 
 
@@ -520,7 +532,7 @@ namespace FacialStuff
             WalkCycleDef walkCycle = this.compAnimator.CurrentWalkCycle;
             //PoseCycleDef poseCycle = this.CompAnimator.PoseCycle;
 
-            if (!carrying)
+            if (!carrying || isEating)
             {
                 float offsetJoint = walkCycle.ShoulderOffsetHorizontalX.Evaluate(this.compAnimator.MovedPercent);
 
@@ -547,7 +559,7 @@ namespace FacialStuff
                 matRight = this.CompAnimator.PawnBodyGraphic?.HandGraphicRightCol?.MatSingle;
             }
             else */
-            if (!carrying)
+            if (!carrying || isEating)
             {
                 // Should draw shadow if inner side of the palm is facing to camera?
                 switch (rot.AsInt)
@@ -581,7 +593,7 @@ namespace FacialStuff
             {
                 Quaternion quat;
                 Vector3 position = Vector3.zero;
-                bool noTween = false;
+                bool noTween = carrying || pawn.Aiming();
                 if (this.compAnimator.BodyStat.HandRight == PartStatus.Missing &&
                     MainHandPosition != Vector3.zero)
                 {
@@ -619,7 +631,7 @@ namespace FacialStuff
                     leftHandVector = leftHandVector.RotatedBy(bodyAngle - handSwingAngle[0] - shoulderAngle + animationAngle);
 
                     position = drawPos + (shoulperPosLeftJoint + leftHandVector) * bodySizeScaling;
-                    if (carrying) // grabby angle
+                    if (carrying && !isEating) // grabby angle
                     {
                         quat = Quaternion.AngleAxis(bodyAngle + 105f, Vector3.up);
                     }
@@ -644,14 +656,14 @@ namespace FacialStuff
             {
                 Quaternion quat;
                 Vector3 position;
-                bool noTween = false;
+                bool noTween = carrying || pawn.Aiming();
                 if (MainHandPosition != Vector3.zero)
                 {
                     quat = Quaternion.AngleAxis(this.compAnimator.MainHandAngle - 90f + mainHandAngle, Vector3.up);
                     position = MainHandPosition;
                     if (compAnimator.CurrentRotation == Rot4.West) // put the second hand behind while turning right
                     {
-                        quat *= Quaternion.AngleAxis(180f, Vector3.up);
+                     //   quat *= Quaternion.AngleAxis(180f, Vector3.up);
                     }
                     if (rightBehind)
                     {
@@ -666,7 +678,7 @@ namespace FacialStuff
                     rightHandVector = rightHandVector.RotatedBy(bodyAngle + handSwingAngle[1] - shoulderAngle + animationAngle);
 
                     position = drawPos + (shoulperPosRightJoint + rightHandVector) * bodySizeScaling;
-                    if (carrying) // grabby angle
+                    if (carrying && !isEating) // grabby angle
                     {
                         quat = Quaternion.AngleAxis(bodyAngle - 115f, Vector3.up);
                     }

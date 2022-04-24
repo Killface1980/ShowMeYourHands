@@ -64,7 +64,7 @@ internal class SaveableVector3
     public Vector3 ToVector3()
     {
         return new Vector3(x, y, z);
-    }    
+    }
     public float ToAngleFloat()
     {
         return angle;

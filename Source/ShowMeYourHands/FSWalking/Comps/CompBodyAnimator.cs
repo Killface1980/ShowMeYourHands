@@ -132,24 +132,24 @@ namespace FacialStuff
                     footAngleLeft = angle.Evaluate(percentInverse);
                 }
                 rightFoot.z = offsetZ.Evaluate(percent);
-                leftFoot.z = offsetZ.Evaluate(percentInverse);
+                leftFoot.z  = offsetZ.Evaluate(percentInverse);
 
                 rightFoot.x += offsetJoint;
-                leftFoot.x += offsetJoint;
+                leftFoot.x  += offsetJoint;
 
                 if (rot == Rot4.West)
                 {
-                    rightFoot.x *= -1f;
-                    leftFoot.x *= -1f;
-                    footAngleLeft *= -1f;
+                    rightFoot.x    *= -1f;
+                    leftFoot.x     *= -1f;
+                    footAngleLeft  *= -1f;
                     footAngleRight *= -1f;
-                    offsetJoint *= -1;
+                    offsetJoint    *= -1;
                 }
             }
             else
             {
                 rightFoot.z = offsetZ.Evaluate(percent);
-                leftFoot.z = offsetZ.Evaluate(percentInverse);
+                leftFoot.z  = offsetZ.Evaluate(percentInverse);
                 offsetJoint = 0;
             }
         }
@@ -764,13 +764,15 @@ namespace FacialStuff
         {
             weaponPosOffset = Vector3.zero;
 
-            if (this.CurrentRotation == Rot4.West || this.CurrentRotation == Rot4.North)
+            if (flipped)
             {
                 weaponPosOffset.y = -Offsets.YOffset_Head - Offsets.YOffset_CarriedThing;
             }
 
             // Use y for the horizontal position. too lazy to add even more vectors
-            bool isHorizontal                 = this.CurrentRotation.IsHorizontal;
+            bool isHorizontal  =  this.CurrentRotation.IsHorizontal || flipped;
+
+
             bool aiming                       = pawn.Aiming();
             Vector3 weaponPositionOffset      = extensions.WeaponPositionOffset;
             Vector3 aimedWeaponPositionOffset = extensions.AimedWeaponPositionOffset;
@@ -795,7 +797,7 @@ namespace FacialStuff
             if (flipped)
             {
                 // flip x position offset
-                if (pawn.Rotation != Rot4.South)
+               // if (pawn.Rotation != Rot4.South)
                 {
                     weaponPosOffset.x *= -1;
                 }
@@ -880,7 +882,6 @@ namespace FacialStuff
                 }
             }
 
-            float aimAngle = this.CurrentRotation == Rot4.West ? 217f : 143f;
 
             bool aiming = false;
 
@@ -892,10 +893,10 @@ namespace FacialStuff
                     ? stance_Busy.focusTarg.Thing.DrawPos
                     : stance_Busy.focusTarg.Cell.ToVector3Shifted();
 
-                if ((a - ___pawn.DrawPos).MagnitudeHorizontalSquared() > 0.001f)
-                {
-                    aimAngle = (a - ___pawn.DrawPos).AngleFlat();
-                }
+                // if ((a - ___pawn.DrawPos).MagnitudeHorizontalSquared() > 0.001f)
+                // {
+                //     aimAngle = (a - ___pawn.DrawPos).AngleFlat();
+                // }
 
                 aiming = true;
             }
@@ -913,8 +914,8 @@ namespace FacialStuff
             }
 
             Vector3 mainWeaponLocation = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item1;
-            float mainHandAngle = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item2;
-            float mainMeleeExtra = 0f;
+            float mainHandAngle        = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item2;
+            float mainMeleeExtra       = 0f;
 
             DoOffsets(mainHandWeapon, mainHandAngle, stance_Busy, out mainHandAngle, out bool mainMelee, out bool facingWestAiming, out bool showWeapon, out mainHandFlipped);
 
@@ -968,8 +969,12 @@ namespace FacialStuff
                 drawSize = mainHandWeapon.def.graphicData.drawSize.x;
             }
 
-            Rot4 rotation = this.CurrentRotation;
+            Rot4 mainHandWeaponRot = Pawn_RotationTracker.RotFromAngleBiased(mainHandAngle);// this.CurrentRotation;
+            Rot4 offHandWeaponRot = Pawn_RotationTracker.RotFromAngleBiased(offHandAngle);// this.CurrentRotation;
 
+
+
+            // Log.Message(mainHandAngle.ToString("N0"));
             if (MainHand != Vector3.zero)
             {
                 float x = MainHand.x * drawSize;
@@ -978,26 +983,23 @@ namespace FacialStuff
 
                 //rotation = mainHandFlipped ? Rot4.West : Rot4.East;
 
-                if (rotation == Rot4.North && !mainMelee && !aiming)
-                {
-                    //       z += 0.1f;
-                }
                 if (this.CurrentRotation == Rot4.West || this.CurrentRotation == Rot4.North)
                 {
                     y *= -1f;
                 }
                 if (this.CurrentRotation.IsHorizontal)
                 {
-                    x += 0.01f;
+                //    x += 0.01f;
                 }
 
                 if (mainHandFlipped)
                 {
                     x *= -1;
+                    x -= 0.03f;
                 }
 
                 this.MainHandPosition = mainWeaponLocation +
-                                         AdjustRenderOffsetFromDir(rotation, mainHandWeapon as ThingWithComps) +
+                                         AdjustRenderOffsetFromDir(mainHandWeaponRot, mainHandWeapon as ThingWithComps) +
                                          new Vector3(x, y + mainMeleeExtra, z).RotatedBy(mainHandAngle);
                 float propertiesMainHandAngle = compProperties.MainHandAngle;
                 propertiesMainHandAngle *= mainHandFlipped ? -1f : 1f;
@@ -1074,7 +1076,7 @@ namespace FacialStuff
                 }
 
                 this.SecondHandPosition = offhandWeaponLocation +
-                                          AdjustRenderOffsetFromDir(rotation, secondHandThing as ThingWithComps) +
+                                          AdjustRenderOffsetFromDir(offHandWeaponRot, secondHandThing as ThingWithComps) +
                                           new Vector3(x2, y2 + offMeleeExtra, z2).RotatedBy(offHandAngle);
 
                 propsOffHandAngle *= (offHandFlipped ? -1f : 1f);
@@ -1105,66 +1107,40 @@ namespace FacialStuff
         {
             handAngle = baseAngle - 90f;
             isMeleeWeapon = false;
+            isFlipped = baseAngle is > 200f and < 340f;
             facingWestAiming = false;
-            isFlipped = false;
-
             showWeapon = true;
             if (pawn.CurJob != null && pawn.CurJob.def.neverShowWeapon)
             {
                 showWeapon = false;
             }
 
-            if (showWeapon && CurrentlyAiming(stance_Busy))
+            //if (showWeapon && CurrentlyAiming(stance_Busy))
+            //{
+            //    if (this.CurrentRotation == Rot4.West)
+            //    {
+            //        facingWestAiming = true;
+            //    }
+            //
+            //    if (!eq.def.IsRangedWeapon || stance_Busy.verb.IsMeleeAttack)
+            //    {
+            //        isMeleeWeapon = true;
+            //    }
+            //}
+            if (isFlipped)
             {
-                if (pawn.Rotation == Rot4.West)
-                {
-                    facingWestAiming = true;
-                }
-
-                if (!eq.def.IsRangedWeapon || stance_Busy.verb.IsMeleeAttack)
-                {
-                    isMeleeWeapon = true;
-                }
-            }
-
-            if (isMeleeWeapon)
-            {
-                if (facingWestAiming)
-                {
-                    isFlipped = true;
-                    handAngle -= 270f;
-                    handAngle -= eq.def.equippedAngleOffset;
-                }
-                else
-                {
-                    isFlipped = false;
-                    handAngle += eq.def.equippedAngleOffset;
-                }
-            }
-            else if (baseAngle > 20f && baseAngle < 160f)
-            {
-                isFlipped = false;
-                handAngle += eq.def.equippedAngleOffset;
-            }
-            else if ((baseAngle > 200f && baseAngle < 340f) || facingWestAiming)
-            {
-                isFlipped = true;
                 handAngle -= 180f;
                 handAngle -= eq.def.equippedAngleOffset;
             }
             else
             {
-                isFlipped = false;
                 handAngle += eq.def.equippedAngleOffset;
             }
+            
 
             handAngle %= 360f;
         }
 
-        internal static bool CurrentlyAiming(Stance_Busy stance)
-        {
-            return stance != null && !stance.neverAimWeapon && stance.focusTarg.IsValid;
-        }
 
         public float GetBodysizeScaling()
         {

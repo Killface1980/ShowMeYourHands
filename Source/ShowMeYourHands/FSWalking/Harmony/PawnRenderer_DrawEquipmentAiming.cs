@@ -33,14 +33,12 @@ public class PawnRenderer_DrawEquipmentAiming
         ref float aimAngle)
     {
 
-
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(drawLoc, aimAngle);
-
+        
         if (!ShowMeYourHandsMod.instance.Settings.UseHands)
         {
             return;
-
         }
 
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
@@ -72,7 +70,7 @@ public class PawnRenderer_DrawEquipmentAiming
             //}
         }
 
-        // Log.ErrorOnce(aimAngle.ToString("N0"), Mathf.RoundToInt(aimAngle));
+        // Log.ErrorOnce(aimAngle.ToString("N0"), Mathf.RoundToInt(aimAngle)*1000);
 
         // Log.ErrorOnce(num.ToString(), 3);
         ;
@@ -97,7 +95,7 @@ public class PawnRenderer_DrawEquipmentAiming
         }
 
         bool isFirstHandWeapon = eq != pawn.equipment.Primary;
-        bool flipped = (compAnim.CurrentRotation == Rot4.West || compAnim.CurrentRotation == Rot4.North);
+        bool flipped = aimAngle is > 200f and < 340f;
 
         // ShowMeYourHandsMain.LogMessage($"Changing angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 
@@ -105,10 +103,12 @@ public class PawnRenderer_DrawEquipmentAiming
         // Log.Message(eq.def + " - " + weaponOffset.x.ToString("N3") + "-" + weaponOffset.y.ToString("N3") + "-" +
         //             weaponOffset.z.ToString("N3"));
 
+
+
         if (pawn?.equipment?.AllEquipmentListForReading != null && pawn.equipment.AllEquipmentListForReading.Count == 2)
         {
             drawLoc.z += weaponOffset.z;
-            drawLoc.x += weaponOffset.x *0.5f * (isFirstHandWeapon ? -1f: 1f);
+            drawLoc.x += weaponOffset.x * 0.5f * (isFirstHandWeapon ? -1f: 1f);
         }
         else
         {
@@ -117,7 +117,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
         int equipment = isFirstHandWeapon ? (int)TweenThing.Equipment1 : (int)TweenThing.Equipment2;
 
-        bool noTween = pawn.Drafted;
+        bool noTween = false;// pawn.Drafted;
         //if (pawn.pather != null && pawn.pather.MovedRecently(5))
         //{
         //    noTween = true;
@@ -148,7 +148,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
                 Vector3 start = compAnim.LastPosition[equipment];
                 float distance = Vector3.Distance(start, drawLoc);
-                if (distance > 0.05f)
+                if (distance > 0.05f && distance < 0.5f)
                 {
                      float duration = Mathf.Abs(distance * 50f);
                      if (start != Vector3.zero && duration > 12f)
@@ -160,10 +160,6 @@ public class PawnRenderer_DrawEquipmentAiming
                      }
                 }
 
-                if (distance > 0f) ;
-                {
-                   // Log.Message("Start: " + start + " - Ende: " + drawLoc);
-                }
                 break;
         }
      
@@ -192,7 +188,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
                 float start = compAnim.LastAimAngle[equipment];
                 float angleDiff = Mathf.Abs(start)- Mathf.Abs(aimAngle);
-              
+                
                 if (Mathf.Abs(angleDiff) < 145f)
                 {
                      float duration = Mathf.Abs(angleDiff * 0.35f);

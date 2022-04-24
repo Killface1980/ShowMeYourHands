@@ -6,6 +6,7 @@ namespace ShowMeYourHands;
 /// <summary>
 ///     Definition of the settings for the mod
 /// </summary>
+[ShowMeYourHandsMod.HotSwappable]
 internal class ShowMeYourHandsModSettings : ModSettings
 {
     public Dictionary<string, SaveableVector3> ManualMainHandPositions = new();
@@ -14,9 +15,18 @@ internal class ShowMeYourHandsModSettings : ModSettings
 
     private List<SaveableVector3> manualMainHandPositionsValues;
 
+    private List<SaveableVector3> manualWeaponPositionsValues;
+    private List<SaveableVector3> manualAimedWeaponPositionsValues;
+
     public Dictionary<string, SaveableVector3> ManualOffHandPositions = new();
 
+    public Dictionary<string, SaveableVector3> ManualWeaponPositions = new();
+    public Dictionary<string, SaveableVector3> ManualAimedWeaponPositions = new();
+    
     private List<string> manualOffHandPositionsKeys;
+
+    private List<string> manualWeaponPositionsKeys;
+    private List<string> manualAimedWeaponPositionsKeys;
 
     private List<SaveableVector3> manualOffHandPositionsValues;
     public bool MatchArmorColor;
@@ -52,23 +62,39 @@ internal class ShowMeYourHandsModSettings : ModSettings
         Scribe_Collections.Look(ref ManualOffHandPositions, "ManualOffHandPositions", LookMode.Value,
             LookMode.Value,
             ref manualOffHandPositionsKeys, ref manualOffHandPositionsValues);
+        Scribe_Collections.Look(ref ManualWeaponPositions, "ManualWeaponPositions", LookMode.Value,
+            LookMode.Value,
+            ref manualWeaponPositionsKeys, ref manualWeaponPositionsValues);
+        Scribe_Collections.Look(ref ManualAimedWeaponPositions, "ManualAimedWeaponPositions", LookMode.Value,
+            LookMode.Value,
+            ref manualAimedWeaponPositionsKeys, ref manualAimedWeaponPositionsValues);
 
         Scribe_Values.Look(ref UseHands, "UseHands", true);
         Scribe_Values.Look(ref UseFeet, "UseFeet", true);
         Scribe_Values.Look(ref UsePaws, "UsePaws", true);
         Scribe_Values.Look(ref CutHair, "CutHair", true);
 
-
     }
 
     public void ResetManualValues()
     {
+        ManualMainHandPositions       = new Dictionary<string, SaveableVector3>();
         manualMainHandPositionsKeys = new List<string>();
         manualMainHandPositionsValues = new List<SaveableVector3>();
-        ManualMainHandPositions = new Dictionary<string, SaveableVector3>();
+
+        ManualOffHandPositions        = new Dictionary<string, SaveableVector3>();
         manualOffHandPositionsKeys = new List<string>();
-        manualOffHandPositionsValues = new List<SaveableVector3>();
-        ManualOffHandPositions = new Dictionary<string, SaveableVector3>();
+        manualOffHandPositionsValues  = new List<SaveableVector3>();
+
+        ManualWeaponPositions          = new Dictionary<string, SaveableVector3>();
+        manualWeaponPositionsKeys      = new List<string>();
+        manualWeaponPositionsValues    = new List<SaveableVector3>();
+
+        ManualAimedWeaponPositions       = new Dictionary<string, SaveableVector3>();
+        manualAimedWeaponPositionsKeys   = new List<string>();
+        manualAimedWeaponPositionsValues = new List<SaveableVector3>();
+
+
         RimWorld_MainMenuDrawer_MainMenuOnGUI.UpdateHandDefinitions();
     }
 }

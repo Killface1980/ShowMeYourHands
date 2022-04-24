@@ -223,7 +223,13 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         {
             return;
         }
-
+        //List<Dictionary<string, SaveableVector3>> list = new()
+        //{
+        //    ShowMeYourHandsMod.instance?.Settings?.ManualMainHandPositions,
+        //    ShowMeYourHandsMod.instance?.Settings?.ManualWeaponPositions,
+        //    ShowMeYourHandsMod.instance?.Settings?.ManualAimedPositions,
+        //};
+        //foreach (Dictionary<string, SaveableVector3> kvp in list)
         foreach (KeyValuePair<string, SaveableVector3> keyValuePair in ShowMeYourHandsMod.instance?.Settings?.ManualMainHandPositions)
         {
             ThingDef weapon = DefDatabase<ThingDef>.GetNamedSilentFail(keyValuePair.Key);
@@ -253,14 +259,27 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                             ? ShowMeYourHandsMod.instance.Settings.ManualOffHandPositions[keyValuePair.Key]
                                 .ToAngleFloat()
                             : 0f,
+                    WeaponPositionOffset = ShowMeYourHandsMod.instance?.Settings?.ManualWeaponPositions
+                        .ContainsKey(keyValuePair.Key) == true
+                        ? ShowMeYourHandsMod.instance.Settings.ManualWeaponPositions[keyValuePair.Key]
+                            .ToVector3()
+                        : Vector3.zero,
+                    AimedWeaponPositionOffset = ShowMeYourHandsMod.instance?.Settings?.ManualAimedWeaponPositions
+                    .ContainsKey(keyValuePair.Key) == true
+                    ? ShowMeYourHandsMod.instance.Settings.ManualAimedWeaponPositions[keyValuePair.Key]
+                    .ToVector3()
+                    : Vector3.zero,
 
                 };
                 weapon.comps.Add(compProps);
             }
             else
             {
-                compProps.MainHand = keyValuePair.Value.ToVector3();
+                compProps.MainHand      = keyValuePair.Value.ToVector3();
                 compProps.MainHandAngle = keyValuePair.Value.ToAngleFloat();
+
+                // compProps.WeaponPositionOffset = keyValuePair.Value[1].ToVector3();
+                // compProps.AimedWeaponPositionOffset = keyValuePair.Value[2].ToVector3();
 
                 if (ShowMeYourHandsMod.instance?.Settings?.ManualOffHandPositions.ContainsKey(keyValuePair.Key) == true)
                 {
@@ -273,6 +292,24 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                 {
                     compProps.SecHand = Vector3.zero;
                     compProps.SecHandAngle = 0f;
+                }
+                if (ShowMeYourHandsMod.instance?.Settings?.ManualWeaponPositions.ContainsKey(keyValuePair.Key) == true)
+                {
+                    compProps.WeaponPositionOffset = ShowMeYourHandsMod.instance.Settings.ManualWeaponPositions[keyValuePair.Key]
+                        .ToVector3();
+                }
+                else
+                {
+                    compProps.WeaponPositionOffset = Vector3.zero;
+                }
+                if (ShowMeYourHandsMod.instance?.Settings?.ManualAimedWeaponPositions.ContainsKey(keyValuePair.Key) == true)
+                {
+                    compProps.AimedWeaponPositionOffset = ShowMeYourHandsMod.instance.Settings.ManualAimedWeaponPositions[keyValuePair.Key]
+                        .ToVector3();
+                }
+                else
+                {
+                    compProps.AimedWeaponPositionOffset = Vector3.zero;
                 }
             }
 
@@ -326,8 +363,8 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                         compProps = new WhandCompProps
                         {
                             compClass = typeof(WhandComp),
-                            MainHand = weaponSets.MainHand,
-                            SecHand = weaponSets.SecHand,
+                            MainHand  = weaponSets.MainHand,
+                            SecHand   = weaponSets.SecHand,
 
                             WeaponPositionOffset      = weaponSets.WeaponPositionOffset,
                             AimedWeaponPositionOffset = weaponSets.AimedWeaponPositionOffset,

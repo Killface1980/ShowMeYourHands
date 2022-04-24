@@ -49,7 +49,6 @@ public static class PawnRenderer_DrawCarriedThing
         }
 
         handPos.y += 2 * Offsets.YOffset_CarriedThing * (behind ? -1f : 1f);// + 2* Offsets.YOffset_HandsFeetOver;
-
 		anim.DrawHands(0f, handPos, carriedThing, flip);
 
     }

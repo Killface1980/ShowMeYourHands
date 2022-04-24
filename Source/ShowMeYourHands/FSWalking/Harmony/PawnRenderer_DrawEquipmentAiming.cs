@@ -224,6 +224,8 @@ public class PawnRenderer_DrawEquipmentAiming
 
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(newDrawLoc, newAimAngle);
 
+      //  compAnim.DrawHands(0f, newDrawLoc, eq, flipped);
+
 
     }
 }

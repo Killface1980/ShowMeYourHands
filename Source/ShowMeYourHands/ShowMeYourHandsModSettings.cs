@@ -29,13 +29,13 @@ internal class ShowMeYourHandsModSettings : ModSettings
     private List<string> manualAimedWeaponPositionsKeys;
 
     private List<SaveableVector3> manualOffHandPositionsValues;
-    public bool MatchArmorColor;
-    public bool MatchArtificialLimbColor;
-    public bool MatchHandAmounts;
+    public bool MatchArmorColor = true;
+    public bool MatchArtificialLimbColor = true;
+    public bool MatchHandAmounts = true;
     public bool RepositionHands = true;
     public bool ResizeHands = true;
-    public bool ShowOtherTmes;
-    public bool ShowWhenCarry;
+    public bool ShowOtherTmes = true;
+    public bool ShowWhenCarry = true;
     public bool VerboseLogging;
 
     // Hands and feet added as an extra option. Can be removed/included

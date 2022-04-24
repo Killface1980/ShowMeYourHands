@@ -802,6 +802,9 @@ namespace FacialStuff
                     weaponPosOffset.x *= -1;
                 }
             }
+            float bodySizeScaling = this.GetBodysizeScaling();
+            weaponPosOffset *= bodySizeScaling * BodyAnim.extremitySize;
+
         }
 
         public void CheckMovement()

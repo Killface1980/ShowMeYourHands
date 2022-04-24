@@ -376,11 +376,11 @@ namespace FacialStuff
 
             float bodySizeScaling = compAnimator.GetBodysizeScaling();
 
-            this.compAnimator.MainHandPosition = this.compAnimator.SecondHandPosition = Vector3.zero;
-            bool hasSecondWeapon                = false;
-            ThingWithComps eq                   = pawn?.equipment?.Primary;
-            bool leftBehind                     = false;
-            bool rightBehind                    = false;
+            this.compAnimator.MainHandPosition       = this.compAnimator.SecondHandPosition = Vector3.zero;
+            bool hasSecondWeapon                     = false;
+            ThingWithComps eq                        = pawn?.equipment?.Primary;
+            bool leftBehind                          = false;
+            bool rightBehind                         = false;
             bool leftHandFlipped                     = false;
             bool rightHandFlipped                    = false;
 
@@ -401,7 +401,7 @@ namespace FacialStuff
             
             if (curJob != null && carrying && !this.compAnimator.IsMoving && curJob.def == JobDefOf.Ingest && curJob.targetB.IsValid)
             {
-                if (this.pawn.Position != curJob.targetB)
+                if (this.pawn.Position.DistanceTo(((IntVec3)curJob.targetB)) > 0.65f )
                 {
                     isEating = true;
                     drawPos = pawn.Drawer.DrawPos;
@@ -419,7 +419,7 @@ namespace FacialStuff
                 if (this.compAnimator.CurrentRotation != Rot4.North)
                 {
                     //drawPos.y += Offsets.YOffset_CarriedThing;
-                    drawPos.z -= 0.1f;
+                    drawPos.z -= 0.1f * bodySizeScaling;
                 }
                 
                 /*    this.compAnimator.DoHandOffsetsOnWeapon(carriedThing,
@@ -440,7 +440,7 @@ namespace FacialStuff
             float animationAngle = 0f;
             Vector3 animationPosOffset = Vector3.zero;
             
-            if ((!carrying && !compAnimator.IsMoving) || isEating)
+            if ((!carrying && !compAnimator.IsMoving || isEating) )
             {
                 DoAnimationHands(ref animationPosOffset, ref animationAngle);
                 animationPosOffset.y = 0f;
@@ -559,7 +559,7 @@ namespace FacialStuff
                 matRight = this.CompAnimator.PawnBodyGraphic?.HandGraphicRightCol?.MatSingle;
             }
             else */
-            if (!carrying || isEating)
+            if (!carrying)
             {
                 // Should draw shadow if inner side of the palm is facing to camera?
                 switch (rot.AsInt)

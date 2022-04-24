@@ -6,7 +6,7 @@
     <footTexPath>Things/Pawn/Humanlike/Feet/Human_Foot</footTexPath>
     <quadruped>False</quadruped>
     <bipedWithHands>True</bipedWithHands>
-    <armLength>0.35</armLength>
+    <armLength>0.42</armLength>
     <extremitySize>1.08</extremitySize>
     <walkCycles>
       <li>
@@ -26,7 +26,7 @@
         <value>Biped_Walk</value>
       </li>
     </walkCycles>
-    <extraLegLength>0.15</extraLegLength>
+    <extraLegLength>0.25</extraLegLength>
     <WalkCycleType>Biped</WalkCycleType>
     <shoulderOffsets>
       <li>

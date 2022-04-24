@@ -1,21 +1,20 @@
 ﻿// ReSharper disable StyleCop.SA1401
 
-using System.Collections.Generic;
-using System.Linq;
-using ColorMine.ColorSpaces;
-using ColorMine.ColorSpaces.Comparisons;
 using RimWorld;
 using ShowMeYourHands;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
-using static System.Byte;
 
 namespace FacialStuff.GraphicsFS
 {
+    [ShowMeYourHandsMod.HotSwappable]
     [StaticConstructorOnStartup]
     public class PawnBodyGraphic
     {
         #region Public Fields
+
         private readonly Pawn _pawn;
 
         public readonly CompBodyAnimator CompAni;
@@ -41,7 +40,6 @@ namespace FacialStuff.GraphicsFS
         #endregion Public Fields
 
         #region Private Fields
-
 
         private readonly Color _shadowColor = new(0.54f, 0.56f, 0.6f);
 
@@ -103,20 +101,18 @@ namespace FacialStuff.GraphicsFS
                 else
                 {
                     skinColor = _pawn.story.SkinColor;
-
                 }
 
                 Color rightFootShadowColor = (animalOverride ? skinColor : this.CompAni.FootColorRight) * this._shadowColor;
                 Color leftFootShadowColor = (animalOverride ? skinColor : this.CompAni.FootColorLeft) * this._shadowColor;
 
-
-                Vector2 drawSize = new(1f,1f);
+                Vector2 drawSize = new(1f, 1f);
                 BodyPartStats stats = this.CompAni.BodyStat;
                 this.FootGraphicRight = GraphicDatabase.Get<Graphic_Multi>(
                     CompAni.BodyStat.FootRight == PartStatus.Artificial ? texNameArtificial : texNameFoot,
                     GetShader(stats.FootRight),
                     drawSize,
-                    animalOverride? skinColor : this.CompAni.FootColorRight,
+                    animalOverride ? skinColor : this.CompAni.FootColorRight,
                     animalOverride ? skinColor : this.CompAni.FootColorRight);
 
                 this.FootGraphicLeft = GraphicDatabase.Get<Graphic_Multi>(
@@ -161,7 +157,6 @@ namespace FacialStuff.GraphicsFS
             if (!this.CompAni.BodyAnim.quadruped)
             {
                 return;
-
             }
             if (this.CompAni.BodyAnim.handTexPath.NullOrEmpty())
             {
@@ -205,7 +200,6 @@ namespace FacialStuff.GraphicsFS
 
             Color rightFootColorShadow = rightFootColor * this._shadowColor;
             Color leftFootColorShadow = leftFootColor * this._shadowColor;
-
 
             Vector2 drawSize = new(1f, 1f);
             this.FrontPawGraphicRight = GraphicDatabase.Get<Graphic_Multi>(
@@ -261,16 +255,11 @@ namespace FacialStuff.GraphicsFS
             if (this.CompAni.BodyAnim.handTexPath.NullOrEmpty())
             {
                 return;
-
             }
             string texNameHand = this.CompAni.BodyAnim.handTexPath;
 
             Color rightColorHand = Color.cyan;
             Color leftColorHand = Color.magenta;
-
-
-
-
 
             Color metal = new(0.51f, 0.61f, 0.66f);
 
@@ -332,6 +321,7 @@ namespace FacialStuff.GraphicsFS
             {
                 case PartStatus.Natural:
                     return ShaderDatabase.CutoutSkin;
+
                 case PartStatus.Missing:
                 case PartStatus.Artificial:
                 case PartStatus.DisplayOverBeard:
@@ -340,14 +330,12 @@ namespace FacialStuff.GraphicsFS
                     break;
             }
             return ShaderDatabase.Cutout;
-
         }
 
-        bool handLeftHasColor = false;
-        bool handRightHasColor = false;
-        bool footLeftHasColor = false;
-        bool footRightHasColor = false;
-
+        private bool handLeftHasColor = false;
+        private bool handRightHasColor = false;
+        private bool footLeftHasColor = false;
+        private bool footRightHasColor = false;
 
         public void CheckForAddedOrMissingPartsAndSetColors()
         {
@@ -364,7 +352,6 @@ namespace FacialStuff.GraphicsFS
             if (pawn == null)
             {
                 return;
-
             }
             Color skinColor = Color.white;
             bool animalOverride = pawn.story == null;
@@ -398,11 +385,12 @@ namespace FacialStuff.GraphicsFS
             {
                 return;
             }
-             handLeftHasColor = false;
-             handRightHasColor = false;
-             footLeftHasColor = false;
-             footRightHasColor = false;
-            colorBody = new List<bool> { false, false, false, false};
+            handLeftHasColor  = false;
+            handRightHasColor = false;
+            footLeftHasColor  = false;
+            footRightHasColor = false;
+            colorBody         = new List<bool> { false, false, false, false };
+
             if (ShowMeYourHandsMod.instance.Settings.MatchHandAmounts ||
                 ShowMeYourHandsMod.instance.Settings.MatchArtificialLimbColor)
             {
@@ -478,7 +466,6 @@ namespace FacialStuff.GraphicsFS
                                         {
                                             anim.BodyStat.HandRight = PartStatus.Missing;
                                         }
-
                                     }
                                 }
 
@@ -594,23 +581,31 @@ namespace FacialStuff.GraphicsFS
                 {
                     Thing outerApparel = null;
                     int highestDrawOrder = 0;
-                    foreach (Apparel thing in handApparel)
-                    {
-                        int thingOutmostLayer =
-                            thing.def.apparel.layers.OrderByDescending(def => def.drawOrder).First().drawOrder;
-                        if (outerApparel != null && highestDrawOrder >= thingOutmostLayer)
-                        {
-                            continue;
-                        }
 
-                        highestDrawOrder = thingOutmostLayer;
-                        outerApparel = thing;
+                    if (handApparel.Any(x => x.def.label.Contains("glove")))
+                    {
+                        outerApparel = handApparel.FirstOrDefault(x => x.def.label.Contains("glove"));
                     }
+                    else
+                    {
+                        foreach (Apparel thing in handApparel)
+                        {
+                            int thingOutmostLayer =
+                                thing.def.apparel.layers.OrderByDescending(def => def.drawOrder).First().drawOrder;
+                            if (outerApparel != null && highestDrawOrder >= thingOutmostLayer)
+                            {
+                                continue;
+                            }
+
+                            highestDrawOrder = thingOutmostLayer;
+                            outerApparel = thing;
+                        }
+                    }
+
 
                     if (outerApparel != null)
                     {
-                        // The method is only called on changes, and the apparel can be dyed. deactivated for now
-                        // if (PawnExtensions.colorDictionary == null)
+                        if (PawnExtensions.colorDictionary == null)
                         {
                             PawnExtensions.colorDictionary = new Dictionary<Thing, Color>();
                         }
@@ -628,7 +623,7 @@ namespace FacialStuff.GraphicsFS
                         {
                             SetHandColor(PawnExtensions.colorDictionary[outerApparel]);
                         }
-                        // BUG Tried to get a resource "Things/Pawn/Humanlike/Apparel/Duster/Duster" from a different thread. All resources must be loaded in the main thread. 
+                        // BUG Tried to get a resource "Things/Pawn/Humanlike/Apparel/Duster/Duster" from a different thread. All resources must be loaded in the main thread.
                         else
                         {
                             if (outerApparel.Graphic != null && outerApparel.Stuff != null && outerApparel.Graphic.Shader != ShaderDatabase.CutoutComplex)
@@ -656,23 +651,30 @@ namespace FacialStuff.GraphicsFS
                 {
                     Thing outerApparel = null;
                     int highestDrawOrder = 0;
-                    foreach (Apparel thing in footApparel)
+                    if (footApparel.Any(x => x.def.label.Contains("boot") || x.def.label.Contains("shoe")))
                     {
-                        int thingOutmostLayer =
-                            thing.def.apparel.layers.OrderByDescending(def => def.drawOrder).First().drawOrder;
-                        if (outerApparel != null && highestDrawOrder >= thingOutmostLayer)
+                        outerApparel = footApparel.FirstOrDefault(x => x.def.label.Contains("boot") || x.def.label.Contains("shoe"));
+                    }
+                    else
+                    {
+                        foreach (Apparel thing in footApparel)
                         {
-                            continue;
-                        }
+                            int thingOutmostLayer =
+                                thing.def.apparel.layers.OrderByDescending(def => def.drawOrder).First().drawOrder;
+                            if (outerApparel != null && highestDrawOrder >= thingOutmostLayer)
+                            {
+                                continue;
+                            }
 
-                        highestDrawOrder = thingOutmostLayer;
-                        outerApparel = thing;
+                            highestDrawOrder = thingOutmostLayer;
+                            outerApparel = thing;
+                        }
                     }
 
                     bool hasColor = false;
                     if (outerApparel != null)
                     {
-                     //   if (PawnExtensions.colorDictionary == null)
+                        if (PawnExtensions.colorDictionary == null)
                         {
                             PawnExtensions.colorDictionary = new Dictionary<Thing, Color>();
                         }
@@ -708,17 +710,15 @@ namespace FacialStuff.GraphicsFS
                             {
                                 SetFeetColor(PawnExtensions.colorDictionary[outerApparel]);
                             }
-
                         }
                     }
                 }
             }
         }
 
+        private List<bool> colorBody = new List<bool> { false, false, false, false };
 
-        private List<bool> colorBody = new List<bool> {false,false,false,false};
-
-        private void SetHandColor(Color color )
+        private void SetHandColor(Color color)
         {
             CompBodyAnimator anim = this.CompAni;
             if (!handLeftHasColor)
@@ -738,9 +738,9 @@ namespace FacialStuff.GraphicsFS
                     : anim.BodyStat.HandRight;
                 handRightHasColor = true;
             }
-
         }
-        private void SetFeetColor(Color color )
+
+        private void SetFeetColor(Color color)
         {
             CompBodyAnimator anim = this.CompAni;
             if (!footLeftHasColor)
@@ -760,11 +760,7 @@ namespace FacialStuff.GraphicsFS
                     : anim.BodyStat.FootRight;
                 footRightHasColor = true;
             }
-
         }
-
-
-
 
         #endregion Private Methods
     }

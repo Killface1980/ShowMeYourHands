@@ -157,7 +157,7 @@ class DrawAt_Patch
         {
             animator?.DrawFeet(footAngle, __state, loc);
         }
-        if (ShowMeYourHandsMod.instance.Settings.UseHands && pawn.carryTracker?.CarriedThing == null)
+        if (ShowMeYourHandsMod.instance.Settings.UseHands && (!ShowMeYourHandsMod.instance.Settings.ShowWhenCarry ||  pawn.carryTracker?.CarriedThing == null))
         {
             animator?.DrawHands(handAngle, loc);
         }

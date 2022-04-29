@@ -183,7 +183,7 @@ public class PawnRenderer_DrawEquipmentAiming
                 {
                     break;
                 }
-
+                break; // Todo: currently broken with gun twirling
                 ScaleFunc scaleFunc = ScaleFuncs.SineEaseOut;
 
                 float start = compAnim.LastAimAngle[equipment];

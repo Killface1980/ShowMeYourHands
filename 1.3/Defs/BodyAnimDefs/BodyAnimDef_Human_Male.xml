@@ -6,7 +6,7 @@
     <footTexPath>Things/Pawn/Humanlike/Feet/Human_Foot</footTexPath>
     <quadruped>False</quadruped>
     <bipedWithHands>True</bipedWithHands>
-    <armLength>0.35</armLength>
+    <armLength>0.4</armLength>
     <extraLegLength>0.15</extraLegLength>
     <extremitySize>1</extremitySize>
     <hipOffsets>

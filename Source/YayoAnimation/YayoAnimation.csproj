@@ -29,6 +29,7 @@
     <Reference Include="yayoAni">
       <HintPath>D:\SteamLibrary\steamapps\workshop\content\294100\2575938407\Assemblies\yayoAni.dll</HintPath>
       <CopyLocal>False</CopyLocal>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 </Project>

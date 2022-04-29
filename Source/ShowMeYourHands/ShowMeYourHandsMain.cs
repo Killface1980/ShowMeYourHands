@@ -51,7 +51,7 @@ public static class ShowMeYourHandsMain
     public static readonly List<string> knownPatches = new()
     {
         // This mod
-        "Mlie.ShowMeYourHands",
+        "Killface.ShowMeYourHands",
         // Yayos Combat 3
         // Replaces weapon drawer
         "com.yayo.combat",
@@ -100,9 +100,9 @@ public static class ShowMeYourHandsMain
 
     static ShowMeYourHandsMain()
     {
-        DualWieldLoaded = ModLister.GetActiveModWithIdentifier("Roolo.DualWield") != null;
-        YayoAdoptedLoaded = ModLister.GetActiveModWithIdentifier("com.yayo.combat3") != null;
-        BabysAndChildrenLoaded = ModLister.GetActiveModWithIdentifier("babies.and.children.continued") != null;
+        DualWieldLoaded         = ModLister.GetActiveModWithIdentifier("Roolo.DualWield") != null;
+        YayoAdoptedLoaded       = ModLister.GetActiveModWithIdentifier("com.yayo.combat3") != null;
+        BabysAndChildrenLoaded  = ModLister.GetActiveModWithIdentifier("babies.and.children.continued") != null;
         BabysAndChildrenLoaded2 = ModLister.GetActiveModWithIdentifier("Babies_and_Children") != null;
         BabysAndChildrenLoaded3 = ModLister.GetActiveModWithIdentifier("babies.and.children.continued.13") != null;
         if (BabysAndChildrenLoaded || BabysAndChildrenLoaded2 || BabysAndChildrenLoaded3)
@@ -157,7 +157,7 @@ public static class ShowMeYourHandsMain
         IsColorable = DefDatabase<ThingDef>.AllDefsListForReading.Where(def => def.HasComp(typeof(CompColorable)))
             .ToList();
 
-        harmony = new Harmony("Mlie.ShowMeYourHands");
+        harmony = new Harmony("Killface.ShowMeYourHands");
 
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 

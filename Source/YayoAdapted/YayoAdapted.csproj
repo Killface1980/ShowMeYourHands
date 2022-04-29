@@ -29,6 +29,7 @@
     <Reference Include="yayoCombat">
       <HintPath>D:\SteamLibrary\steamapps\workshop\content\294100\2513695736\1.3\Assemblies\yayoCombat.dll</HintPath>
       <CopyLocal>False</CopyLocal>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 </Project>

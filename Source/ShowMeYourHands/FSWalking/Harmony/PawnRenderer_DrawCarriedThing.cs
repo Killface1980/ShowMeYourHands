@@ -27,6 +27,11 @@ public static class PawnRenderer_DrawCarriedThing
             return;
         }
 
+        if (anim.IsMoving)
+        {
+            drawLoc.x += !anim.CurrentRotation.IsHorizontal ? 0f : anim.CurrentRotation == Rot4.West ? -0.25f : 0.25f;
+        }
+
         Vector3 handPos = drawLoc;
 
         bool behind = false;

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
   <name>Show Me Your Hands</name>
-  <packageId>Mlie.ShowMeYourHands</packageId>
+  <packageId>Killface.ShowMeYourHands</packageId>
   <author>Mlie, Killface</author>
   <url>https://github.com/emipa606/ShowMeYourHands</url>
   <supportedVersions>
@@ -23,6 +23,7 @@
   </loadAfter>
   <incompatibleWith>
     <li>Mlie.ClutterWeaponHands</li>
+    <li>Mlie.ShowMeYourHands</li>
   </incompatibleWith>
   <description>
 

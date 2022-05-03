@@ -59,7 +59,7 @@ namespace FacialStuff.AnimatorWindows
 
         private static float _animSlider;
 
-        private static Rot4 _bodyRot = Rot4.East;
+        private static Rot4 _currentRotation = Rot4.East;
 
         [CanBeNull]
         private static string _defPath;
@@ -88,12 +88,12 @@ namespace FacialStuff.AnimatorWindows
             }
         }
 
-        protected static Rot4 BodyRot
+        protected static Rot4 currentRotation
         {
-            get => _bodyRot;
+            get => _currentRotation;
             set
             {
-                _bodyRot = value;
+                _currentRotation = value;
                 HeadRot = value;
             }
         }
@@ -143,7 +143,7 @@ namespace FacialStuff.AnimatorWindows
             }
         }
 
-        protected BodyAnimDef BodyAnimDef
+        protected BodyAnimDef currentBodyAnimDef
         {
             get
             {
@@ -180,7 +180,7 @@ namespace FacialStuff.AnimatorWindows
             this.SetKeyframes();
             this._frameLabel = CurrentFrameInt + 1;
 
-            Rot4 rotation = BodyRot;
+            Rot4 rotation = currentRotation;
 
             Rect topEditor = inRect.TopPart(0.52f);
             Rect basics = topEditor.LeftPart(0.375f).ContractedBy(this.Spacing);
@@ -348,7 +348,7 @@ namespace FacialStuff.AnimatorWindows
 
         protected virtual void DoBasicSettingsMenu(Listing_Standard listing)
         {
-            string label = pawn.LabelCap + " - " + this.Label + " - " + this.BodyAnimDef.LabelCap;
+            string label = pawn.LabelCap + " - " + this.Label + " - " + this.currentBodyAnimDef.LabelCap;
 
             listing.Label(label);
 
@@ -721,7 +721,7 @@ namespace FacialStuff.AnimatorWindows
 
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                BodyRot = rotation;
+                currentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;
@@ -729,21 +729,21 @@ namespace FacialStuff.AnimatorWindows
 
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                BodyRot = rotation;
+                currentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;
             rotation = Rot4.North;
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                BodyRot = rotation;
+                currentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;
             rotation = Rot4.South;
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                BodyRot = rotation;
+                currentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;

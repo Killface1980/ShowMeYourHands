@@ -177,6 +177,10 @@ namespace FacialStuff
                     key.HipOffsetHorizontalX
                 },
                 {
+                    cycle.BodyAngle,
+                    key.BodyAngle
+                },
+                {
                     cycle.BodyAngleVertical,
                     key.BodyAngleVertical
                 },

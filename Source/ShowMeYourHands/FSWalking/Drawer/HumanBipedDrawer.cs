@@ -383,6 +383,7 @@ namespace FacialStuff
             bool rightBehind                         = false;
             bool leftHandFlipped                     = false;
             bool rightHandFlipped                    = false;
+            bool carriesWeaponOpenly                 = false;
 
             if (eq != null && pawn?.CurJob?.def != null && !pawn.CurJob.def.neverShowWeapon)
             {
@@ -392,6 +393,7 @@ namespace FacialStuff
                 if (result != null && (bool)result)
                 {
                     this.compAnimator.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
+                    carriesWeaponOpenly = true;
                 }
             }
             var curJob = pawn?.CurJob;
@@ -573,7 +575,7 @@ namespace FacialStuff
                         break;
                 }
             }
-             if (isFacingNorth)
+            if (isFacingNorth && !carrying && !carriesWeaponOpenly)
             {
                 matLeft = this.LeftHandShadowMat;
                 matRight = this.RightHandShadowMat;
@@ -644,6 +646,9 @@ namespace FacialStuff
                 }
 
                 TweenThing handLeft = TweenThing.HandLeft;
+
+                //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
+                noTween = true;
                 this.DrawTweenedHand(position, handMeshLeft, matLeft, quat, handLeft, noTween);
                 //GenDraw.DrawMeshNowOrLater(
                 //                           handMeshLeft, position,
@@ -695,6 +700,8 @@ namespace FacialStuff
                 }
 
                 TweenThing handRight = TweenThing.HandRight;
+                //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
+                noTween = true;
                 this.DrawTweenedHand(position, handMeshRight, matRight, quat, handRight, noTween);
                 // GenDraw.DrawMeshNowOrLater(
                 //                            handMeshRight, position,

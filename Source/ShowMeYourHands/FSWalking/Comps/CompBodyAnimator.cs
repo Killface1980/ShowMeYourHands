@@ -667,9 +667,7 @@ namespace FacialStuff
             {
                 if (ShowMeYourHandsMod.instance.Settings.UseFeet)
                 {
-                    WalkCycleDef walkCycle = this.CurrentWalkCycle;
-
-                    SimpleCurve curve = walkCycle.BodyOffsetZ;
+                    SimpleCurve curve = this.CurrentWalkCycle.BodyOffsetZ;
                     if (curve.PointsCount > 0)
                     {
                         return curve.Evaluate(this.MovedPercent);
@@ -825,6 +823,7 @@ namespace FacialStuff
             // pawn started pathing
 
             this.MovedPercent = PawnMovedPercent(pawn);
+
         }
 
         public void DoHandOffsetsOnWeapon(ThingWithComps eq, out bool hasSecondWeapon, out bool leftBehind,
@@ -860,11 +859,11 @@ namespace FacialStuff
             if (compProperties != null)
             {
                 MainHand = compProperties.MainHand;
-                OffHand = compProperties.SecHand;
+                OffHand  = compProperties.SecHand;
             }
             else
             {
-                OffHand = Vector3.zero;
+                OffHand  = Vector3.zero;
                 MainHand = Vector3.zero;
             }
 
@@ -890,19 +889,19 @@ namespace FacialStuff
 
 
                 Stance_Busy stance_Busy = ___pawn.stances.curStance as Stance_Busy;
-            if (pawn.Aiming())
-            {
-                Vector3 a = stance_Busy.focusTarg.HasThing
-                    ? stance_Busy.focusTarg.Thing.DrawPos
-                    : stance_Busy.focusTarg.Cell.ToVector3Shifted();
-
-                // if ((a - ___pawn.DrawPos).MagnitudeHorizontalSquared() > 0.001f)
-                // {
-                //     aimAngle = (a - ___pawn.DrawPos).AngleFlat();
-                // }
-
-                aiming = true;
-            }
+            // if (pawn.Aiming())
+            // {
+            //     Vector3 a = stance_Busy.focusTarg.HasThing
+            //         ? stance_Busy.focusTarg.Thing.DrawPos
+            //         : stance_Busy.focusTarg.Cell.ToVector3Shifted();
+            // 
+            //     // if ((a - ___pawn.DrawPos).MagnitudeHorizontalSquared() > 0.001f)
+            //     // {
+            //     //     aimAngle = (a - ___pawn.DrawPos).AngleFlat();
+            //     // }
+            // 
+            //     aiming = true;
+            // }
 
             if (!ShowMeYourHandsMain.weaponLocations.ContainsKey(mainHandWeapon))
             {
@@ -1056,9 +1055,13 @@ namespace FacialStuff
                     */
                 }
 
-                if (this.CurrentRotation == Rot4.East || this.CurrentRotation == Rot4.North)
+                if (this.CurrentRotation == Rot4.East)
                 {
                     y2 = -1f;
+                }
+                if (this.CurrentRotation == Rot4.North)
+                {
+                    y2 = 0.001f;
                 }
 
                 if (this.CurrentRotation == Rot4.West)
@@ -1347,55 +1350,39 @@ namespace FacialStuff
                 }
             }
 
-            /*
-            PawnExtensions.cellCostMin = Mathf.Min(pather.nextCellCostTotal, PawnExtensions.cellCostMin);
-            PawnExtensions.cellCostMax = Mathf.Max(pather.nextCellCostTotal, PawnExtensions.cellCostMax);
-
-            float costToPayThisTick = CostToPayThisTick(pather.nextCellCostTotal);
-            PawnExtensions.costToPayMin = Mathf.Min(costToPayThisTick, PawnExtensions.costToPayMin);
-            PawnExtensions.costToPayMax = Mathf.Max(costToPayThisTick, PawnExtensions.costToPayMax);
-
-            Log.ErrorOnce(pawn.LabelCap + " - " + pawn.CurJob.locomotionUrgency + " - " + numbie.ToString("N2"), Mathf.FloorToInt(
-                numbie * 100));
-            */
-            /*
-            PawnExtensions.TicksPerMoveCardinalMin = Mathf.Min(perMoveCardinal, PawnExtensions.TicksPerMoveCardinalMin);
-            PawnExtensions.TicksPerMoveCardinalMax = Mathf.Max(perMoveCardinal, PawnExtensions.TicksPerMoveCardinalMax);
-            var message = "Costs:\ncellCostMin: " + PawnExtensions.cellCostMin +
-                          "\ncellCostMax: " + PawnExtensions.cellCostMax +
-                          "\ncostToPayMin: " + PawnExtensions.costToPayMin +
-                          "\ncostToPayMax: " + PawnExtensions.costToPayMax +
-                          "\nTicksPerMoveCardinalMin: " + PawnExtensions.TicksPerMoveCardinalMin +
-                          "\nTicksPerMoveCardinalMax: " + PawnExtensions.TicksPerMoveCardinalMax;
-
-            Log.ErrorOnce(message, 1000 + Mathf.FloorToInt(PawnExtensions.cellCostMin));
-            Log.ErrorOnce(message, 2000 + Mathf.FloorToInt(PawnExtensions.cellCostMax));
-            Log.ErrorOnce(message, 3000 + Mathf.FloorToInt(PawnExtensions.costToPayMin));
-            Log.ErrorOnce(message, 4000 + Mathf.FloorToInt(PawnExtensions.costToPayMax));
-            Log.ErrorOnce(message, 5000 + Mathf.FloorToInt(PawnExtensions.TicksPerMoveCardinalMin));
-            Log.ErrorOnce(message, 6000 + Mathf.FloorToInt(PawnExtensions.TicksPerMoveCardinalMax));
-            */
-            /*
-            int y = (int)AccessTools.Method(typeof(Pawn_PathFollower), "CostToMoveIntoCell", new[] { typeof(IntVec3) })
-                .Invoke(pawn.pather, new object[] { pawn.pather.nextCell });
-            */
-
-            /*
-            Log.Message("Pawn is movinng;" + pawn.LabelCap +
-                        " total: " + pather.nextCellCostTotal +
-                        " left: " + pather.nextCellCostLeft +
-                        " float: " + costToPayThisTick +
-                        " urgency: " + pawn.CurJob.locomotionUrgency +
-                        " cell cost: " + perMoveCardinal);
-            */
             this.IsMoving = true;
             // revert the walkcycle for drafted shooters
             float cellCostFactor = pather.nextCellCostLeft / pather.nextCellCostTotal;
 
+            // if (pather.nextCellCostLeft == pather.nextCellCostTotal) // starts moving
+            // {
+            //     remainingPercent = pather.nextCellCostTotal - pather.nextCellCostLeft;
+            //     // SimpleCurve moveSpeedCurve = new()
+            //     // {
+            //     //     new CurvePoint(0, 1), // concrete, wood floor, carpets
+            //     //     new CurvePoint(1, 0.93f), // carpet, wood floor
+            //     //     new CurvePoint(2, 0.87f), // soil, rough stones
+            //     //     new CurvePoint(5, 0.72f), // tilled soil
+            //     //     // new(4, 0.xxf), // sand
+            //     //     new CurvePoint(14, 0.48f), // mud, ice
+            //     //     new CurvePoint(30, 0.3f), // shallow water
+            //     // };
+            //     // int walkSpeed = pawn.Map.terrainGrid.TerrainAt(pawn.Position).pathCost; 
+            //     // terrainModifier = moveSpeedCurve.Evaluate(walkSpeed);
+            // }
+
+            // if (movedPercent is > 0.5f and < 0.51f)
+            // {
+            // 
+            // }
+            // movedPercent *= terrainModifier;
+
+
+
             // sustainer.def.subSounds.FirstOrDefault().pitchRange = new FloatRange(cellCostFactor, cellCostFactor);
 
             bool invert = false;
-            if (CurrentRotation.IsHorizontal && CurrentRotation.FacingCell != pather.nextCell)
+            if (/*CurrentRotation.IsHorizontal &&*/ CurrentRotation.FacingCell != pather.nextCell)
             {
                 IntVec3 intVec = pather.nextCell - pawn.Position;
                 if (intVec.x > 0)
@@ -1442,12 +1429,33 @@ namespace FacialStuff
                 doSmoothWalk = false;
             }
             */
-            if (!invert)
+            // float modifiedAnimationSpeed = cellCostFactor;
+            //  modifiedAnimationSpeed *= terrainModifier;
+            // 
+            // 
+            // modifiedAnimationSpeed += remainingPercent;
+            // 
+            // if (modifiedAnimationSpeed > 1f)
+            // {
+            //     modifiedAnimationSpeed -= 1f;
+            // }
+            // 
+            // if (pather.nextCellCostLeft > 100)
+            // {
+            //     remainingPercent = terrainModifier;
+            // }
+
+
+            if (invert)
             {
                 cellCostFactor = 1f - cellCostFactor;
             }
 
+
             return cellCostFactor;
         }
+
+        private static float remainingPercent = 0f;
+        private static float terrainModifier = 1f;
     }
 }

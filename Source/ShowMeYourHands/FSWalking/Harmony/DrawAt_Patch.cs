@@ -47,7 +47,6 @@ class DrawAt_Patch
         loc.x += animator?.BodyAnim?.offCenterX ?? 0f;
         __state = loc;
         animator?.ApplyBodyWobble(ref loc, ref __state);
-        animator?.TickDrawers();
      
         if (!Find.TickManager.Paused)
         {
@@ -156,6 +155,10 @@ class DrawAt_Patch
         if (ShowMeYourHandsMod.instance.Settings.UseFeet)
         {
             animator?.DrawFeet(footAngle, __state, loc);
+        }
+        if (ShowMeYourHandsMod.instance.Settings.UsePaws )
+        {
+            animator?.DrawAnimalFeet(footAngle, __state, loc);
         }
         if (ShowMeYourHandsMod.instance.Settings.UseHands && (!ShowMeYourHandsMod.instance.Settings.ShowWhenCarry ||  pawn.carryTracker?.CarriedThing == null))
         {

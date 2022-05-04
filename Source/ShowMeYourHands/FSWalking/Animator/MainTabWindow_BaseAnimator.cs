@@ -151,18 +151,19 @@ namespace FacialStuff.AnimatorWindows
                 if (compAnimBodyAnim != null && compAnimBodyAnim.thingTarget.NullOrEmpty())
                 {
                     // ReSharper disable once PossibleNullReferenceException
-                    this.CompAnim.BodyAnim.thingTarget = pawn.def.ToString();
-                    this.CompAnim.BodyAnim.bodyDrawers = this.CompAnim.Props.bodyDrawers;
-                    this.CompAnim.BodyAnim.handTexPath = this.CompAnim.Props.handTexPath;
-                    this.CompAnim.BodyAnim.footTexPath = this.CompAnim.Props.footTexPath;
-                    //this.CompAnim.BodyAnim.footType = this.CompAnim.Props.footType;
-                    //this.CompAnim.BodyAnim.pawType = this.CompAnim.Props.pawType;
-                    this.CompAnim.BodyAnim.quadruped = this.CompAnim.Props.quadruped;
-                    this.CompAnim.BodyAnim.bipedWithHands = this.CompAnim.Props.bipedWithHands;
+                    this.CompAnim.BodyAnim.thingTarget     = pawn.def.ToString();
+                    this.CompAnim.BodyAnim.handTexPath     = this.CompAnim.Props.handTexPath;
+                    this.CompAnim.BodyAnim.footTexPath     = this.CompAnim.Props.footTexPath;
+                    //this.CompAnim.BodyAnim.footType      = this.CompAnim.Props.footType;
+                    //this.CompAnim.BodyAnim.pawType       = this.CompAnim.Props.pawType;
+                    this.CompAnim.BodyAnim.extremitySize = this.CompAnim.Props.extremitySize;
+                    this.CompAnim.BodyAnim.quadruped       = this.CompAnim.Props.quadruped;
+                    this.CompAnim.BodyAnim.bipedWithHands  = this.CompAnim.Props.bipedWithHands;
                     this.CompAnim.BodyAnim.shoulderOffsets = this.CompAnim.Props.shoulderOffsets;
-                    this.CompAnim.BodyAnim.hipOffsets = this.CompAnim.Props.hipOffsets;
-                    this.CompAnim.BodyAnim.armLength = this.CompAnim.Props.armLength;
-                    this.CompAnim.BodyAnim.extraLegLength= this.CompAnim.Props.extraLegLength;
+                    this.CompAnim.BodyAnim.hipOffsets      = this.CompAnim.Props.hipOffsets;
+                    this.CompAnim.BodyAnim.armLength       = this.CompAnim.Props.armLength;
+                    this.CompAnim.BodyAnim.extraLegLength  = this.CompAnim.Props.extraLegLength;
+                    this.CompAnim.BodyAnim.offCenterX = this.CompAnim.Props.offCenterX;
                 }
                 return this.CompAnim.BodyAnim;
             }

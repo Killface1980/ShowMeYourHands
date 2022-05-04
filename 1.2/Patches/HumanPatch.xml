@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <!--this part adds a component if not already there. pre-requisite-->
+    <operations>
+      <li Class="PatchOperationConditional">
+        <xpath>/Defs/ThingDef[defName = "Human"]/comps</xpath>
+        <success>Always</success>
+        <nomatch Class="PatchOperationAdd">
+          <xpath>/Defs/ThingDef[defName = "Human"]</xpath>
+          <value>
+            <comps />
+          </value>
+        </nomatch>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName = "Human"]/comps</xpath>
+        <value>
+          <li Class = "FacialStuff.CompProperties_BodyAnimator">
+            <!--needed for everything with hands-->
+            <bipedWithHands>true</bipedWithHands>
+            <!--which hand texture?-->
+            <!--<handType>Human</handType>-->
+            <!--custom drawers can be used here-->
+            <bodyDrawers>
+              <li Class ="FacialStuff.HumanBipedDrawer"/>
+            </bodyDrawers>
+          </li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+</Patch>

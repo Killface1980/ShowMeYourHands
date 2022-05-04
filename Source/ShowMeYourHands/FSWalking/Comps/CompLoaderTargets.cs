@@ -35,11 +35,12 @@ namespace FacialStuff
 
         public bool quadruped;
         public bool bipedWithHands;
-        public List<PawnBodyDrawer> bodyDrawers;
         [CanBeNull] public List<Vector3> hipOffsets = new();
         public List<Vector3> shoulderOffsets = new();
         public float armLength = 0f;
         public float extraLegLength = 0f;
+        public float offCenterX = 0f;
+        public float extremitySize = 1f;
 
         #endregion Public Fields
     }

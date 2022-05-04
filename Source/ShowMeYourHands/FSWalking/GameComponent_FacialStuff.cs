@@ -8,6 +8,7 @@ using Verse;
 
 namespace FacialStuff
 {
+    [ShowMeYourHandsMod.HotSwappable]
     public class GameComponent_FacialStuff : GameComponent
     {
         #region Private Fields
@@ -31,8 +32,10 @@ namespace FacialStuff
             }
 
             // todo: use BodyDef instead, target for kickstarting?
-            //this.AnimalPawnCompsBodyDefImport();
-             this.AnimalPawnCompsImportFromAnimationTargetDefs();
+            this.AnimalPawnCompsBodyDefImport();
+            
+            // this.AnimalPawnCompsImportFromAnimationTargetDefs(); // no AnimationTargetDefs defined ...
+           
             SetMainButtons();
             // BuildWalkCycles();
 
@@ -299,7 +302,6 @@ namespace FacialStuff
                         CompProperties_BodyAnimator bodyAnimator = new()
                         {
                             compClass = typeof(CompBodyAnimator),
-                            bodyDrawers = pawnSets.bodyDrawers,
                             handTexPath = pawnSets.handTexPath,
                             footTexPath = pawnSets.footTexPath,
                             hipOffsets = pawnSets.hipOffsets,
@@ -308,8 +310,10 @@ namespace FacialStuff
                             extraLegLength= pawnSets.extraLegLength,
                             // footType = pawnSets.footType,
                             // pawType = pawnSets.pawType,
+                            extremitySize = pawnSets.extremitySize,
                             quadruped = pawnSets.quadruped,
-                            bipedWithHands = pawnSets.bipedWithHands
+                            bipedWithHands = pawnSets.bipedWithHands,
+                            offCenterX = pawnSets.offCenterX
                         };
                         thingDef.comps?.Add(bodyAnimator);
 
@@ -343,19 +347,19 @@ namespace FacialStuff
 
                 CompProperties_BodyAnimator bodyAnimator = new()
                 {
-                    compClass = typeof(CompBodyAnimator),
-                    bodyDrawers = def.bodyDrawers,
-                    handTexPath = def.handTexPath,
-                    footTexPath = def.footTexPath,
-                    extremitySize = def.extremitySize,
-                    // footType = def.footType,
-                    // pawType = def.pawType,
-                    quadruped = def.quadruped,
-                    bipedWithHands = def.bipedWithHands,
+                    compClass       = typeof(CompBodyAnimator),
+                    handTexPath     = def.handTexPath,
+                    footTexPath     = def.footTexPath,
+                    extremitySize   = def.extremitySize,
+                    // footType     = def.footType,
+                    // pawType      = def.pawType,
+                    quadruped       = def.quadruped,
+                    bipedWithHands  = def.bipedWithHands,
                     shoulderOffsets = def.shoulderOffsets,
-                    hipOffsets = def.hipOffsets,
-                    armLength = def.armLength,
-                    extraLegLength = def.extraLegLength
+                    hipOffsets      = def.hipOffsets,
+                    armLength       = def.armLength,
+                    extraLegLength  = def.extraLegLength,
+                    offCenterX      = def.offCenterX
                 };
 
                 thingDef.comps?.Add(bodyAnimator);

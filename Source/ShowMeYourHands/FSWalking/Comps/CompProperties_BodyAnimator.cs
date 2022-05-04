@@ -24,8 +24,6 @@ namespace FacialStuff
 
         #region Public Fields
 
-        [NotNull] public List<PawnBodyDrawer> bodyDrawers = new();
-
         public string handTexPath = "Things/Pawn/Humanlike/Hands/Human_Hand";
         public string footTexPath = "Things/Pawn/Humanlike/Feet/Human_Foot";
         public List<Vector3> hipOffsets = new();

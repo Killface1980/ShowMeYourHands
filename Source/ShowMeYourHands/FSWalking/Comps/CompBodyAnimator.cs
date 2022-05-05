@@ -719,6 +719,10 @@ namespace FacialStuff
         public void DrawHands(float bodyAngle, Vector3 drawPos,
             Thing carriedThing = null, bool flip = false)
         {
+            if (!IsInitialized)
+            {
+                return;
+            }
             if (this.ShouldBeIgnored())
             {
                 return;
@@ -730,7 +734,9 @@ namespace FacialStuff
                 return;
             }
 
-            if (!this.BodyAnim.bipedWithHands)
+
+            BodyAnimDef bodyAnimDef = this.BodyAnim;
+            if (bodyAnimDef is not { bipedWithHands: true })
             {
                 return;
             }
@@ -1049,7 +1055,7 @@ namespace FacialStuff
                 Vector3 position = Vector3.zero;
                 bool noTween = carrying || pawn.Aiming();
                 if (this.BodyStat.HandRight == PartStatus.Missing &&
-                    MainHandPosition != Vector3.zero && ignoreRight)
+                    MainHandPosition != Vector3.zero && !ignoreRight)
                 {
                     quat = Quaternion.AngleAxis(this.MainHandAngle - 90f, Vector3.up);
                     position = MainHandPosition;
@@ -1059,7 +1065,7 @@ namespace FacialStuff
                     }
                     noTween = true;
                 }
-                else if ((hasSecondWeapon || offHandPosition != Vector3.zero && pawnIsAiming) && !ignoreLeft) // only draw he second hand on weapon while aiming
+                else if (!ignoreLeft && offHandPosition != Vector3.zero && (hasSecondWeapon || pawnIsAiming)) // only draw he second hand on weapon while aiming
                 {
                     position = offHandPosition;
                     quat = Quaternion.AngleAxis(this.OffHandAngle - 90f, Vector3.up);
@@ -1269,7 +1275,7 @@ namespace FacialStuff
         }
 
         public const float OffsetGroundZ = -0.575f;
-
+        public bool IsInitialized = false;
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
@@ -1453,6 +1459,7 @@ namespace FacialStuff
         {
             base.CompTick();
             this.SelectWalkcycle(false);
+            this.IsInitialized = true;
         }
 
         public Material LeftHandShadowMat => OverrideMaterialIfNeeded(this.pawnBodyGraphic

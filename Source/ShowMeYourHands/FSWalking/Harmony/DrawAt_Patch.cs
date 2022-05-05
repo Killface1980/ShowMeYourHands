@@ -109,7 +109,7 @@ class DrawAt_Patch
         CompBodyAnimator animator = animatorDict[___pawn];
 
 
-        if (animator == null)
+        if (animator == null || !animator.IsInitialized)
         {
             return;
 

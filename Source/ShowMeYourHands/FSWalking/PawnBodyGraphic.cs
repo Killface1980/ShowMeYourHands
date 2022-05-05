@@ -70,6 +70,8 @@ namespace FacialStuff.GraphicsFS
                                                      this.InitializeGraphicsHand();
 
                                                      this.InitializeGraphicsFrontPaws();
+
+                                                   //  this.CompAni.IsInitialized = true;
                                                  });
         }
 

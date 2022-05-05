@@ -6,11 +6,13 @@ using ShowMeYourHands.FSWalking.Animator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 
 namespace FacialStuff.AnimatorWindows
 {
+    [ShowMeYourHandsMod.HotSwappable]
     public class MainTabWindow_BaseAnimator : MainTabWindow
     {
         #region Public Fields
@@ -300,7 +302,7 @@ namespace FacialStuff.AnimatorWindows
 
         protected virtual void SetKeyframes()
         {
-            PawnKeyframes = new List<PawnKeyframe> { new PawnKeyframe() };
+            PawnKeyframes = new List<PawnKeyframe> { new() };
         }
 
         #endregion Public Methods
@@ -436,17 +438,29 @@ namespace FacialStuff.AnimatorWindows
 
         protected virtual void FindRandomPawn()
         {
-            Thing selectedThing = Find.Selector.SingleSelectedThing;
-            if (selectedThing != null && selectedThing is Pawn pawn && pawn.HasCompAnimator())
+            Pawn selectedThing = Find.Selector.SelectedPawns.FirstOrDefault();
+            if (selectedThing != null)
             {
-                MainTabWindow_BaseAnimator.pawn = pawn;
+                Log.Message("FS :: " + selectedThing.def);
+
+                if (!selectedThing.HasCompAnimator())
+                {
+                    string defaultName = "BodyAnimDef_" + selectedThing.def.defName + "_" + selectedThing.story != null? selectedThing.story.bodyType.ToString() : "Undefined";
+                    BodyAnimDef BodyAnim = new() { defName = defaultName, label = defaultName, thingTarget = selectedThing.def.ToString() };
+                    DefDatabase<BodyAnimDef>.Add(BodyAnim);
+
+                    RimWorld_MainMenuDrawer_MainMenuOnGUI.AddCompBaToThingDef(BodyAnim);
+                    Log.Message("FS :: added "+ BodyAnim.defName + " to " + selectedThing.def);
+                }
+                MainTabWindow_BaseAnimator.pawn = selectedThing;
+                MainTabWindow_BaseAnimator.pawn?.GetCompAnim(out this.CompAnim);
             }
             else
             {
                 MainTabWindow_BaseAnimator.pawn = Find.AnyPlayerHomeMap.PlayerPawnsForStoryteller.FirstOrDefault(x => x.HasCompAnimator());
+            MainTabWindow_BaseAnimator.pawn?.GetCompAnim(out this.CompAnim);
             }
 
-            MainTabWindow_BaseAnimator.pawn?.GetCompAnim(out this.CompAnim);
         }
 
         protected static void ReIndexKeyframes()

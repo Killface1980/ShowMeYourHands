@@ -20,7 +20,10 @@ namespace FacialStuff
     {
         private const float animationFactorForSmoothing = 0.5f;
 
+        public bool IsAlien = false;
+
         #region Public Fields
+
         public JointLister GetJointPositions(JointType jointType, Vector3 offsets,
                                                 float jointWidth,
                                         bool carrying = false, bool armed = false)
@@ -221,7 +224,7 @@ namespace FacialStuff
             else
             {
                 rightFoot.z = offsetZ.Evaluate(percent);
-                leftFoot.z  = offsetZ.Evaluate(percentInverse);
+                leftFoot.z = offsetZ.Evaluate(percentInverse);
                 offsetJoint = 0;
             }
         }
@@ -388,7 +391,6 @@ namespace FacialStuff
         [NotNull]
         public Pawn pawn => this.parent as Pawn;
 
-
         public CompProperties_BodyAnimator Props => (CompProperties_BodyAnimator)this.props;
 
         #endregion Public Properties
@@ -493,8 +495,6 @@ namespace FacialStuff
                 return;
             }
 
-
-
             /*
             /// No feet while sitting at a table
             Job curJob = this.pawn.CurJob;
@@ -542,12 +542,12 @@ namespace FacialStuff
                                                            body.hipOffsets[rot.AsInt],
                                                            body.hipOffsets[Rot4.North.AsInt].x);
 
-            Vector3 rightFootCycle      = Vector3.zero;
-            Vector3 leftFootCycle       = Vector3.zero;
-            float footAngleRight        = 0;
-            float footAngleLeft         = 0;
-            float offsetJoint           = 0;
-            WalkCycleDef cycle          = this.CurrentWalkCycle;
+            Vector3 rightFootCycle = Vector3.zero;
+            Vector3 leftFootCycle  = Vector3.zero;
+            float footAngleRight   = 0;
+            float footAngleLeft    = 0;
+            float offsetJoint      = 0;
+            WalkCycleDef cycle     = this.CurrentWalkCycle;
 
             if (this.IsMoving && cycle != null)
             {
@@ -580,7 +580,6 @@ namespace FacialStuff
             */
             (matRight, matLeft) = GetMaterialFor(this.pawnBodyGraphic?.FootGraphicRight, this.pawnBodyGraphic?.FootGraphicLeft, this.pawnBodyGraphic?.FootGraphicRightShadow, this.pawnBodyGraphic?.FootGraphicLeftShadow);
 
-
             bool drawRight = matRight != null && this.BodyStat.FootRight != PartStatus.Missing;
             bool drawLeft  = matLeft != null && this.BodyStat.FootLeft != PartStatus.Missing;
 
@@ -591,9 +590,7 @@ namespace FacialStuff
 
             // rootLoc.y -= Offsets.YOffset_CarriedThing; // feet pop out in front of other pawns
 
-
             Vector3 ground = rootLoc + new Vector3(0, 0, OffsetGroundZ).RotatedBy(drawAngle) * bodysizeScaling;
-
 
             if (drawLeft)
             {
@@ -688,28 +685,31 @@ namespace FacialStuff
                 matRight = OverrideMaterialIfNeeded(graphicRight?.MatAt(rot));
                 matLeft = OverrideMaterialIfNeeded(graphicLeft?.MatAt(rot));
             }
-            else switch (rot.AsInt)
+            else
             {
-                default:
-                    matRight = OverrideMaterialIfNeeded(graphicRight?.MatAt(rot));
-                    matLeft  = OverrideMaterialIfNeeded(graphicLeft?.MatAt(rot));
-                    break;
-                
-                case 0:
-                    matRight = OverrideMaterialIfNeeded(graphicRightShadow?.MatAt(rot));
-                    matLeft  = OverrideMaterialIfNeeded(graphicLeftShadow?.MatAt(rot));
-                    break;
-                
-                case 1:
-                    matRight = OverrideMaterialIfNeeded(graphicRight?.MatAt(rot));
-                    matLeft  = OverrideMaterialIfNeeded(graphicLeftShadow?.MatAt(rot));
-                    break;
+                switch (rot.AsInt)
+                {
+                    default:
+                        matRight = OverrideMaterialIfNeeded(graphicRight?.MatAt(rot));
+                        matLeft = OverrideMaterialIfNeeded(graphicLeft?.MatAt(rot));
+                        break;
 
-                case 3:
+                    case 0:
+                        matRight = OverrideMaterialIfNeeded(graphicRightShadow?.MatAt(rot));
+                        matLeft = OverrideMaterialIfNeeded(graphicLeftShadow?.MatAt(rot));
+                        break;
 
-                    matRight = OverrideMaterialIfNeeded(graphicRightShadow?.MatAt(rot));
-                    matLeft  = OverrideMaterialIfNeeded(graphicLeft?.MatAt(rot));
-                    break;
+                    case 1:
+                        matRight = OverrideMaterialIfNeeded(graphicRight?.MatAt(rot));
+                        matLeft = OverrideMaterialIfNeeded(graphicLeftShadow?.MatAt(rot));
+                        break;
+
+                    case 3:
+
+                        matRight = OverrideMaterialIfNeeded(graphicRightShadow?.MatAt(rot));
+                        matLeft = OverrideMaterialIfNeeded(graphicLeft?.MatAt(rot));
+                        break;
+                }
             }
 
             return (matRight, matLeft);
@@ -735,8 +735,6 @@ namespace FacialStuff
                 return;
             }
 
-
-
             float bodySizeScaling = GetBodysizeScaling();
 
             this.MainHandPosition = this.SecondHandPosition = Vector3.zero;
@@ -748,7 +746,8 @@ namespace FacialStuff
             bool rightHandFlipped = false;
             bool carriesWeaponOpenly = false;
 
-            if (eq != null && pawn?.CurJob?.def != null && !pawn.CurJob.def.neverShowWeapon)
+            Job curJob = pawn?.CurJob;
+            if (eq != null && curJob?.def != null && !curJob.def.neverShowWeapon)
             {
                 Type baseType = pawn.Drawer.renderer.GetType();
                 MethodInfo methodInfo = baseType.GetMethod("CarryWeaponOpenly", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -759,7 +758,6 @@ namespace FacialStuff
                     carriesWeaponOpenly = true;
                 }
             }
-            var curJob = pawn?.CurJob;
 
             bool carrying = carriedThing != null;
             bool isEating = false;
@@ -773,11 +771,9 @@ namespace FacialStuff
                 }
             }
 
-
             if (this.CurrentRotation != Rot4.North)
             {
                 // drawPos.y += 0.03474903f;
-
             }
             if (carrying && !isEating)
             {
@@ -826,7 +822,6 @@ namespace FacialStuff
                 poschanged = true;
             }
 
-
             JointLister shoulperPos = this.GetJointPositions(JointType.Shoulder,
                 body.shoulderOffsets[rot.AsInt],
                 body.shoulderOffsets[Rot4.North.AsInt].x,
@@ -854,7 +849,6 @@ namespace FacialStuff
                     MainHandPosition = props.MainHand;
                     mainHandAngle = props.MainHandAngle + carriedThing.def.equippedAngleOffset;
                 }
-
                 else */
                 if (!this.IsMoving)
                 {
@@ -865,8 +859,6 @@ namespace FacialStuff
                         float step = 0.025f;
                         handVector = Vector3.MoveTowards(handVector, this.pawn.DrawPos, step);
                     }
-
-
 
                     // carriedThing.DrawAt(drawPos, flip);
                     handVector.y = drawPos.y;
@@ -880,15 +872,12 @@ namespace FacialStuff
                     drawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
                     shoulperPosLeftJoint.x -= animationPosOffset.z * 0.75f;
                     shoulperPosRightJoint.x -= animationPosOffset.z * 0.75f;
-
                 }
                 if (isFacingNorth) // put the hands behind the pawn
                 {
                     drawPos.y = Offsets.YOffset_Behind;
                 }
-
             }
-
 
             List<float> handSwingAngle = new() { 0f, 0f };
             float shoulderAngle = 0f;
@@ -913,12 +902,11 @@ namespace FacialStuff
 
             // this.DoAttackAnimationHandOffsets(ref handSwingAngle, ref rightHand, false);
 
+
+
             this.GetBipedMesh(out Mesh handMeshRight, out Mesh handMeshLeft, rightHandFlipped, leftHandFlipped);
 
-            Material matLeft;
-            Material matRight;
-            (matRight, matLeft) = GetMaterialFor(this.pawnBodyGraphic?.HandGraphicRight, this.pawnBodyGraphic?.HandGraphicLeft, this.pawnBodyGraphic?.HandGraphicRightShadow, this.pawnBodyGraphic?.HandGraphicLeftShadow, carrying);
-
+            (Material matRight, Material matLeft) = GetMaterialFor(this.pawnBodyGraphic?.HandGraphicRight, this.pawnBodyGraphic?.HandGraphicLeft, this.pawnBodyGraphic?.HandGraphicRightShadow, this.pawnBodyGraphic?.HandGraphicLeftShadow, carrying);
 
             /*if (MainTabWindow_BaseAnimator.Colored)
             {
@@ -943,78 +931,50 @@ namespace FacialStuff
 
             //float shouldRotate = pawn.GetPosture() == PawnPosture.Standing ? 0f : 90f;
 
-            if (drawLeft)
-            {
-                Quaternion quat;
-                Vector3 position = Vector3.zero;
-                bool noTween = carrying || pawn.Aiming();
-                if (this.BodyStat.HandRight == PartStatus.Missing &&
-                    MainHandPosition != Vector3.zero)
-                {
-                    quat = Quaternion.AngleAxis(this.MainHandAngle - 90f, Vector3.up);
-                    position = MainHandPosition;
-                    if (CurrentRotation == Rot4.West) // put the second hand behind while turning right
-                    {
-                        //  quat *= Quaternion.AngleAxis(180f, Vector3.up);
-                    }
-                    if (rightBehind)
-                    {
-                        matRight = this.RightHandShadowMat;
-                    }
-
-                    noTween = true;
-                }
-                else if (hasSecondWeapon || offHandPosition != Vector3.zero && pawn.stances.curStance is Stance_Busy stance_Busy && !stance_Busy.neverAimWeapon && stance_Busy.focusTarg.IsValid) // only draw he second hand on weapon while aiming
-                {
-                    position = offHandPosition;
-                    quat = Quaternion.AngleAxis(this.OffHandAngle - 90f, Vector3.up);
-                    if (CurrentRotation == Rot4.East) // put the second hand behind while turning right
-                    {
-                        // quat *= Quaternion.AngleAxis(180f, Vector3.up);
-                    }
-
-                    if (leftBehind)
-                    {
-                        matLeft = this.LeftHandShadowMat;
-                    }
-                    noTween = true;
-                }
-                else
-                {
-                    shoulperPosLeftJoint = shoulperPosLeftJoint.RotatedBy(bodyAngle);
-                    leftHandVector = leftHandVector.RotatedBy(bodyAngle - handSwingAngle[0] - shoulderAngle + animationAngle);
-
-                    position = drawPos + (shoulperPosLeftJoint + leftHandVector) * bodySizeScaling;
-                    if (carrying && !isEating) // grabby angle
-                    {
-                        quat = Quaternion.AngleAxis(bodyAngle + 105f, Vector3.up);
-                    }
-                    else
-                    {
-                        quat = Quaternion.AngleAxis(bodyAngle - handSwingAngle[0] - shoulderAngle, Vector3.up);
-                    }
-                    quat *= Quaternion.AngleAxis(animationAngle * 1.25f, Vector3.up);
-
-                }
-
-                TweenThing handLeft = TweenThing.HandLeft;
-
-                //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
-                noTween = true;
-                this.DrawTweenedHand(position, handMeshLeft, matLeft, quat, handLeft, noTween);
-                //GenDraw.DrawMeshNowOrLater(
-                //                           handMeshLeft, position,
-                //                           quat,
-                //                           matLeft,
-                //                           portrait);
-            }
+            bool pawnIsAiming = pawn.stances.curStance is Stance_Busy stance_Busy && !stance_Busy.neverAimWeapon &&
+                                stance_Busy.focusTarg.IsValid;
+            bool ignoreRight = false;
+            ThingWithComps thingWithComps = this.pawn.equipment.Primary;
 
             if (drawRight)
             {
                 Quaternion quat;
                 Vector3 position;
                 bool noTween = carrying || pawn.Aiming();
-                if (MainHandPosition != Vector3.zero)
+                
+
+                if (this.IsMoving)
+                {
+                    if (!pawnIsAiming && carriesWeaponOpenly && (!hasSecondWeapon || offHandPosition != Vector3.zero))
+                    {
+                        if (thingWithComps != null)
+                        {
+                            ShowMeYourHandsMain.rightHandLocations[thingWithComps] = new Tuple<Vector3, float>(
+                                GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector,
+                                    handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - MainHandPosition, handSwingAngle[1]);
+                            ignoreRight = true;
+                        }
+                    }
+                    else
+                    {
+                        if (thingWithComps != null)
+                        {
+                            ShowMeYourHandsMain.rightHandLocations[thingWithComps] =
+                                new Tuple<Vector3, float>(Vector3.zero, 0f);
+                            ignoreRight = false;
+                        }                }
+                }
+                else
+                {
+                    if (thingWithComps != null)
+                    {
+                        ShowMeYourHandsMain.rightHandLocations[thingWithComps] =
+                            new Tuple<Vector3, float>(Vector3.zero, 0f);
+                        ignoreRight = false;
+                    }
+                }
+
+                if (MainHandPosition != Vector3.zero && !ignoreRight)
                 {
                     quat = Quaternion.AngleAxis(this.MainHandAngle - 90f + mainHandAngle, Vector3.up);
                     position = MainHandPosition;
@@ -1029,12 +989,9 @@ namespace FacialStuff
 
                     noTween = true;
                 }
-                else
+                else // standard
                 {
-                    shoulperPosRightJoint = shoulperPosRightJoint.RotatedBy(bodyAngle);
-                    rightHandVector = rightHandVector.RotatedBy(bodyAngle + handSwingAngle[1] - shoulderAngle + animationAngle);
-
-                    position = drawPos + (shoulperPosRightJoint + rightHandVector) * bodySizeScaling;
+                    position = GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
                     if (carrying && !isEating) // grabby angle
                     {
                         quat = Quaternion.AngleAxis(bodyAngle - 115f, Vector3.up);
@@ -1061,6 +1018,92 @@ namespace FacialStuff
                 //                            matRight,
                 //                            portrait);
             }
+
+            if (drawLeft)
+            {
+                bool ignoreLeft = false;
+                List<ThingWithComps> listForReading = pawn.equipment.AllEquipmentListForReading;
+                if (hasSecondWeapon && listForReading != null && listForReading.Count == 2)
+                {
+                    ThingWithComps thing = (from weapon in listForReading
+                                            where pawn.equipment?.Primary != null && weapon != pawn.equipment.Primary
+                                            select weapon).First();
+                    if ( thing != null)
+                    {
+                        if (this.IsMoving && !pawnIsAiming && carriesWeaponOpenly)
+                        {
+                            ShowMeYourHandsMain.leftHandLocations[thing] = new Tuple<Vector3, float>(
+                                GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector,
+                                    handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - offHandPosition,
+                                handSwingAngle[0]);
+                            ignoreLeft = true;
+                        }
+                        else
+                        {
+                            ShowMeYourHandsMain.leftHandLocations[thing] = new Tuple<Vector3, float>(Vector3.zero, 0f);
+                        }
+                    }
+                }
+
+                Quaternion quat;
+                Vector3 position = Vector3.zero;
+                bool noTween = carrying || pawn.Aiming();
+                if (this.BodyStat.HandRight == PartStatus.Missing &&
+                    MainHandPosition != Vector3.zero && ignoreRight)
+                {
+                    quat = Quaternion.AngleAxis(this.MainHandAngle - 90f, Vector3.up);
+                    position = MainHandPosition;
+                    if (CurrentRotation == Rot4.West) // put the second hand behind while turning right
+                    {
+                        //  quat *= Quaternion.AngleAxis(180f, Vector3.up);
+                    }
+                    noTween = true;
+                }
+                else if ((hasSecondWeapon || offHandPosition != Vector3.zero && pawnIsAiming) && !ignoreLeft) // only draw he second hand on weapon while aiming
+                {
+                    position = offHandPosition;
+                    quat = Quaternion.AngleAxis(this.OffHandAngle - 90f, Vector3.up);
+                    if (CurrentRotation == Rot4.East) // put the second hand behind while turning right
+                    {
+                        // quat *= Quaternion.AngleAxis(180f, Vector3.up);
+                    }
+
+                    if (leftBehind)
+                    {
+                        matLeft = this.LeftHandShadowMat;
+                    }
+                    noTween = true;
+                }
+                else // standard
+                {
+                    position = GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
+                    if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal) // pawn has free left hand
+                    {
+                        position.y = ShowMeYourHandsMain.weaponLocations[thingWithComps].Item1.y - 0.01f;
+                    }
+                    if (carrying && !isEating) // grabby angle
+                    {
+                        quat = Quaternion.AngleAxis(bodyAngle + 105f, Vector3.up);
+                    }
+                    else
+                    {
+                        quat = Quaternion.AngleAxis(bodyAngle - handSwingAngle[0] - shoulderAngle, Vector3.up);
+                    }
+                    quat *= Quaternion.AngleAxis(animationAngle * 1.25f, Vector3.up);
+                }
+
+                TweenThing handLeft = TweenThing.HandLeft;
+
+                //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
+                noTween = true;
+                this.DrawTweenedHand(position, handMeshLeft, matLeft, quat, handLeft, noTween);
+                //GenDraw.DrawMeshNowOrLater(
+                //                           handMeshLeft, position,
+                //                           quat,
+                //                           matLeft,
+                //                           portrait);
+            }
+
             /*
             if (MainTabWindow_BaseAnimator.Develop)
             {
@@ -1086,6 +1129,26 @@ namespace FacialStuff
                                            false);
             }
             */
+        }
+
+        private static Vector3 GetRightHandPosition(float bodyAngle, Vector3 drawPos, Vector3 shoulperPosRightJoint,
+            Vector3 rightHandVector, List<float> handSwingAngle, float shoulderAngle, float animationAngle, float bodySizeScaling)
+        {
+            Vector3 position;
+            shoulperPosRightJoint = shoulperPosRightJoint.RotatedBy(bodyAngle);
+            rightHandVector = rightHandVector.RotatedBy(bodyAngle + handSwingAngle[1] - shoulderAngle + animationAngle);
+            position = drawPos + (shoulperPosRightJoint + rightHandVector) * bodySizeScaling;
+            return position;
+        }
+
+        private static Vector3 GetLeftHandPosition(float bodyAngle, Vector3 drawPos, Vector3 shoulperPosLeftJoint, Vector3 leftHandVector,
+            List<float> handSwingAngle, float shoulderAngle, float animationAngle, float bodySizeScaling)
+        {
+            Vector3 position;
+            shoulperPosLeftJoint = shoulperPosLeftJoint.RotatedBy(bodyAngle);
+            leftHandVector = leftHandVector.RotatedBy(bodyAngle - handSwingAngle[0] - shoulderAngle + animationAngle);
+            position = drawPos + (shoulperPosLeftJoint + leftHandVector) * bodySizeScaling;
+            return position;
         }
 
         // public override string CompInspectStringExtra()
@@ -1167,6 +1230,7 @@ namespace FacialStuff
 
             Graphics.DrawMesh(handsMesh, position, quat, material, 0);
         }
+
         public bool ShouldBeIgnored()
         {
             return this.pawn.Dead || !this.pawn.Spawned || this.pawn.InContainerEnclosed;
@@ -1203,6 +1267,7 @@ namespace FacialStuff
             //   Scribe_Values.Look(ref this._lastRoomCheck, "lastRoomCheck");
             // Scribe_Values.Look(ref this.PawnBodyGraphic, "PawnBodyGraphic");
         }
+
         public const float OffsetGroundZ = -0.575f;
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
@@ -1259,7 +1324,10 @@ namespace FacialStuff
         public void SetBodyAngle()
         {
             WalkCycleDef walkCycle = this.CurrentWalkCycle;
-            if (walkCycle == null) return;
+            if (walkCycle == null)
+            {
+                return;
+            }
 
             float movedPercent = this.MovedPercent;
 
@@ -1281,14 +1349,21 @@ namespace FacialStuff
                 }
             }
         }
+
         public void SelectWalkcycle(bool pawnInEditor)
         {
-            if (pawn.pather == null || Math.Abs(pawn.pather.nextCellCostTotal - this.currentCellCostTotal) == 0f) return;
-         
+            if (pawn.pather == null || Math.Abs(pawn.pather.nextCellCostTotal - this.currentCellCostTotal) == 0f)
+            {
+                return;
+            }
+
             if (pawn.RaceProps.Animal)
             {
                 if (BodyAnim != null)
+                {
                     this.SetWalkCycle(BodyAnim.walkCycles.FirstOrDefault().Value);
+                }
+
                 return;
             }
             /*
@@ -1306,13 +1381,16 @@ namespace FacialStuff
 
             Dictionary<LocomotionUrgency, WalkCycleDef> cycles = BodyAnim?.walkCycles;
 
-            if (cycles.NullOrEmpty()) return;
+            if (cycles.NullOrEmpty())
+            {
+                return;
+            }
 
             LocomotionUrgency locomotionUrgency = LocomotionUrgency.Walk;
 
             int moves = pawn.pather.nextCell.z == pawn.Position.z ? pawn.TicksPerMoveCardinal : pawn.TicksPerMoveDiagonal;
 
-            float pawnSpeedPerTick = moves / currentCellCostTotal; // 
+            float pawnSpeedPerTick = moves / currentCellCostTotal; //
             pawnSpeedPerTick *= Mathf.InverseLerp(100, -100, currentCellCostTotal) * 2.25f;
 
             if (pawnSpeedPerTick > 1f)
@@ -1346,8 +1424,10 @@ namespace FacialStuff
 
                         List<SubSoundDef> subSounds = this.sustainer?.def?.subSounds;
                         if (!subSounds.NullOrEmpty())
+                        {
                             subSounds.FirstOrDefault().pitchRange =
-                                new(number, number);
+                                new FloatRange(number, number);
+                        }
                     }
                 }
             }
@@ -1368,12 +1448,12 @@ namespace FacialStuff
             {
             }
         }
+
         public override void CompTick()
         {
             base.CompTick();
             this.SelectWalkcycle(false);
         }
-
 
         public Material LeftHandShadowMat => OverrideMaterialIfNeeded(this.pawnBodyGraphic
             ?.HandGraphicLeftShadow?.MatSingle);
@@ -1408,7 +1488,6 @@ namespace FacialStuff
 
         public Vector3 LastEqPos = Vector3.zero;
 
-
         public void ApplyEquipmentWobble(ref Vector3 rootLoc)
         {
             if (this.IsMoving)
@@ -1427,14 +1506,11 @@ namespace FacialStuff
             // cannot move root pos so the stuff below not working
         }
 
-
         private Material OverrideMaterialIfNeeded(Material original, bool portrait = false)
         {
             Material baseMat = ((!portrait && this.pawn.IsInvisible()) ? InvisibilityMatPool.GetInvisibleMat(original) : original);
             return this.pawn.Drawer.renderer.graphics.flasher.GetDamagedMat(baseMat);
         }
-
-
 
         public enum aniType
         { none, doSomeThing, social, smash, idle, gameCeremony, crowd, solemn }
@@ -1532,13 +1608,31 @@ namespace FacialStuff
                 case "Vomit":
                     tick = (Find.TickManager.TicksGame + IdTick) % 200;
                     if (!PawnExtensions.Ani(ref tick, 25, ref angle, 15f, 35f, -1f, ref pos, rot))
+                    {
                         if (!PawnExtensions.Ani(ref tick, 25, ref angle, 35f, 25f, -1f, ref pos, rot))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 25, ref angle, 25f, 35f, -1f, ref pos, rot))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 25, ref angle, 35f, 25f, -1f, ref pos, rot))
+                                {
                                     if (!PawnExtensions.Ani(ref tick, 25, ref angle, 25f, 35f, -1f, ref pos, rot))
+                                    {
                                         if (!PawnExtensions.Ani(ref tick, 25, ref angle, 35f, 25f, -1f, ref pos, rot))
+                                        {
                                             if (!PawnExtensions.Ani(ref tick, 25, ref angle, 25f, 35f, -1f, ref pos, rot))
-                                                if (!PawnExtensions.Ani(ref tick, 25, ref angle, 35f, 15f, -1f, ref pos, rot)) ;
+                                            {
+                                                if (!PawnExtensions.Ani(ref tick, 25, ref angle, 35f, 15f, -1f, ref pos, rot))
+                                                {
+                                                    ;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     break;
 
                 case "Clean":
@@ -1554,9 +1648,18 @@ namespace FacialStuff
                     if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 150))
                     {
                         if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 5f, -1f, ref pos, Vector3.zero, new Vector3(0.05f, 0f, 0f), rot))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 50, ref angle, 5f, 10f, -1f, ref pos, new Vector3(0.05f, 0f, 0f), new Vector3(0.05f, 0f, 0f), rot))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 50, ref angle, 10, 10f, -1f, ref pos, new Vector3(0.05f, 0f, 0f), new Vector3(0.05f, 0f, 0f), rot))
-                                    if (!PawnExtensions.Ani(ref tick, 40, ref angle, 10f, 0f, -1f, ref pos, new Vector3(0.05f, 0f, 0f), Vector3.zero, rot)) ;
+                                {
+                                    if (!PawnExtensions.Ani(ref tick, 40, ref angle, 10f, 0f, -1f, ref pos, new Vector3(0.05f, 0f, 0f), Vector3.zero, rot))
+                                    {
+                                        ;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     break;
@@ -1600,7 +1703,10 @@ namespace FacialStuff
                     tick = (Find.TickManager.TicksGame + IdTick) % 60;
                     if (!PawnExtensions.Ani(ref tick, 30, ref angle, 10f, -20f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
                     {
-                        if (!PawnExtensions.Ani(ref tick, 30, ref angle, -20f, 10f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot)) ;
+                        if (!PawnExtensions.Ani(ref tick, 30, ref angle, -20f, 10f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
+                        {
+                            ;
+                        }
                     }
                     break;
 
@@ -1608,7 +1714,10 @@ namespace FacialStuff
                     tick = (Find.TickManager.TicksGame + IdTick) % 60;
                     if (!PawnExtensions.Ani(ref tick, 30, ref angle, 10f, -20f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
                     {
-                        if (!PawnExtensions.Ani(ref tick, 30, ref angle, -20f, 10f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot)) ;
+                        if (!PawnExtensions.Ani(ref tick, 30, ref angle, -20f, 10f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
+                        {
+                            ;
+                        }
                     }
                     break;
 
@@ -1644,8 +1753,16 @@ namespace FacialStuff
                     tick = (Find.TickManager.TicksGame + IdTick) % 50;
 
                     if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 35))
+                    {
                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, 0f, 10f, -1f, ref pos, rot))
-                            if (!PawnExtensions.Ani(ref tick, 10, ref angle, 10f, 0f, -1f, ref pos, rot)) ;
+                        {
+                            if (!PawnExtensions.Ani(ref tick, 10, ref angle, 10f, 0f, -1f, ref pos, rot))
+                            {
+                                ;
+                            }
+                        }
+                    }
+
                     break;
 
                 case "CutPlant": // 식물 베기
@@ -1689,14 +1806,33 @@ namespace FacialStuff
                     tick = (Find.TickManager.TicksGame + IdTick) % 150;
                     f = 0.03f;
                     if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 15f, -1f, ref pos, Vector3.zero, new Vector3(0f, 0f, 0f), rot))
+                    {
                         if (!PawnExtensions.Ani(ref tick, 10, ref angle, 15f, 0f, -1f, ref pos, Vector3.zero, new Vector3(0f, 0f, 0f), rot))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 0f, -1f, ref pos, Vector3.zero, new Vector3(0f, 0f, f), rot))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, f), new Vector3(0f, 0f, -f), rot))
+                                {
                                     if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, -f), new Vector3(0f, 0f, f), rot))
+                                    {
                                         if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, f), new Vector3(0f, 0f, -f), rot))
+                                        {
                                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, -f), new Vector3(0f, 0f, f), rot))
+                                            {
                                                 if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, f), new Vector3(0f, 0f, -f), rot))
-                                                    if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, -f), new Vector3(0f, 0f, f), rot)) ;
+                                                {
+                                                    if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, -f), new Vector3(0f, 0f, f), rot))
+                                                    {
+                                                        ;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     break;
             }
@@ -1709,8 +1845,15 @@ namespace FacialStuff
                     if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 300))
                     {
                         if (!PawnExtensions.Ani(ref tick, 30, ref angle, 0f, 15f, -1f, ref pos, Vector3.zero, Vector3.zero, rot))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 300, ref angle, 15f, 15f, -1f, ref pos, Vector3.zero, Vector3.zero, rot))
-                                if (!PawnExtensions.Ani(ref tick, 30, ref angle, 15f, 0f, -1f, ref pos, Vector3.zero, Vector3.zero, rot)) ;
+                            {
+                                if (!PawnExtensions.Ani(ref tick, 30, ref angle, 15f, 0f, -1f, ref pos, Vector3.zero, Vector3.zero, rot))
+                                {
+                                    ;
+                                }
+                            }
+                        }
                     }
                     break;
 
@@ -1723,8 +1866,11 @@ namespace FacialStuff
                     if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 20))
                     {
                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, 0f, 10f, -1f, ref pos, r))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 10f, 10f, -1f, ref pos, r))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 5, ref angle, 10f, -10f, -1f, ref pos, r))
+                                {
                                     if (!PawnExtensions.Ani(ref tick, 20, ref angle, -10f, -10f, -1f, ref pos, r))
                                     {
                                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, -10f, 0f, -1f, ref pos, r))
@@ -1735,18 +1881,31 @@ namespace FacialStuff
                                                 tr = rot;
                                                 if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, rot)) // 105
 
+                                                {
                                                     if (t2 >= total)
                                                     {
                                                         if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0.60f), rot))
-                                                            if (!PawnExtensions.Ani(ref tick, 13, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.60f), new Vector3(0f, 0f, 0f), rot, PawnExtensions.tweenType.line)) ;
+                                                        {
+                                                            if (!PawnExtensions.Ani(ref tick, 13, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.60f), new Vector3(0f, 0f, 0f), rot, PawnExtensions.tweenType.line))
+                                                            {
+                                                                ;
+                                                            }
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 33)) ;
+                                                        if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 33))
+                                                        {
+                                                            ;
+                                                        }
                                                     }
+                                                }
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
                     }
 
                     rot = tr;
@@ -1763,7 +1922,9 @@ namespace FacialStuff
                     {
                         if (!PawnExtensions.Ani(ref tick, 13, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.60f), new Vector3(0f, 0f, 0f), rot, PawnExtensions.tweenType.line))
 
+                        {
                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0.60f), rot))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 13, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.60f), new Vector3(0f, 0f, 0f), rot, PawnExtensions.tweenType.line))
                                 {
                                     rot = PawnExtensions.Rot90b(rot);
@@ -1772,19 +1933,30 @@ namespace FacialStuff
                                         rot = PawnExtensions.Rot90b(rot);
                                         if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
 
+                                        {
                                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0.60f), rot))
+                                            {
                                                 if (!PawnExtensions.Ani(ref tick, 13, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.60f), new Vector3(0f, 0f, 0f), rot, PawnExtensions.tweenType.line))
+                                                {
                                                     if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
                                                     {
                                                         rot = PawnExtensions.Rot90b(rot);
                                                         if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
                                                         {
                                                             rot = PawnExtensions.Rot90b(rot);
-                                                            if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot)) ;
+                                                            if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
+                                                            {
+                                                                ;
+                                                            }
                                                         }
                                                     }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
+                            }
+                        }
                     }
 
                     break;
@@ -1794,13 +1966,31 @@ namespace FacialStuff
                     f = 4.5f;
                     r = PawnExtensions.Rot90(rot);
                     if (!PawnExtensions.Ani(ref tick, 500, ref angle, 0f, 0f, -1f, ref pos, r))
+                    {
                         if (!PawnExtensions.Ani(ref tick, 25, ref angle, 0f, f, -1f, ref pos, r))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 50, ref angle, f, -f, -1f, ref pos, r))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 50, ref angle, -f, f, -1f, ref pos, r))
+                                {
                                     if (!PawnExtensions.Ani(ref tick, 50, ref angle, f, -f, -1f, ref pos, r))
+                                    {
                                         if (!PawnExtensions.Ani(ref tick, 50, ref angle, -f, f, -1f, ref pos, r))
+                                        {
                                             if (!PawnExtensions.Ani(ref tick, 50, ref angle, f, -f, -1f, ref pos, r))
-                                                if (!PawnExtensions.Ani(ref tick, 25, ref angle, -f, 0f, -1f, ref pos, r)) ;
+                                            {
+                                                if (!PawnExtensions.Ani(ref tick, 25, ref angle, -f, 0f, -1f, ref pos, r))
+                                                {
+                                                    ;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     break;
 
                 case aniType.smash:
@@ -1809,8 +1999,15 @@ namespace FacialStuff
                     if (!PawnExtensions.Ani(ref tick, 70, ref angle, 0f, -20f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
                     {
                         if (!PawnExtensions.Ani(ref tick, 3, ref angle, -20f, 10f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot, PawnExtensions.tweenType.line))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 10f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
-                                if (!PawnExtensions.Ani(ref tick, 40, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot)) ;
+                            {
+                                if (!PawnExtensions.Ani(ref tick, 40, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), rot))
+                                {
+                                    ;
+                                }
+                            }
+                        }
                     }
                     break;
 
@@ -1821,9 +2018,13 @@ namespace FacialStuff
                     r = PawnExtensions.Rot90(rot);
                     tr = rot;
                     if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 20))
+                    {
                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, 0f, 10f, -1f, ref pos, r))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 10f, 10f, -1f, ref pos, r))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 5, ref angle, 10f, -10f, -1f, ref pos, r))
+                                {
                                     if (!PawnExtensions.Ani(ref tick, 20, ref angle, -10f, -10f, -1f, ref pos, r))
                                     {
                                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, -10f, 0f, -1f, ref pos, r))
@@ -1833,11 +2034,22 @@ namespace FacialStuff
                                             {
                                                 //tr = rot;
                                                 if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, rot)) // 105
+                                                {
                                                     if (!PawnExtensions.Ani(ref tick, 5, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0.05f), rot))
-                                                        if (!PawnExtensions.Ani(ref tick, 6, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.05f), new Vector3(0f, 0f, 0f), rot)) ;
+                                                    {
+                                                        if (!PawnExtensions.Ani(ref tick, 6, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.05f), new Vector3(0f, 0f, 0f), rot))
+                                                        {
+                                                            ;
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
 
                     rot = tr;
                     break;
@@ -1849,9 +2061,13 @@ namespace FacialStuff
                     r = PawnExtensions.Rot90(rot);
                     tr = rot;
                     if (!PawnExtensions.AnimationHasTicksLeft(ref tick, 20))
+                    {
                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, 0f, 10f, -1f, ref pos, r))
+                        {
                             if (!PawnExtensions.Ani(ref tick, 20, ref angle, 10f, 10f, -1f, ref pos, r))
+                            {
                                 if (!PawnExtensions.Ani(ref tick, 5, ref angle, 10f, -10f, -1f, ref pos, r))
+                                {
                                     if (!PawnExtensions.Ani(ref tick, 20, ref angle, -10f, -10f, -1f, ref pos, r))
                                     {
                                         if (!PawnExtensions.Ani(ref tick, 5, ref angle, -10f, 0f, -1f, ref pos, r))
@@ -1861,18 +2077,41 @@ namespace FacialStuff
                                             {
                                                 tr = rot;
                                                 if (!PawnExtensions.Ani(ref tick, 20, ref angle, 0f, 0f, -1f, ref pos, rot)) // 105
+                                                {
                                                     if (!PawnExtensions.Ani(ref tick, 5, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0.05f), rot))
+                                                    {
                                                         if (!PawnExtensions.Ani(ref tick, 6, ref angle, 0f, 0f, -1f, ref pos, new Vector3(0f, 0f, 0.05f), new Vector3(0f, 0f, 0f), rot))
 
+                                                        {
                                                             if (!PawnExtensions.Ani(ref tick, 35, ref angle, 0f, 0f, -1f, ref pos, rot))
+                                                            {
                                                                 if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 10f, -1f, ref pos, rot))
+                                                                {
                                                                     if (!PawnExtensions.Ani(ref tick, 10, ref angle, 10f, 0f, -1f, ref pos, rot))
+                                                                    {
                                                                         if (!PawnExtensions.Ani(ref tick, 10, ref angle, 0f, 10f, -1f, ref pos, rot))
+                                                                        {
                                                                             if (!PawnExtensions.Ani(ref tick, 10, ref angle, 10f, 0f, -1f, ref pos, rot))
-                                                                                if (!PawnExtensions.Ani(ref tick, 25, ref angle, 0f, 0f, -1f, ref pos, rot)) ;
+                                                                            {
+                                                                                if (!PawnExtensions.Ani(ref tick, 25, ref angle, 0f, 0f, -1f, ref pos, rot))
+                                                                                {
+                                                                                    ;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
 
                     rot = tr;
                     break;
@@ -1892,9 +2131,7 @@ namespace FacialStuff
             */
         }
 
-
         public float currentCellCostTotal = 0;
-
 
         public float Offset_Angle = 0f;
 
@@ -2031,11 +2268,10 @@ namespace FacialStuff
             }
 
             // Use y for the horizontal position. too lazy to add even more vectors
-            bool isHorizontal  =  this.CurrentRotation.IsHorizontal || flipped;
+            bool isHorizontal = this.CurrentRotation.IsHorizontal || flipped;
 
-
-            bool aiming                       = pawn.Aiming();
-            Vector3 weaponPositionOffset      = extensions.WeaponPositionOffset;
+            bool aiming = pawn.Aiming();
+            Vector3 weaponPositionOffset = extensions.WeaponPositionOffset;
             Vector3 aimedWeaponPositionOffset = extensions.AimedWeaponPositionOffset;
 
             if (isHorizontal)
@@ -2058,14 +2294,13 @@ namespace FacialStuff
             if (flipped)
             {
                 // flip x position offset
-               // if (pawn.Rotation != Rot4.South)
+                // if (pawn.Rotation != Rot4.South)
                 {
                     weaponPosOffset.x *= -1;
                 }
             }
             float bodySizeScaling = this.GetBodysizeScaling();
             weaponPosOffset *= bodySizeScaling * BodyAnim.extremitySize;
-
         }
 
         public void CheckMovement()
@@ -2086,7 +2321,6 @@ namespace FacialStuff
             // pawn started pathing
 
             this.MovedPercent = PawnMovedPercent(pawn);
-
         }
 
         public void DoHandOffsetsOnWeapon(ThingWithComps eq, out bool hasSecondWeapon, out bool leftBehind,
@@ -2122,11 +2356,11 @@ namespace FacialStuff
             if (compProperties != null)
             {
                 MainHand = compProperties.MainHand;
-                OffHand  = compProperties.SecHand;
+                OffHand = compProperties.SecHand;
             }
             else
             {
-                OffHand  = Vector3.zero;
+                OffHand = Vector3.zero;
                 MainHand = Vector3.zero;
             }
 
@@ -2147,22 +2381,20 @@ namespace FacialStuff
                 }
             }
 
-
             bool aiming = false;
 
-
-                Stance_Busy stance_Busy = ___pawn.stances.curStance as Stance_Busy;
+            Stance_Busy stance_Busy = ___pawn.stances.curStance as Stance_Busy;
             // if (pawn.Aiming())
             // {
             //     Vector3 a = stance_Busy.focusTarg.HasThing
             //         ? stance_Busy.focusTarg.Thing.DrawPos
             //         : stance_Busy.focusTarg.Cell.ToVector3Shifted();
-            // 
+            //
             //     // if ((a - ___pawn.DrawPos).MagnitudeHorizontalSquared() > 0.001f)
             //     // {
             //     //     aimAngle = (a - ___pawn.DrawPos).AngleFlat();
             //     // }
-            // 
+            //
             //     aiming = true;
             // }
 
@@ -2179,8 +2411,8 @@ namespace FacialStuff
             }
 
             Vector3 mainWeaponLocation = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item1;
-            float mainHandAngle        = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item2;
-            float mainMeleeExtra       = 0f;
+            float mainHandAngle = ShowMeYourHandsMain.weaponLocations[mainHandWeapon].Item2;
+            float mainMeleeExtra = 0f;
 
             DoOffsets(mainHandWeapon, mainHandAngle, stance_Busy, out mainHandAngle, out bool mainMelee, out bool facingWestAiming, out bool showWeapon, out mainHandFlipped);
 
@@ -2237,8 +2469,6 @@ namespace FacialStuff
             Rot4 mainHandWeaponRot = Pawn_RotationTracker.RotFromAngleBiased(mainHandAngle);// this.CurrentRotation;
             Rot4 offHandWeaponRot = Pawn_RotationTracker.RotFromAngleBiased(offHandAngle);// this.CurrentRotation;
 
-
-
             // Log.Message(mainHandAngle.ToString("N0"));
             if (MainHand != Vector3.zero)
             {
@@ -2254,7 +2484,7 @@ namespace FacialStuff
                 }
                 if (this.CurrentRotation.IsHorizontal)
                 {
-                //    x += 0.01f;
+                    //    x += 0.01f;
                 }
 
                 if (mainHandFlipped)
@@ -2331,8 +2561,9 @@ namespace FacialStuff
                 {
                     if (offHandWeapon == null)
                     {
-                          y2 *= -1f;
-                    }                }
+                        y2 *= -1f;
+                    }
+                }
 
                 if (this.CurrentRotation.IsHorizontal)
                 {
@@ -2405,11 +2636,9 @@ namespace FacialStuff
             {
                 handAngle += eq.def.equippedAngleOffset;
             }
-            
 
             handAngle %= 360f;
         }
-
 
         public float GetBodysizeScaling()
         {
@@ -2417,11 +2646,10 @@ namespace FacialStuff
             {
                 float bodySize = 1f;
                 if (!pawn.RaceProps.Humanlike && this.pawn.kindDef.lifeStages.Any())
-                    {
-                        Vector2 maxSize = this.pawn.kindDef.lifeStages.Last().bodyGraphicData.drawSize;
-                        Vector2 sizePaws = this.pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
-                        bodySize = sizePaws.x / maxSize.x;
-                    
+                {
+                    Vector2 maxSize = this.pawn.kindDef.lifeStages.Last().bodyGraphicData.drawSize;
+                    Vector2 sizePaws = this.pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
+                    bodySize = sizePaws.x / maxSize.x;
                 }
                 else if (ShowMeYourHandsMod.instance.Settings.ResizeHands)
                 {
@@ -2457,7 +2685,7 @@ namespace FacialStuff
             this.CurrentWalkCycle = newWalkCycleDef;
         }
 
-        private Vector3 AdjustRenderOffsetFromDir(Rot4 rotation, ThingWithComps weapon)
+        private static Vector3 AdjustRenderOffsetFromDir(Rot4 rotation, ThingWithComps weapon)
         {
             if (!ShowMeYourHandsMain.OversizedWeaponLoaded && !ShowMeYourHandsMain.EnableOversizedLoaded)
             {
@@ -2628,17 +2856,15 @@ namespace FacialStuff
             //     //     new CurvePoint(14, 0.48f), // mud, ice
             //     //     new CurvePoint(30, 0.3f), // shallow water
             //     // };
-            //     // int walkSpeed = pawn.Map.terrainGrid.TerrainAt(pawn.Position).pathCost; 
+            //     // int walkSpeed = pawn.Map.terrainGrid.TerrainAt(pawn.Position).pathCost;
             //     // terrainModifier = moveSpeedCurve.Evaluate(walkSpeed);
             // }
 
             // if (movedPercent is > 0.5f and < 0.51f)
             // {
-            // 
+            //
             // }
             // movedPercent *= terrainModifier;
-
-
 
             // sustainer.def.subSounds.FirstOrDefault().pitchRange = new FloatRange(cellCostFactor, cellCostFactor);
 
@@ -2692,26 +2918,24 @@ namespace FacialStuff
             */
             // float modifiedAnimationSpeed = cellCostFactor;
             //  modifiedAnimationSpeed *= terrainModifier;
-            // 
-            // 
+            //
+            //
             // modifiedAnimationSpeed += remainingPercent;
-            // 
+            //
             // if (modifiedAnimationSpeed > 1f)
             // {
             //     modifiedAnimationSpeed -= 1f;
             // }
-            // 
+            //
             // if (pather.nextCellCostLeft > 100)
             // {
             //     remainingPercent = terrainModifier;
             // }
 
-
             if (!invert)
             {
                 cellCostFactor = 1f - cellCostFactor;
             }
-
 
             return cellCostFactor;
         }
@@ -2723,6 +2947,7 @@ namespace FacialStuff
         {
             GetBipedMesh(out meshRight, out meshLeft, null, null);
         }
+
         public void GetBipedMesh(out Mesh meshRight, out Mesh meshLeft, bool? rightFlipped, bool? leftFlipped)
         {
             Rot4 rot = this.CurrentRotation;
@@ -2752,7 +2977,6 @@ namespace FacialStuff
                     break;
             }
         }
-
 
         public void DrawAnimalFeet(float drawAngle, Vector3 rootLoc, Vector3 bodyLoc)
         {
@@ -2786,7 +3010,6 @@ namespace FacialStuff
             this.DrawFeet(drawAngle, rearPawLoc, bodyLoc);
         }
 
-
         public void DrawFrontPaws(float drawQuat, Vector3 rootLoc)
         {
             BodyAnimDef body = this.BodyAnim;
@@ -2803,7 +3026,6 @@ namespace FacialStuff
             // Basic values
 
             Rot4 rot = this.CurrentRotation;
-
 
             JointLister jointPositions = this.GetJointPositions(JointType.Shoulder,
                 body.shoulderOffsets[rot.AsInt],
@@ -2877,7 +3099,6 @@ namespace FacialStuff
                         Quaternion.AngleAxis(drawQuat + footAngleLeft, Vector3.up),
                         matLeft,
                         0);
-
                 }
             }
 
@@ -2926,6 +3147,5 @@ namespace FacialStuff
             }
             */
         }
-
     }
 }

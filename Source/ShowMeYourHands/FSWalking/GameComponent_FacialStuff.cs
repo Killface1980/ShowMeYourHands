@@ -1,9 +1,9 @@
 ﻿using FacialStuff.Defs;
 using JetBrains.Annotations;
 using RimWorld;
+using ShowMeYourHands;
 using System.Collections.Generic;
 using System.Linq;
-using ShowMeYourHands;
 using Verse;
 
 namespace FacialStuff
@@ -11,11 +11,6 @@ namespace FacialStuff
     [ShowMeYourHandsMod.HotSwappable]
     public class GameComponent_FacialStuff : GameComponent
     {
-        #region Private Fields
-
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         public GameComponent_FacialStuff()
@@ -25,17 +20,13 @@ namespace FacialStuff
         // ReSharper disable once UnusedParameter.Local
         public GameComponent_FacialStuff(Game game)
         {
-
             if (!RimWorld_MainMenuDrawer_MainMenuOnGUI.alreadyRun)
             {
                 RimWorld_MainMenuDrawer_MainMenuOnGUI.MainMenuOnGUI();
             }
 
             // todo: use BodyDef instead, target for kickstarting?
-            this.AnimalPawnCompsBodyDefImport();
-            
-            // this.AnimalPawnCompsImportFromAnimationTargetDefs(); // no AnimationTargetDefs defined ...
-           
+
             SetMainButtons();
             // BuildWalkCycles();
 
@@ -66,9 +57,7 @@ namespace FacialStuff
             {
                 button.buttonVisible = Prefs.DevMode;
             }
-
         }
-
 
         public static void BuildWalkCycles([CanBeNull] WalkCycleDef defToRebuild = null)
         {
@@ -133,7 +122,6 @@ namespace FacialStuff
                 }
             }
         }
-
 
         #endregion Public Methods
 
@@ -241,8 +229,6 @@ namespace FacialStuff
             }
         }
 
-
-
         private static void UpdateCurve(PawnKeyframe key, float? curvePoint, SimpleCurve simpleCurve, float frameAt)
         {
             if (curvePoint.HasValue)
@@ -260,112 +246,6 @@ namespace FacialStuff
             }
         }
 
-
-
-
-        private void AnimalPawnCompsImportFromAnimationTargetDefs()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            foreach (AnimationTargetDef def in DefDatabase<AnimationTargetDef>.AllDefsListForReading)
-            {
-                if (def.CompLoaderTargets.NullOrEmpty())
-                {
-                    continue;
-                }
-
-                foreach (CompLoaderTargets pawnSets in def.CompLoaderTargets)
-                {
-                    if (pawnSets == null)
-                    {
-                        continue;
-                    }
-
-                    if (pawnSets.thingTargets.NullOrEmpty())
-                    {
-                        continue;
-                    }
-
-                    foreach (string target in pawnSets.thingTargets)
-                    {
-                        ThingDef thingDef = ThingDef.Named(target);
-                        if (thingDef == null)
-                        {
-                            continue;
-                        }
-                        //if (DefDatabase<BodyAnimDef>
-                        //   .AllDefsListForReading.Any(x => x.defName.Contains(thingDef.defName))) continue;
-                        if (thingDef.HasComp(typeof(CompBodyAnimator)))
-                        {
-                            continue;
-                        }
-
-                        CompProperties_BodyAnimator bodyAnimator = new()
-                        {
-                            compClass = typeof(CompBodyAnimator),
-                            handTexPath = pawnSets.handTexPath,
-                            footTexPath = pawnSets.footTexPath,
-                            hipOffsets = pawnSets.hipOffsets,
-                            shoulderOffsets = pawnSets.shoulderOffsets,
-                            armLength = pawnSets.armLength,
-                            extraLegLength= pawnSets.extraLegLength,
-                            // footType = pawnSets.footType,
-                            // pawType = pawnSets.pawType,
-                            extremitySize = pawnSets.extremitySize,
-                            quadruped = pawnSets.quadruped,
-                            bipedWithHands = pawnSets.bipedWithHands,
-                            offCenterX = pawnSets.offCenterX
-                        };
-                        thingDef.comps?.Add(bodyAnimator);
-
-                    }
-                }
-            }
-        }
-        
-        private void AnimalPawnCompsBodyDefImport()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            foreach (BodyAnimDef def in DefDatabase<BodyAnimDef>.AllDefsListForReading)
-            {
-                string target = def.thingTarget;
-                if (target.NullOrEmpty())
-                {
-                    continue;
-                }
-
-                ThingDef thingDef = ThingDef.Named(target);
-                if (thingDef == null)
-                {
-                    continue;
-                }
-                //if (DefDatabase<BodyAnimDef>
-                //   .AllDefsListForReading.Any(x => x.defName.Contains(thingDef.defName))) continue;
-                if (thingDef.HasComp(typeof(CompBodyAnimator)))
-                {
-                    continue;
-                }
-
-                CompProperties_BodyAnimator bodyAnimator = new()
-                {
-                    compClass       = typeof(CompBodyAnimator),
-                    handTexPath     = def.handTexPath,
-                    footTexPath     = def.footTexPath,
-                    extremitySize   = def.extremitySize,
-                    // footType     = def.footType,
-                    // pawType      = def.pawType,
-                    quadruped       = def.quadruped,
-                    bipedWithHands  = def.bipedWithHands,
-                    shoulderOffsets = def.shoulderOffsets,
-                    hipOffsets      = def.hipOffsets,
-                    armLength       = def.armLength,
-                    extraLegLength  = def.extraLegLength,
-                    offCenterX      = def.offCenterX
-                };
-
-                thingDef.comps?.Add(bodyAnimator);
-            }
-        }
-        
         #endregion Private Methods
     }
 }

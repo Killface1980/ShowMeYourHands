@@ -236,7 +236,7 @@ namespace FacialStuff.Tweener
 
             this.CurrentTime = 0;
             this.Duration = duration;
-            this._scaleFunc = scaleFunc ?? throw new ArgumentNullException("scaleFunc");
+            this._scaleFunc = scaleFunc ?? throw new ArgumentNullException(nameof(scaleFunc));
             this.State = TweenState.Running;
 
             this.StartValue = start;

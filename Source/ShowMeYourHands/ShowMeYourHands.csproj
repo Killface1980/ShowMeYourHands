@@ -21,11 +21,11 @@
     <Compile Remove="FSWalking\Harmony\DrawEquipmentAiming_Patch.cs" />
     <Compile Remove="FSWalking\Harmony\ModifyCarriedThingDrawPos_Postfix.cs" />
     <Compile Remove="FSWalking\SimpleCurve_Extension.cs" />
-    <Compile Remove="FSWalking\SkinColors\PawnSkinColors_FS.cs" />
     <Compile Remove="HandDrawer.cs" />
     <Compile Remove="SaveableFloat.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="FSWalking\Animation\BodyAnimator.cs" />
     <None Include="FSWalking\Animation\PoseCycleDef.cs" />
     <None Include="FSWalking\BodyProps.cs" />
@@ -38,7 +38,6 @@
     <None Include="FSWalking\Harmony\DrawEquipmentAiming_Patch.cs" />
     <None Include="FSWalking\Harmony\ModifyCarriedThingDrawPos_Postfix.cs" />
     <None Include="FSWalking\SimpleCurve_Extension.cs" />
-    <None Include="FSWalking\SkinColors\PawnSkinColors_FS.cs" />
     <None Include="HandDrawer.cs" />
     <None Include="SaveableFloat.cs" />
   </ItemGroup>
@@ -51,6 +50,10 @@
     <PackageReference Include="Lib.Harmony">
       <Version>*</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Mlie_Rimworld_VersionFromManifest" Version="*" />
   </ItemGroup>

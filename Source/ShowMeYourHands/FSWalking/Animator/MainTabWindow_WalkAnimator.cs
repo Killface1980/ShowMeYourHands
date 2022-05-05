@@ -224,7 +224,7 @@ namespace FacialStuff.AnimatorWindows
             if (false)
             {
 
-                FS_Skeleton skeleton = new FS_Skeleton { joints = new List<FS_Joint>() };
+                FS_Skeleton skeleton = new() { joints = new List<FS_Joint>() };
                 FS_Joint head = new() { color = Color.red };
                 FS_Joint neck = new() { color = Color.cyan };
                 FS_Joint hipCenter = new() { color = Color.cyan };
@@ -257,14 +257,14 @@ namespace FacialStuff.AnimatorWindows
             // Draw the pawn's portrait
             Vector2 size = new(rect.width / 1.4f, rect.height); // 128x180
 
-            Rect position = new Rect(
+            Rect position = new(
                 rect.width * 0.5f - size.x * 0.5f,
                 rect.height * 0.5f - size.y * 0.5f - 10f,
                 size.x,
                 size.y);
 
 
-            Vector3 cameraOffset = new Vector3(0f, 0f, 0.1f + EditorWalkcycle.BodyOffsetZ.Evaluate(AnimationPercent));
+            Vector3 cameraOffset = new(0f, 0f, 0.1f + EditorWalkcycle.BodyOffsetZ.Evaluate(AnimationPercent));
             cameraOffset.z -= currentBodyAnimDef.extraLegLength;
 
             float currentAngle = 0f;
@@ -287,7 +287,7 @@ namespace FacialStuff.AnimatorWindows
             }
 
             // RenderTexture image = PortraitsCache.Get(Pawn, size, cameraOffset, this.Zoom);
-            RenderTexture renderTexture = new RenderTexture((int)size.x, (int)size.y, 24);
+            RenderTexture renderTexture = new((int)size.x, (int)size.y, 24);
             Find.PawnCacheRenderer.RenderPawn(pawn, renderTexture, cameraOffset, this.Zoom, currentAngle, currentRotation);
             GUI.DrawTexture(position, renderTexture);
             renderTexture.Release();
@@ -409,8 +409,8 @@ namespace FacialStuff.AnimatorWindows
             // ref bodyAnimDef.hipOffsetVerticalFromCenter, ref sliderRect);
 
             Vector2 headOffset = this.currentBodyAnimDef.headOffset;
-            this.DrawBodyStats("headOffsetX", ref headOffset.x, ref sliderRect);
-            this.DrawBodyStats("headOffsetY", ref headOffset.y, ref sliderRect);
+            DrawBodyStats("headOffsetX", ref headOffset.x, ref sliderRect);
+            DrawBodyStats("headOffsetY", ref headOffset.y, ref sliderRect);
 
 
             Vector3 shoulderOffset = this.currentBodyAnimDef.shoulderOffsets[rotation.AsInt];
@@ -434,8 +434,8 @@ namespace FacialStuff.AnimatorWindows
                 front = shoulderOffset.y < 0;
             }
 
-            this.DrawBodyStats("shoulderOffsetX", ref shoulderOffset.x, ref sliderRect);
-            this.DrawBodyStats("shoulderOffsetZ", ref shoulderOffset.z, ref sliderRect);
+            DrawBodyStats("shoulderOffsetX", ref shoulderOffset.x, ref sliderRect);
+            DrawBodyStats("shoulderOffsetZ", ref shoulderOffset.z, ref sliderRect);
             // this.DrawBodyStats("shoulderFront",   ref front,            ref sliderRect);
 
             Vector3 hipOffset = this.currentBodyAnimDef.hipOffsets[rotation.AsInt];
@@ -457,8 +457,8 @@ namespace FacialStuff.AnimatorWindows
                 hipFront = hipOffset.y < 0;
             }
 
-            this.DrawBodyStats("hipOffsetX", ref hipOffset.x, ref sliderRect);
-            this.DrawBodyStats("hipOffsetZ", ref hipOffset.z, ref sliderRect);
+            DrawBodyStats("hipOffsetX", ref hipOffset.x, ref sliderRect);
+            DrawBodyStats("hipOffsetZ", ref hipOffset.z, ref sliderRect);
             // this.DrawBodyStats("hipFront",   ref hipFront,    ref sliderRect);
 
             if (GUI.changed)
@@ -468,8 +468,8 @@ namespace FacialStuff.AnimatorWindows
                 SetNewVector(rotation, hipOffset, this.currentBodyAnimDef.hipOffsets, hipFront);
             }
 
-            this.DrawBodyStats("armLength", ref this.currentBodyAnimDef.armLength, ref sliderRect);
-            this.DrawBodyStats("extraLegLength", ref this.currentBodyAnimDef.extraLegLength, ref sliderRect);
+            DrawBodyStats("armLength", ref this.currentBodyAnimDef.armLength, ref sliderRect);
+            DrawBodyStats("extraLegLength", ref this.currentBodyAnimDef.extraLegLength, ref sliderRect);
         }
 
         protected override void DrawKeyframeEditor(Rect keyframes, Rot4 rotation)
@@ -744,7 +744,7 @@ namespace FacialStuff.AnimatorWindows
 
         #region Private Methods
 
-        private void DrawBodyStats(string label, ref float value, ref Rect sliderRect)
+        private static void DrawBodyStats(string label, ref float value, ref Rect sliderRect)
         {
             float left = -1.5f;
             float right = 1.5f;

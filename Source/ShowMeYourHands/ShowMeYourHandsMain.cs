@@ -13,6 +13,8 @@ namespace ShowMeYourHands;
 public static class ShowMeYourHandsMain
 {
     public static readonly Dictionary<Thing, Tuple<Vector3, float>> weaponLocations = new();
+    public static readonly Dictionary<Thing, Tuple<Vector3, float>> rightHandLocations = new();
+    public static readonly Dictionary<Thing, Tuple<Vector3, float>> leftHandLocations = new();
 
     public static readonly Dictionary<Thing, Rot4?> pawnRotation = new();
     public static readonly Dictionary<Thing, float> pawnAngle = new();

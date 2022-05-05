@@ -9,6 +9,7 @@
 // ReSharper disable StyleCop.SA1310
 
 using RimWorld;
+// ReSharper disable UnusedMember.Global
 
 namespace FacialStuff.DefOfs
 {

@@ -81,7 +81,7 @@ internal class ShowMeYourHandsMod : Mod
 
     private static Dictionary<string, int> fixedWeaponsByMod = new();
 
-    [NotNull] public static HashSet<string> DefinedByDef = new HashSet<string>();
+    [NotNull] public static HashSet<string> DefinedByDef = new();
 
     private static string selectedDef = "Settings";
 
@@ -168,7 +168,7 @@ internal class ShowMeYourHandsMod : Mod
         set => allWeapons = value;
     }
 
-    private Graphic HandTex
+    private static Graphic HandTex
     {
         get
         {
@@ -184,7 +184,7 @@ internal class ShowMeYourHandsMod : Mod
         set => handTex = value;
     }
 
-    private Graphic FootTex
+    private static Graphic FootTex
     {
         get
         {
@@ -200,7 +200,7 @@ internal class ShowMeYourHandsMod : Mod
         set => footTex = value;
     }
 
-    private Graphic BodyTex
+    private static Graphic BodyTex
     {
         get
         {
@@ -217,7 +217,7 @@ internal class ShowMeYourHandsMod : Mod
         set => bodyTex = value;
     }
 
-    private Graphic HeadTex
+    private static Graphic HeadTex
     {
         get
         {
@@ -319,7 +319,10 @@ internal class ShowMeYourHandsMod : Mod
     {
         totalWeaponsByMod = new Dictionary<string, int>();
         fixedWeaponsByMod = new Dictionary<string, int>();
-        if (AllWeapons.NullOrEmpty()) return;
+        if (AllWeapons.NullOrEmpty())
+        {
+            return;
+        }
 
         foreach (ThingDef currentWeapon in AllWeapons)
         {
@@ -466,12 +469,18 @@ internal class ShowMeYourHandsMod : Mod
         if (drawRotation == Rot4.South)
         {
             posXmodifier += positionOffset.x;
-            if (!currentShowAiming) posYmodifier -= 0.22f;
+            if (!currentShowAiming)
+            {
+                posYmodifier -= 0.22f;
+            }
         }
         else if (drawRotation == Rot4.North)
         {
             posXmodifier -= positionOffset.x;
-            if (!currentShowAiming) posYmodifier -= 0.11f;
+            if (!currentShowAiming)
+            {
+                posYmodifier -= 0.11f;
+            }
         }
         else if (drawRotation == Rot4.East)
         {
@@ -504,7 +513,7 @@ internal class ShowMeYourHandsMod : Mod
 
         if (currentShowAiming)
         {
-            var veccie = new Vector2(0, 0.4f).RotatedBy(drawAngle);
+            Vector2 veccie = new Vector2(0, 0.4f).RotatedBy(drawAngle);
             posXmodifier -= veccie.x;
             posYmodifier += veccie.y;
         }
@@ -629,7 +638,7 @@ internal class ShowMeYourHandsMod : Mod
         }
     }
 
-    public void DrawTextureRotatedLocal(Rect rect, Texture texture, float angle)
+    public static void DrawTextureRotatedLocal(Rect rect, Texture texture, float angle)
     {
         if (angle == 0f)
         {
@@ -653,7 +662,7 @@ internal class ShowMeYourHandsMod : Mod
         GUI.matrix = matrix;
     }
 
-    private void DrawWeapon(ThingDef thing, Rect rect)
+    private static void DrawWeapon(ThingDef thing, Rect rect)
     {
         if (thing?.graphicData?.Graphic?.MatSingle?.mainTexture == null)
         {
@@ -955,7 +964,7 @@ internal class ShowMeYourHandsMod : Mod
                         translateWeaponPosition, SetTabFaceStyle(WeaponeStyleTab.WeaponPositionOnPawn),
                         (bool)(Tab == WeaponeStyleTab.WeaponPositionOnPawn));
                     list.Add(item2);
-                    Rect tabRect = new Rect(frameRect.x, frameRect.y + 10, frameRect.width, TabDrawer.TabHeight);
+                    Rect tabRect = new(frameRect.x, frameRect.y + 10, frameRect.width, TabDrawer.TabHeight);
                     TabDrawer.DrawTabs(tabRect, list, (tabRect.width) / 2);
 
                     frameRect.y      += tabRect.height;
@@ -1101,7 +1110,7 @@ internal class ShowMeYourHandsMod : Mod
         //listing_Standard.ColumnWidth = frameRect.width;
     }
 
-    private void DrawAllButtons(ThingDef currentDef, float yPosButtons, float xPosButton)
+    private static void DrawAllButtons(ThingDef currentDef, float yPosButtons, float xPosButton)
     {
         float spacer = 170f;
         WhandCompProps compProperties = currentDef?.GetCompProperties<WhandCompProps>();
@@ -1320,7 +1329,7 @@ internal class ShowMeYourHandsMod : Mod
         return delegate { Tab = tab; };
     }
 
-    private void CopyChangedWeapons(bool onlySelected = false)
+    private static void CopyChangedWeapons(bool onlySelected = false)
     {
         if (onlySelected && string.IsNullOrEmpty(selectedSubDef))
         {
@@ -1494,7 +1503,7 @@ internal class ShowMeYourHandsMod : Mod
         Widgets.EndScrollView();
     }
 
-    private void ResetOneWeapon(ThingDef currentDef, ref WhandCompProps compProperties)
+    private static void ResetOneWeapon(ThingDef currentDef, ref WhandCompProps compProperties)
     {
         instance.Settings.ManualMainHandPositions.Remove(currentDef.defName);
         instance.Settings.ManualOffHandPositions.Remove(currentDef.defName);
@@ -1519,7 +1528,7 @@ internal class ShowMeYourHandsMod : Mod
         }
     }
 
-    private Color GetColorFromPercent(decimal percent)
+    private static Color GetColorFromPercent(decimal percent)
     {
         switch (percent)
         {

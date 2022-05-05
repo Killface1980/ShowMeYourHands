@@ -34,7 +34,6 @@ public class PawnRenderer_DrawEquipmentAiming
     {
 
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
-        ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(drawLoc, aimAngle);
         
         if (!ShowMeYourHandsMod.instance.Settings.UseHands)
         {
@@ -194,25 +193,43 @@ public class PawnRenderer_DrawEquipmentAiming
                      float duration = Mathf.Abs(angleDiff * 0.35f);
                      if (angleDiff > 10f)
                      {
-                    // Log.Message("Distance: " +distance.ToString("N2") + " - duration: " + duration);
+                         // Log.Message("Distance: " +distance.ToString("N2") + " - duration: " + duration);
                          compAnim.FloatTweens[equipment].Start(start, aimAngle, Mathf.Min(duration, 15f), scaleFunc);
                          aimAngle = start;
                      }
                 }
 
-                if (angleDiff > 0f) ;
+                if (angleDiff > 0f)
                 {
+                    ;
+                }
+
+            {
                    // Log.Message("Start: " + start + " - Ende: " + drawLoc);
                 }
                 break;
         }
 
-        var newDrawLoc = drawLoc;
-        var newAimAngle = aimAngle;
+
+        Vector3 newDrawLoc = drawLoc;
+        float newAimAngle = aimAngle;
+
+        if (ShowMeYourHandsMain.rightHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.rightHandLocations[eq].Item1 != Vector3.zero)
+        {
+            drawLoc += ShowMeYourHandsMain.rightHandLocations[eq].Item1;
+          //  aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2 + 90f;
+        }
+        else if (ShowMeYourHandsMain.leftHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.leftHandLocations[eq].Item1 != Vector3.zero)
+        {
+            drawLoc += ShowMeYourHandsMain.leftHandLocations[eq].Item1;
+         //   aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2 + 90f;
+        }
+
+
         CompEquippable compEquippable = eq.TryGetComp<CompEquippable>();
         if (compEquippable != null)
         {
-            EquipmentUtility.Recoil(eq.def, EquipmentUtility.GetRecoilVerb(compEquippable.AllVerbs), out var drawOffset, out var angleOffset, aimAngle);
+            EquipmentUtility.Recoil(eq.def, EquipmentUtility.GetRecoilVerb(compEquippable.AllVerbs), out Vector3 drawOffset, out float angleOffset, aimAngle);
             newDrawLoc += drawOffset;
             newAimAngle += angleOffset;
         }

@@ -13,7 +13,7 @@ namespace FacialStuff
     [StaticConstructorOnStartup]
     public static class PawnExtensions
     {
-        public static readonly Dictionary<Pawn, float> pawnBodySizes = new Dictionary<Pawn, float>();
+        public static readonly Dictionary<Pawn, float> pawnBodySizes = new();
         public const string PathHumanlike = "Things/Pawn/Humanlike/";
         public const string PathAnimals = "Things/Pawn/Animal/";
         public const string STR_Foot = "_Foot";
@@ -33,16 +33,40 @@ namespace FacialStuff
         public enum tweenType { line, sin }
         static public Rot4 Rot90(Rot4 rot)
         {
-            if (rot == Rot4.East) return Rot4.South;
-            if (rot == Rot4.South) return Rot4.West;
-            if (rot == Rot4.West) return Rot4.North;
+            if (rot == Rot4.East)
+            {
+                return Rot4.South;
+            }
+
+            if (rot == Rot4.South)
+            {
+                return Rot4.West;
+            }
+
+            if (rot == Rot4.West)
+            {
+                return Rot4.North;
+            }
+
             return Rot4.East;
         }
         static public Rot4 Rot90b(Rot4 rot)
         {
-            if (rot == Rot4.East) return Rot4.North;
-            if (rot == Rot4.North) return Rot4.West;
-            if (rot == Rot4.West) return Rot4.South;
+            if (rot == Rot4.East)
+            {
+                return Rot4.North;
+            }
+
+            if (rot == Rot4.North)
+            {
+                return Rot4.West;
+            }
+
+            if (rot == Rot4.West)
+            {
+                return Rot4.South;
+            }
+
             return Rot4.East;
         }
         static public bool Ani(ref int tick, int duration, ref float angle, float s_angle, float t_angle, float centerY, ref Vector3 pos, Vector3 s_pos, Vector3 t_pos, Rot4? rot = null, tweenType tween = tweenType.sin, Rot4? axis = null)
@@ -186,14 +210,21 @@ namespace FacialStuff
         public static float TicksPerMoveCardinalMin = 9999999999f;
         public static float TicksPerMoveCardinalMax = 0f;
         */
-        static List<LordJob_Ritual> ar_lordJob_ritual = new List<LordJob_Ritual>();
+        static List<LordJob_Ritual> ar_lordJob_ritual = new();
         static public LordJob_Ritual GetPawnRitual(this Pawn p)
         {
             ar_lordJob_ritual = Find.IdeoManager.GetActiveRituals(p.Map);
-            if (ar_lordJob_ritual == null) return null;
+            if (ar_lordJob_ritual == null)
+            {
+                return null;
+            }
+
             foreach (LordJob_Ritual l in ar_lordJob_ritual)
             {
-                if (l.PawnsToCountTowardsPresence.Contains(p)) return l;
+                if (l.PawnsToCountTowardsPresence.Contains(p))
+                {
+                    return l;
+                }
             }
             return null;
         }

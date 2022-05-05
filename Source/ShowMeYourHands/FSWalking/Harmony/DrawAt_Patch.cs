@@ -24,7 +24,10 @@ class DrawAt_Patch
         {
             return;
         }
-        if (___pawn.Dead) return;
+        if (___pawn.Dead)
+        {
+            return;
+        }
 
         if (!animatorDict.ContainsKey(___pawn))
         {
@@ -93,7 +96,10 @@ class DrawAt_Patch
         {
             return;
         }
-        if (pawn.Dead) return;
+        if (pawn.Dead)
+        {
+            return;
+        }
 
         if (!animatorDict.ContainsKey(___pawn))
         {

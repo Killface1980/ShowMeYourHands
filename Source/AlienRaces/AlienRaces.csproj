@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputPath>..\..\AlienRaces\1.3\Assemblies</OutputPath>
+    <TargetFramework>net472</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <DebugType>None</DebugType>
+    <LangVersion>latest</LangVersion>
+    <FileVersion>1.3.4</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="DualWieldMain.cs" />
+    <Compile Remove="PawnRenderer_DrawEquipmentAiming_DrawEquipmentAimingOverride.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DualWieldMain.cs" />
+    <None Include="PawnRenderer_DrawEquipmentAiming_DrawEquipmentAimingOverride.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref">
+      <Version>*</Version>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony">
+      <Version>*</Version>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ShowMeYourHands\ShowMeYourHands.csproj">
+      <Private>false</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="AlienRace">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.3\Assemblies\AlienRace.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="DualWield">
+      <HintPath>D:\SteamLibrary\steamapps\workshop\content\294100\1628211313\1.3\Assemblies\DualWield.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

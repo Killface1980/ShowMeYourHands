@@ -94,7 +94,10 @@ namespace FacialStuff.GraphicsFS
             {
                 PawnKindLifeStage curKindLifeStage = _pawn.ageTracker.CurKindLifeStage;
 
-                if (curKindLifeStage?.bodyGraphicData != null) skinColor = curKindLifeStage.bodyGraphicData.color;
+                if (curKindLifeStage?.bodyGraphicData != null)
+                {
+                    skinColor = curKindLifeStage.bodyGraphicData.color;
+                }
             }
             else if (_pawn.story != null)
             {
@@ -359,8 +362,12 @@ namespace FacialStuff.GraphicsFS
                 PawnKindLifeStage curKindLifeStage = pawn.ageTracker?.CurKindLifeStage;
 
                 if (curKindLifeStage != null)
+                {
                     if (curKindLifeStage.bodyGraphicData != null)
+                    {
                         skinColor = curKindLifeStage.bodyGraphicData.color;
+                    }
+                }
             }
             else
             {
@@ -401,6 +408,7 @@ namespace FacialStuff.GraphicsFS
                     {
                         List<Hediff> hediffs = pawn?.health?.hediffSet?.hediffs?.Where(x => x?.def != null && !x.def.defName.NullOrEmpty()).ToList();
                         if (!hediffs.NullOrEmpty())
+                        {
                             foreach (Hediff diff in hediffs.Where(diff => diff?.def == HediffDefOf.MissingBodyPart))
                             {
                                 // Log.Message("Checking missing part "+diff.def.defName);
@@ -470,6 +478,7 @@ namespace FacialStuff.GraphicsFS
 
                                 //BodyPartRecord rightArm = body.Find(x => x.def == DefDatabase<BodyPartDef>.GetNamed("RightShoulder"));
                             }
+                        }
                     }
 
                     if (ShowMeYourHandsMod.instance.Settings.MatchArtificialLimbColor)
@@ -478,6 +487,7 @@ namespace FacialStuff.GraphicsFS
                             .Where(x => x?.def != null && !x.def.defName.NullOrEmpty()).ToList();
 
                         if (addedhediffs != null)
+                        {
                             foreach (Hediff_AddedPart diff in addedhediffs)
                             {
                                 if (allParts.NullOrEmpty() || diff?.def == null)
@@ -560,6 +570,7 @@ namespace FacialStuff.GraphicsFS
                                 // Missing parts first, hands and feet can be replaced by arms/legs
                                 //  Log.Message("Checking missing parts.");
                             }
+                        }
                     }
                 }
             }
@@ -715,7 +726,7 @@ namespace FacialStuff.GraphicsFS
             }
         }
 
-        private List<bool> colorBody = new List<bool> { false, false, false, false };
+        private List<bool> colorBody = new() { false, false, false, false };
 
         private void SetHandColor(Color color)
         {

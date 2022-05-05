@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FacialStuff;
+using FacialStuff.Defs;
 using FacialStuff.GraphicsFS;
 using HarmonyLib;
 using RimWorld;
@@ -30,6 +32,11 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
         LongEventHandler.ExecuteWhenFinished(UpdateHandDefinitions);
 
+        AnimalPawnCompsBodyDefImport();
+
+        AnimalPawnCompsImportFromAnimationTargetDefs();
+
+
         MethodInfo original                 = typeof(PawnRenderer).GetMethod("DrawEquipmentAiming");
         Patches drawEquipmentAimingPatches  = Harmony.GetPatchInfo(original);
         MethodInfo saveWeaponLocationMethod = typeof(PawnRenderer_DrawEquipmentAiming).GetMethod(nameof(PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingPrefix));
@@ -51,7 +58,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
         ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.First));
 
-        foreach (HarmonyLib.Patch patch in drawEquipmentAimingPatches.Prefixes.Where(patch => modifyingPatches.Contains(patch.owner)))
+        foreach (Patch patch in drawEquipmentAimingPatches.Prefixes.Where(patch => modifyingPatches.Contains(patch.owner)))
         {
             ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, -1, null, new[] { patch.owner }));
         }
@@ -63,7 +70,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         if (drawEquipmentAimingPatches.Prefixes.Count > 0)
         {
             ShowMeYourHandsMain.LogMessage($"{drawEquipmentAimingPatches.Prefixes.Count} current active prefixes");
-            foreach (HarmonyLib.Patch patch in drawEquipmentAimingPatches.Prefixes.OrderByDescending(patch => patch.priority))
+            foreach (Patch patch in drawEquipmentAimingPatches.Prefixes.OrderByDescending(patch => patch.priority))
             {
                 if (ShowMeYourHandsMain.knownPatches.Contains(patch.owner))
                 {
@@ -85,7 +92,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         }
 
         ShowMeYourHandsMain.LogMessage($"{drawEquipmentAimingPatches.Transpilers.Count} current active transpilers");
-        foreach (HarmonyLib.Patch patch in drawEquipmentAimingPatches.Transpilers.OrderByDescending(patch => patch.priority))
+        foreach (Patch patch in drawEquipmentAimingPatches.Transpilers.OrderByDescending(patch => patch.priority))
         {
             if (ShowMeYourHandsMain.knownPatches.Contains(patch.owner))
             {
@@ -101,6 +108,110 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         }
 
 
+    }
+    private static void AnimalPawnCompsImportFromAnimationTargetDefs()
+    {
+        // ReSharper disable once PossibleNullReferenceException
+        foreach (AnimationTargetDef def in DefDatabase<AnimationTargetDef>.AllDefsListForReading)
+        {
+            if (def.CompLoaderTargets.NullOrEmpty())
+            {
+                continue;
+            }
+
+            foreach (CompLoaderTargets pawnSets in def.CompLoaderTargets)
+            {
+                if (pawnSets == null)
+                {
+                    continue;
+                }
+
+                if (pawnSets.thingTargets.NullOrEmpty())
+                {
+                    continue;
+                }
+
+                foreach (string target in pawnSets.thingTargets)
+                {
+                    ThingDef thingDef = ThingDef.Named(target);
+                    if (thingDef == null)
+                    {
+                        continue;
+                    }
+                    //if (DefDatabase<BodyAnimDef>
+                    //   .AllDefsListForReading.Any(x => x.defName.Contains(thingDef.defName))) continue;
+                    if (thingDef.HasComp(typeof(CompBodyAnimator)))
+                    {
+                        continue;
+                    }
+
+                    CompProperties_BodyAnimator bodyAnimator = new()
+                    {
+                        compClass = typeof(CompBodyAnimator),
+                        handTexPath = pawnSets.handTexPath,
+                        footTexPath = pawnSets.footTexPath,
+                        hipOffsets = pawnSets.hipOffsets,
+                        shoulderOffsets = pawnSets.shoulderOffsets,
+                        armLength = pawnSets.armLength,
+                        extraLegLength = pawnSets.extraLegLength,
+                        extremitySize = pawnSets.extremitySize,
+                        quadruped = pawnSets.quadruped,
+                        bipedWithHands = pawnSets.bipedWithHands,
+                        offCenterX = pawnSets.offCenterX
+                    };
+                    thingDef.comps?.Add(bodyAnimator);
+
+                }
+            }
+        }
+    }
+
+    private static void AnimalPawnCompsBodyDefImport()
+    {
+        // ReSharper disable once PossibleNullReferenceException
+        foreach (BodyAnimDef def in DefDatabase<BodyAnimDef>.AllDefsListForReading)
+        {
+            AddCompBaToThingDef(def);
+        }
+    }
+
+    public static void AddCompBaToThingDef(BodyAnimDef def)
+    {
+        string target = def.thingTarget;
+        if (target.NullOrEmpty())
+        {
+            return;
+        }
+
+        ThingDef thingDef = ThingDef.Named(target);
+        if (thingDef == null)
+        {
+            return;
+        }
+
+        //if (DefDatabase<BodyAnimDef>
+        //   .AllDefsListForReading.Any(x => x.defName.Contains(thingDef.defName))) continue;
+        if (thingDef.HasComp(typeof(CompBodyAnimator)))
+        {
+            return;
+        }
+
+        CompProperties_BodyAnimator bodyAnimator = new()
+        {
+            compClass       = typeof(CompBodyAnimator),
+            handTexPath     = def.handTexPath,
+            footTexPath     = def.footTexPath,
+            extremitySize   = def.extremitySize,
+            quadruped       = def.quadruped,
+            bipedWithHands  = def.bipedWithHands,
+            shoulderOffsets = def.shoulderOffsets,
+            hipOffsets      = def.hipOffsets,
+            armLength       = def.armLength,
+            extraLegLength  = def.extraLegLength,
+            offCenterX      = def.offCenterX
+        };
+
+        thingDef.comps?.Add(bodyAnimator);
     }
 
     public static void UpdateHandDefinitions()

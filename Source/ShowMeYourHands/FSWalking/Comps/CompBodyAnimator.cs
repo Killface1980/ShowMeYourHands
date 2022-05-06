@@ -831,11 +831,11 @@ namespace FacialStuff
                 body.shoulderOffsets[Rot4.North.AsInt].x,
                 carrying && !isEating, this.pawn.ShowWeaponOpenly());
 
-            Vector3 shoulperPosLeftJoint = shoulperPos.LeftJoint;
+            Vector3 shoulperPosLeftJoint  = shoulperPos.LeftJoint;
             Vector3 shoulperPosRightJoint = shoulperPos.RightJoint;
-            Vector3 MainHandPosition = this.MainHandPosition;
-            Vector3 offHandPosition = this.SecondHandPosition;
-            float mainHandAngle = 0f;
+            Vector3 MainHandPosition      = this.MainHandPosition;
+            Vector3 offHandPosition       = this.SecondHandPosition;
+            float mainHandAngle           = 0f;
             if (carrying && !isEating)
             {
                 // this.ApplyEquipmentWobble(ref drawPos);
@@ -870,11 +870,11 @@ namespace FacialStuff
                     drawPos = handVector;
 
                     // DoAnimationHands(ref animationPosOffset, ref animationAngle);
-                    animationPosOffset.y = 0f;
-                    animationAngle *= 3.8f;
-                    bodyAngle += animationAngle * 2;
-                    drawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
-                    shoulperPosLeftJoint.x -= animationPosOffset.z * 0.75f;
+                    animationPosOffset.y     = 0f;
+                    animationAngle          *= 3.8f;
+                    bodyAngle               += animationAngle * 2;
+                    drawPos                 += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
+                    shoulperPosLeftJoint.x  -= animationPosOffset.z * 0.75f;
                     shoulperPosRightJoint.x -= animationPosOffset.z * 0.75f;
                 }
                 if (isFacingNorth) // put the hands behind the pawn
@@ -955,7 +955,7 @@ namespace FacialStuff
                         {
                             ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(
                                 GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector,
-                                    handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - MainHandPosition, handSwingAngle[1]);
+                                    handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - MainHandPosition, handSwingAngle[1] - shoulderAngle);
                             ignoreRight = true;
                         }
                     }
@@ -1040,7 +1040,7 @@ namespace FacialStuff
                             ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(
                                 GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector,
                                     handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - offHandPosition,
-                                handSwingAngle[0]);
+                                handSwingAngle[0] - shoulderAngle);
                             ignoreLeft = true;
                         }
                         else

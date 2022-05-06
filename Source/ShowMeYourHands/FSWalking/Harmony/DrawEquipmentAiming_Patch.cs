@@ -2,19 +2,62 @@
 using FacialStuff;
 using JetBrains.Annotations;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using HarmonyLib;
 using UnityEngine;
 using Verse;
 
 namespace ShowMeYourHands.FSWalking;
-
+[ShowMeYourHandsMod.HotSwappable]
 internal static class DrawEquipmentAiming_Patch
 {
     private static readonly float angleStanding = 143f;
     private static readonly float angleStandingFlipped = 217f;
     public static readonly Dictionary<Pawn, float> pawnBodySizes = new Dictionary<Pawn, float>();
 
+    [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> Transpiler_DrawEquipmentAiming(IEnumerable<CodeInstruction> instructions)
+    {
+        FieldInfo pawn =AccessTools.Field(typeof(PawnRenderer),
+            "pawn");
+        Pawn p = (Pawn)pawn?.GetValue(instructions);
+        bool skip = p == null || (!p.GetCompAnim(out CompBodyAnimator ani) || !ani.IsMoving);
+
+        List<CodeInstruction> instructionList = instructions.ToList();
+
+        // MethodInfo method = AccessTools.Method(typeof(Vector3), nameof(Vector3.up));
+        // int vecIndex = instructionList.FindIndex(x => x.opcode == OpCodes.Call && x.operand == method);
+
+        foreach (CodeInstruction inst in instructionList)
+        {
+            if (skip)
+            {
+                yield return inst;
+                continue;
+            }
+
+            if (inst.opcode == OpCodes.Ldc_R4 && inst.operand.ToStringSafe().Contains("20"))
+            {
+                yield return new CodeInstruction(OpCodes.Ldc_R4, 0);
+            }
+            else if (inst.opcode == OpCodes.Ldc_R4 && inst.operand.ToStringSafe().Contains("160"))
+            {
+                yield return new CodeInstruction(OpCodes.Ldc_R4, 179);
+            }
+            else if (inst.opcode == OpCodes.Ldc_R4 && inst.operand.ToStringSafe().Contains("200"))
+            {
+                yield return new CodeInstruction(OpCodes.Ldc_R4, 180);
+            }
+            else if (inst.opcode == OpCodes.Ldc_R4 && inst.operand.ToStringSafe().Contains("340"))
+            {
+                yield return new CodeInstruction(OpCodes.Ldc_R4, 359);
+            }
+            else yield return inst;
+        }
 
 
+    }
     /*
         public static void DrawEquipmentAiming_Prefix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,
                                               ref float aimAngle)

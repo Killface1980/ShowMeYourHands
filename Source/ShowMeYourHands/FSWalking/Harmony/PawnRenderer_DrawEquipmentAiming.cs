@@ -207,8 +207,9 @@ public class PawnRenderer_DrawEquipmentAiming
 #endif
 
         Vector3 newDrawLoc = drawLoc;
-        float newAimAngle = aimAngle;
-        float currentY = newDrawLoc.y;
+        float newAimAngle  = aimAngle;
+        float currentY     = newDrawLoc.y;
+
         if (ShowMeYourHandsMain.rightHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.rightHandLocations[eq].Item1 != Vector3.zero)
         {
             drawLoc += ShowMeYourHandsMain.rightHandLocations[eq].Item1;
@@ -224,7 +225,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
                 }
             }
-            //  aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2 + 90f;
+             // aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2;
         }
         else
         {
@@ -244,7 +245,7 @@ public class PawnRenderer_DrawEquipmentAiming
                     }
                 }
 
-                //   aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2 + 90f;
+                 //  aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2 ;
             }
         }
 

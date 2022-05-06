@@ -7,9 +7,11 @@ using FacialStuff.Defs;
 using FacialStuff.GraphicsFS;
 using HarmonyLib;
 using RimWorld;
+using ShowMeYourHands.FSWalking;
 using UnityEngine;
 using Verse;
 using WHands;
+using static ShowMeYourHands.ShowMeYourHandsMain;
 
 namespace ShowMeYourHands;
 
@@ -43,8 +45,8 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
         if (drawEquipmentAimingPatches is null)
         {
-            ShowMeYourHandsMain.LogMessage("There seem to be no patches for DrawEquipmentAiming");
-                ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.High));
+            LogMessage("There seem to be no patches for DrawEquipmentAiming");
+                harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.High));
             return;
         }
 
@@ -56,30 +58,33 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             "com.github.automatic1111.rimlaser"
         };
 
-        ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.First));
+        harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.First));
 
         foreach (Patch patch in drawEquipmentAimingPatches.Prefixes.Where(patch => modifyingPatches.Contains(patch.owner)))
         {
-            ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, -1, null, new[] { patch.owner }));
+            harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, -1, null, new[] { patch.owner }));
         }
 
-        ShowMeYourHandsMain.harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.Last));
+        // harmony.Patch(AccessTools.Method(typeof(PawnRenderer), "DrawEquipmentAiming"), null, null, new HarmonyMethod(typeof(DrawEquipmentAiming_Patch).GetMethod("Transpiler_DrawEquipmentAiming")));
+
+
+        harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.Last));
 
         drawEquipmentAimingPatches = Harmony.GetPatchInfo(original);
 
         if (drawEquipmentAimingPatches.Prefixes.Count > 0)
         {
-            ShowMeYourHandsMain.LogMessage($"{drawEquipmentAimingPatches.Prefixes.Count} current active prefixes");
+            LogMessage($"{drawEquipmentAimingPatches.Prefixes.Count} current active prefixes");
             foreach (Patch patch in drawEquipmentAimingPatches.Prefixes.OrderByDescending(patch => patch.priority))
             {
-                if (ShowMeYourHandsMain.knownPatches.Contains(patch.owner))
+                if (knownPatches.Contains(patch.owner))
                 {
-                    ShowMeYourHandsMain.LogMessage(
+                    LogMessage(
                         $"Prefix - Owner: {patch.owner}, Method: {patch.PatchMethod.Name}, Prio: {patch.priority}");
                 }
                 else
                 {
-                    ShowMeYourHandsMain.LogMessage(
+                    LogMessage(
                         $"There is an unexpected patch of the weapon-rendering function. This may affect hand-positions. Please report the following information to the author of the 'Show Me Your Hands'-mod\nPrefix - Owner: {patch.owner}, Method: {patch.PatchMethod.Name}, Prio: {patch.priority}",
                         false, true);
                 }
@@ -91,17 +96,17 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             return;
         }
 
-        ShowMeYourHandsMain.LogMessage($"{drawEquipmentAimingPatches.Transpilers.Count} current active transpilers");
+        LogMessage($"{drawEquipmentAimingPatches.Transpilers.Count} current active transpilers");
         foreach (Patch patch in drawEquipmentAimingPatches.Transpilers.OrderByDescending(patch => patch.priority))
         {
-            if (ShowMeYourHandsMain.knownPatches.Contains(patch.owner))
+            if (knownPatches.Contains(patch.owner))
             {
-                ShowMeYourHandsMain.LogMessage(
+                LogMessage(
                     $"Transpiler - Owner: {patch.owner}, Method: {patch.PatchMethod}, Prio: {patch.priority}");
             }
             else
             {
-                ShowMeYourHandsMain.LogMessage(
+                LogMessage(
                     $"There is an unexpected patch of the weapon-rendering function. This may affect hand-positions. Please report the following information to the author of the 'Show Me Your Hands'-mod\nTranspiler {patch.index}. Owner: {patch.owner}, Method: {patch.PatchMethod}, Prio: {patch.priority}",
                     false, true);
             }
@@ -229,11 +234,11 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         }
         catch (Exception exception)
         {
-            ShowMeYourHandsMain.LogMessage(
+            LogMessage(
                 $"Failed to save some settings, if debugging the stage it failed was {currentStage}.\n{exception}");
         }
 
-        ShowMeYourHandsMain.LogMessage($"Defined hand definitions of {doneWeapons.Count} weapons", true);
+        LogMessage($"Defined hand definitions of {doneWeapons.Count} weapons", true);
     }
 
     public static void FigureOutSpecific(ThingDef weapon)
@@ -284,7 +289,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         {
             if (ShowMeYourHandsMod.IsShield(weapon))
             {
-                ShowMeYourHandsMain.LogMessage($"Ignoring {weapon.defName} is probably a shield");
+                LogMessage($"Ignoring {weapon.defName} is probably a shield");
                 continue;
             }
 

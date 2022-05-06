@@ -56,6 +56,7 @@ class DrawAt_Patch
             float rateMultiplier = Find.TickManager.TickRateMultiplier;
             float elapsedTime = 1f * rateMultiplier;
 
+#if includeTweens
             foreach (Vector3Tween tween in animator.Vector3Tweens)
             {
                 if (tween is { State: TweenState.Running })
@@ -70,7 +71,7 @@ class DrawAt_Patch
                     tween.Update(elapsedTime);
                 }
             }
-
+#endif
 
             /*
             if (angleTween.State == TweenState.Running)

@@ -96,9 +96,10 @@ namespace FacialStuff
 
             return joints;
         }
-
+#if includeTweens
         public readonly Vector3Tween[] Vector3Tweens = new Vector3Tween[(int)TweenThing.Max];
         public readonly FloatTween[] FloatTweens = new FloatTween[(int)TweenThing.Max];
+#endif
         [CanBeNull] public BodyAnimDef BodyAnim;
         public BodyPartStats BodyStat;
         public bool Deactivated;
@@ -113,7 +114,7 @@ namespace FacialStuff
         //[CanBeNull] public PoseCycleDef PoseCycle;
         public Vector3 SecondHandPosition;
 
-        public WalkCycleDef CurrentWalkCycle { get; private set; }
+        [CanBeNull] public WalkCycleDef CurrentWalkCycle { get; private set; }
 
         public void DoWalkCycleOffsets(ref Vector3 rightFoot,
                     ref Vector3 leftFoot,
@@ -358,9 +359,9 @@ namespace FacialStuff
             }
         }
 
-        #endregion Public Fields
+#endregion Public Fields
 
-        #region Private Fields
+#region Private Fields
 
         private static readonly FieldInfo _infoJitterer;
         [NotNull] private readonly List<Material> _cachedNakedMatsBodyBase = new();
@@ -372,9 +373,9 @@ namespace FacialStuff
         private int _lastRoomCheck;
         [CanBeNull] private Room _theRoom;
 
-        #endregion Private Fields
+#endregion Private Fields
 
-        #region Public Properties
+#region Public Properties
 
         /*
         public BodyAnimator BodyAnimator
@@ -393,9 +394,9 @@ namespace FacialStuff
 
         public CompProperties_BodyAnimator Props => (CompProperties_BodyAnimator)this.props;
 
-        #endregion Public Properties
+#endregion Public Properties
 
-        #region Private Properties
+#region Private Properties
 
         [CanBeNull]
         private Room TheRoom
@@ -419,9 +420,9 @@ namespace FacialStuff
             }
         }
 
-        #endregion Private Properties
+#endregion Private Properties
 
-        #region Public Methods
+#region Public Methods
 
         public static object GetHiddenValue(Type type, object __instance, string fieldName, [CanBeNull] FieldInfo info)
         {
@@ -729,39 +730,36 @@ namespace FacialStuff
             }
 
             BodyAnimDef body = this.BodyAnim;
-            if (body == null)
-            {
-                return;
-            }
 
-
-            BodyAnimDef bodyAnimDef = this.BodyAnim;
-            if (bodyAnimDef is not { bipedWithHands: true })
+            if (body is not { bipedWithHands: true })
             {
                 return;
             }
 
             float bodySizeScaling = GetBodysizeScaling();
 
-            this.MainHandPosition = this.SecondHandPosition = Vector3.zero;
-            bool hasSecondWeapon = false;
-            ThingWithComps eq = pawn?.equipment?.Primary;
-            bool leftBehind = false;
-            bool rightBehind = false;
-            bool leftHandFlipped = false;
-            bool rightHandFlipped = false;
+            this.MainHandPosition    = this.SecondHandPosition = Vector3.zero;
+            bool hasSecondWeapon     = false;
+            ThingWithComps eq        = pawn?.equipment?.Primary;
+            bool leftBehind          = false;
+            bool rightBehind         = false;
+            bool leftHandFlipped     = false;
+            bool rightHandFlipped    = false;
             bool carriesWeaponOpenly = false;
 
             Job curJob = pawn?.CurJob;
             if (eq != null && curJob?.def != null && !curJob.def.neverShowWeapon)
             {
-                Type baseType = pawn.Drawer.renderer.GetType();
-                MethodInfo methodInfo = baseType.GetMethod("CarryWeaponOpenly", BindingFlags.NonPublic | BindingFlags.Instance);
-                object result = methodInfo?.Invoke(pawn.Drawer.renderer, null);
-                if (result != null && (bool)result)
+                Type baseType = pawn?.Drawer?.renderer?.GetType();
+                if (baseType != null)
                 {
-                    this.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
-                    carriesWeaponOpenly = true;
+                    MethodInfo methodInfo = baseType.GetMethod("CarryWeaponOpenly", BindingFlags.NonPublic | BindingFlags.Instance);
+                    object result = methodInfo?.Invoke(pawn.Drawer.renderer, null);
+                    if (result != null && (bool)result)
+                    {
+                        this.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
+                        carriesWeaponOpenly = true;
+                    }
                 }
             }
 
@@ -773,7 +771,7 @@ namespace FacialStuff
                 if (this.pawn.Position.DistanceTo(((IntVec3)curJob.targetB)) > 0.65f)
                 {
                     isEating = true;
-                    drawPos = pawn.Drawer.DrawPos;
+                    if (pawn.Drawer != null) drawPos = pawn.Drawer.DrawPos;
                 }
             }
 
@@ -892,7 +890,7 @@ namespace FacialStuff
             WalkCycleDef walkCycle = this.CurrentWalkCycle;
             //PoseCycleDef poseCycle = this.PoseCycle;
 
-            if (!carrying || isEating)
+            if (walkCycle != null && !carrying || isEating)
             {
                 float offsetJoint = walkCycle.ShoulderOffsetHorizontalX.Evaluate(this.MovedPercent);
 
@@ -940,7 +938,7 @@ namespace FacialStuff
             bool pawnIsAiming = pawn.stances.curStance is Stance_Busy stance_Busy && !stance_Busy.neverAimWeapon &&
                                 stance_Busy.focusTarg.IsValid;
             bool ignoreRight = false;
-            ThingWithComps thingWithComps = this.pawn.equipment.Primary;
+            ThingWithComps equipmentPrimary = this.pawn.equipment.Primary;
 
             if (drawRight)
             {
@@ -953,9 +951,9 @@ namespace FacialStuff
                 {
                     if (!pawnIsAiming && carriesWeaponOpenly && (!hasSecondWeapon || offHandPosition != Vector3.zero))
                     {
-                        if (thingWithComps != null)
+                        if (equipmentPrimary != null)
                         {
-                            ShowMeYourHandsMain.rightHandLocations[thingWithComps] = new Tuple<Vector3, float>(
+                            ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(
                                 GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector,
                                     handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - MainHandPosition, handSwingAngle[1]);
                             ignoreRight = true;
@@ -963,18 +961,18 @@ namespace FacialStuff
                     }
                     else
                     {
-                        if (thingWithComps != null)
+                        if (equipmentPrimary != null)
                         {
-                            ShowMeYourHandsMain.rightHandLocations[thingWithComps] =
+                            ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] =
                                 new Tuple<Vector3, float>(Vector3.zero, 0f);
                             ignoreRight = false;
                         }                }
                 }
                 else
                 {
-                    if (thingWithComps != null)
+                    if (equipmentPrimary != null)
                     {
-                        ShowMeYourHandsMain.rightHandLocations[thingWithComps] =
+                        ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] =
                             new Tuple<Vector3, float>(Vector3.zero, 0f);
                         ignoreRight = false;
                     }
@@ -1029,16 +1027,17 @@ namespace FacialStuff
             {
                 bool ignoreLeft = false;
                 List<ThingWithComps> listForReading = pawn.equipment.AllEquipmentListForReading;
+                ThingWithComps offHandWeapon = null;
                 if (hasSecondWeapon && listForReading != null && listForReading.Count == 2)
                 {
-                    ThingWithComps thing = (from weapon in listForReading
-                                            where pawn.equipment?.Primary != null && weapon != pawn.equipment.Primary
-                                            select weapon).First();
-                    if ( thing != null)
+                    offHandWeapon = (from weapon in listForReading
+                        where pawn.equipment?.Primary != null && weapon != pawn.equipment.Primary
+                        select weapon).First();
+                    if ( offHandWeapon != null)
                     {
                         if (this.IsMoving && !pawnIsAiming && carriesWeaponOpenly)
                         {
-                            ShowMeYourHandsMain.leftHandLocations[thing] = new Tuple<Vector3, float>(
+                            ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(
                                 GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector,
                                     handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - offHandPosition,
                                 handSwingAngle[0]);
@@ -1046,7 +1045,7 @@ namespace FacialStuff
                         }
                         else
                         {
-                            ShowMeYourHandsMain.leftHandLocations[thing] = new Tuple<Vector3, float>(Vector3.zero, 0f);
+                            ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(Vector3.zero, 0f);
                         }
                     }
                 }
@@ -1085,7 +1084,21 @@ namespace FacialStuff
                     position = GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
                     if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal) // pawn has free left hand
                     {
-                        position.y = ShowMeYourHandsMain.weaponLocations[thingWithComps].Item1.y - 0.01f;
+                        position.y = ShowMeYourHandsMain.weaponLocations[equipmentPrimary].Item1.y - 0.01f;
+                    }
+
+                    if (carriesWeaponOpenly && hasSecondWeapon && offHandWeapon!= null && IsMoving && this.CurrentRotation.IsHorizontal)
+                    {
+                        if (this.CurrentRotation == Rot4.East)
+                        {
+                            position.y = ShowMeYourHandsMain.weaponLocations[offHandWeapon].Item1.y - 0.01f;
+
+                        }
+                        else
+                        {
+                            position.y = ShowMeYourHandsMain.weaponLocations[offHandWeapon].Item1.y + 0.01f;
+
+                        }
                     }
                     if (carrying && !isEating) // grabby angle
                     {
@@ -1175,6 +1188,7 @@ namespace FacialStuff
             {
                 return;
             }
+#if includeTweens
 
             if (Find.TickManager.TicksGame == this.LastPosUpdate[(int)tweenThing])
             {
@@ -1231,7 +1245,7 @@ namespace FacialStuff
 
                 this.LastPosition[(int)tweenThing] = position;
             }
-
+#endif
             //  tweener.PreThingPosCalculation(tweenThing, noTween);
 
             Graphics.DrawMesh(handsMesh, position, quat, material, 0);
@@ -1279,6 +1293,7 @@ namespace FacialStuff
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+#if includeTweens
 
             for (int i = 0; i < this.Vector3Tweens.Length; i++)
             {
@@ -1288,7 +1303,7 @@ namespace FacialStuff
             {
                 this.FloatTweens[i] = new FloatTween();
             }
-
+#endif
             string bodyType = "Undefined";
 
             if (this.pawn.story?.bodyType != null)
@@ -1325,6 +1340,8 @@ namespace FacialStuff
 
             //this.BodyAnimator = new BodyAnimator(this.pawn, this);
             this.pawnBodyGraphic = new PawnBodyGraphic(this);
+            this.IsInitialized = true;
+
         }
 
         public void SetBodyAngle()
@@ -1459,7 +1476,6 @@ namespace FacialStuff
         {
             base.CompTick();
             this.SelectWalkcycle(false);
-            this.IsInitialized = true;
         }
 
         public Material LeftHandShadowMat => OverrideMaterialIfNeeded(this.pawnBodyGraphic
@@ -1468,11 +1484,12 @@ namespace FacialStuff
         public Material RightHandShadowMat => OverrideMaterialIfNeeded(this.pawnBodyGraphic
             ?.HandGraphicRightShadow?.MatSingle);
 
-        #endregion Public Methods
+#endregion Public Methods
 
-        //  public float lastWeaponAngle = 53f;
+//  public float lastWeaponAngle = 53f;
+#if includeTweens
         public readonly Vector3[] LastPosition = new Vector3[(int)TweenThing.Max];
-
+#endif
         public float BodyAngle = 0f;
 
         public float DrawOffsetY;
@@ -1490,9 +1507,10 @@ namespace FacialStuff
         public bool IsMoving;
 
         public bool IsRider = false;
+#if includeTweens
 
         public readonly float[] LastAimAngle = new float[(int)TweenThing.Max];
-
+#endif
         public Vector3 LastEqPos = Vector3.zero;
 
         public void ApplyEquipmentWobble(ref Vector3 rootLoc)
@@ -2569,6 +2587,10 @@ namespace FacialStuff
                     if (offHandWeapon == null)
                     {
                         y2 *= -1f;
+                    }
+                    else
+                    {
+                        y2 = 0.01f;
                     }
                 }
 

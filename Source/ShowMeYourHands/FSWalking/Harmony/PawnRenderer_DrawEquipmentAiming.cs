@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using FacialStuff;
-using FacialStuff.Tweener;
+﻿using FacialStuff;
 using RimWorld;
+using System;
 using UnityEngine;
 using Verse;
 
@@ -32,9 +30,8 @@ public class PawnRenderer_DrawEquipmentAiming
     public static void SaveWeaponLocationsAndDoOffsets(Pawn pawn, Thing eq, ref Vector3 drawLoc,
         ref float aimAngle)
     {
-
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
-        
+
         if (!ShowMeYourHandsMod.instance.Settings.UseHands)
         {
             return;
@@ -102,12 +99,10 @@ public class PawnRenderer_DrawEquipmentAiming
         // Log.Message(eq.def + " - " + weaponOffset.x.ToString("N3") + "-" + weaponOffset.y.ToString("N3") + "-" +
         //             weaponOffset.z.ToString("N3"));
 
-
-
         if (pawn?.equipment?.AllEquipmentListForReading != null && pawn.equipment.AllEquipmentListForReading.Count == 2)
         {
             drawLoc.z += weaponOffset.z;
-            drawLoc.x += weaponOffset.x * 0.5f * (isFirstHandWeapon ? -1f: 1f);
+            drawLoc.x += weaponOffset.x * 0.5f * (isFirstHandWeapon ? -1f : 1f);
         }
         else
         {
@@ -117,11 +112,11 @@ public class PawnRenderer_DrawEquipmentAiming
         int equipment = isFirstHandWeapon ? (int)TweenThing.Equipment1 : (int)TweenThing.Equipment2;
 
         bool noTween = false;// pawn.Drafted;
-        //if (pawn.pather != null && pawn.pather.MovedRecently(5))
-        //{
-        //    noTween = true;
-        //}
-
+                             //if (pawn.pather != null && pawn.pather.MovedRecently(5))
+                             //{
+                             //    noTween = true;
+                             //}
+#if includeTweens
         switch (compAnim.Vector3Tweens[equipment].State)
         {
             case TweenState.Running:
@@ -161,7 +156,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
                 break;
         }
-     
+
         switch (compAnim.FloatTweens[equipment].State)
         {
             case TweenState.Running:
@@ -187,7 +182,7 @@ public class PawnRenderer_DrawEquipmentAiming
 
                 float start = compAnim.LastAimAngle[equipment];
                 float angleDiff = Mathf.Abs(start)- Mathf.Abs(aimAngle);
-                
+
                 if (Mathf.Abs(angleDiff) < 145f)
                 {
                      float duration = Mathf.Abs(angleDiff * 0.35f);
@@ -209,22 +204,49 @@ public class PawnRenderer_DrawEquipmentAiming
                 }
                 break;
         }
-
+#endif
 
         Vector3 newDrawLoc = drawLoc;
         float newAimAngle = aimAngle;
-
+        float currentY = newDrawLoc.y;
         if (ShowMeYourHandsMain.rightHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.rightHandLocations[eq].Item1 != Vector3.zero)
         {
             drawLoc += ShowMeYourHandsMain.rightHandLocations[eq].Item1;
-          //  aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2 + 90f;
-        }
-        else if (ShowMeYourHandsMain.leftHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.leftHandLocations[eq].Item1 != Vector3.zero)
-        {
-            drawLoc += ShowMeYourHandsMain.leftHandLocations[eq].Item1;
-         //   aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2 + 90f;
-        }
+            if (compAnim.CurrentRotation.IsHorizontal)
+            {
+                if (compAnim.CurrentRotation == Rot4.West)
+                {
+                    drawLoc.y = Mathf.Max(drawLoc.y, currentY);
+                }
+                else
+                {
+                    drawLoc.y = Mathf.Min(drawLoc.y, currentY);
 
+                }
+            }
+            //  aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2 + 90f;
+        }
+        else
+        {
+            if (ShowMeYourHandsMain.leftHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.leftHandLocations[eq].Item1 != Vector3.zero)
+            {
+                drawLoc += ShowMeYourHandsMain.leftHandLocations[eq].Item1;
+                if (compAnim.CurrentRotation.IsHorizontal)
+                {
+                    if (compAnim.CurrentRotation == Rot4.West)
+                    {
+                        drawLoc.y = Mathf.Max(drawLoc.y, currentY);
+                    }
+                    else
+                    {
+                        drawLoc.y = Mathf.Min(drawLoc.y, currentY);
+
+                    }
+                }
+
+                //   aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2 + 90f;
+            }
+        }
 
         CompEquippable compEquippable = eq.TryGetComp<CompEquippable>();
         if (compEquippable != null)
@@ -233,16 +255,15 @@ public class PawnRenderer_DrawEquipmentAiming
             newDrawLoc += drawOffset;
             newAimAngle += angleOffset;
         }
+#if includeTweens
 
-        compAnim.LastPosition[(int)equipment] = newDrawLoc;
-        compAnim.LastAimAngle[(int)equipment] = newAimAngle;
-
+        compAnim.LastPosition[(int)equipment] = drawLoc;
+        compAnim.LastAimAngle[(int)equipment] = aimAngle;
+#endif
         // ShowMeYourHandsMain.LogMessage($"New angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(newDrawLoc, newAimAngle);
 
-      //  compAnim.DrawHands(0f, newDrawLoc, eq, flipped);
-
-
+        //  compAnim.DrawHands(0f, newDrawLoc, eq, flipped);
     }
 }

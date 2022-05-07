@@ -565,6 +565,15 @@ namespace FacialStuff
                     MovedPercent,
                     CurrentRotation);
             }
+            else
+            {
+
+                while (Vector3.Distance(rootLoc, bodyLoc) > body.extraLegLength * 1.5f)
+                {
+                    float step = 0.025f;
+                    rootLoc = Vector3.MoveTowards(rootLoc, bodyLoc, step);
+                }
+            }
             float bodysizeScaling = GetBodysizeScaling();
 
             this.GetBipedMesh(out Mesh footMeshRight, out Mesh footMeshLeft);
@@ -970,7 +979,7 @@ namespace FacialStuff
                 }
                 else
                 {
-                    if (equipmentPrimary != null)
+                    if (carriesWeaponOpenly && equipmentPrimary != null)
                     {
                         ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] =
                             new Tuple<Vector3, float>(Vector3.zero, 0f);
@@ -1082,12 +1091,12 @@ namespace FacialStuff
                 else // standard
                 {
                     position = GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
-                    if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal) // pawn has free left hand
+                    if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal && ShowMeYourHandsMain.weaponLocations.ContainsKey(equipmentPrimary)) // pawn has free left hand
                     {
                         position.y = ShowMeYourHandsMain.weaponLocations[equipmentPrimary].Item1.y - 0.01f;
                     }
 
-                    if (carriesWeaponOpenly && hasSecondWeapon && offHandWeapon!= null && IsMoving && this.CurrentRotation.IsHorizontal)
+                    if (carriesWeaponOpenly && hasSecondWeapon && offHandWeapon!= null && ShowMeYourHandsMain.weaponLocations.ContainsKey(offHandWeapon) && IsMoving && this.CurrentRotation.IsHorizontal)
                     {
                         if (this.CurrentRotation == Rot4.East)
                         {

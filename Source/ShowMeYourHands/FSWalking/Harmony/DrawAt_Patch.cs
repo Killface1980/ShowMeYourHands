@@ -11,7 +11,7 @@ namespace ShowMeYourHands.FSWalking;
 
 [ShowMeYourHandsMod.HotSwappable]
 [HarmonyPriority(0)]
-[HarmonyPatch(typeof(Pawn_DrawTracker), "DrawAt")]
+[HarmonyPatch(typeof(Pawn_DrawTracker), nameof(Pawn_DrawTracker.DrawAt))]
 class DrawAt_Patch
 {
 

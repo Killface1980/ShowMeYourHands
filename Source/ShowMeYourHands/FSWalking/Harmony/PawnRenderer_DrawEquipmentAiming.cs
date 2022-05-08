@@ -1,6 +1,7 @@
 ﻿using FacialStuff;
 using RimWorld;
 using System;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -262,6 +263,15 @@ public class PawnRenderer_DrawEquipmentAiming
         compAnim.LastAimAngle[(int)equipment] = aimAngle;
 #endif
         // ShowMeYourHandsMain.LogMessage($"New angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
+        if (ShowMeYourHandsMain.OversizedWeaponLoaded || ShowMeYourHandsMain.EnableOversizedLoaded)
+        {
+            // CompProperties thingComp =
+            //     eq.def.comps.FirstOrDefault(y => y.GetType().ToString().Contains("CompOversizedWeapon"));
+            if (eq.def.graphicData.drawSize.x != 1f)
+            {
+                newAimAngle -= eq.def.equippedAngleOffset * (flipped ? -1f : 1f);
+            }
+        }
 
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(newDrawLoc, newAimAngle);
 

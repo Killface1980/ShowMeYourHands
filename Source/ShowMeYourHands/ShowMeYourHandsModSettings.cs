@@ -48,31 +48,31 @@ internal class ShowMeYourHandsModSettings : ModSettings
     public override void ExposeData()
     {
         base.ExposeData();
-        Scribe_Values.Look(ref VerboseLogging, "VerboseLogging");
-        Scribe_Values.Look(ref MatchArmorColor, "MatchArmorColor");
-        Scribe_Values.Look(ref MatchArtificialLimbColor, "MatchArtificialLimbColor");
-        Scribe_Values.Look(ref MatchHandAmounts, "MatchHandAmounts");
-        Scribe_Values.Look(ref ResizeHands, "ResizeHands", true);
-        Scribe_Values.Look(ref RepositionHands, "RepositionHands", true);
-        Scribe_Values.Look(ref ShowWhenCarry, "ShowWhenCarry");
-        Scribe_Values.Look(ref ShowOtherTmes, "ShowOtherTmes");
-        Scribe_Collections.Look(ref ManualMainHandPositions, "ManualMainHandPositions", LookMode.Value,
+        Scribe_Values.Look(ref VerboseLogging, nameof(VerboseLogging));
+        Scribe_Values.Look(ref MatchArmorColor, nameof(MatchArmorColor));
+        Scribe_Values.Look(ref MatchArtificialLimbColor, nameof(MatchArtificialLimbColor));
+        Scribe_Values.Look(ref MatchHandAmounts, nameof(MatchHandAmounts));
+        Scribe_Values.Look(ref ResizeHands, nameof(ResizeHands), true);
+        Scribe_Values.Look(ref RepositionHands, nameof(RepositionHands), true);
+        Scribe_Values.Look(ref ShowWhenCarry, nameof(ShowWhenCarry));
+        Scribe_Values.Look(ref ShowOtherTmes, nameof(ShowOtherTmes));
+        Scribe_Collections.Look(ref ManualMainHandPositions, nameof(ManualMainHandPositions), LookMode.Value,
             LookMode.Value,
             ref manualMainHandPositionsKeys, ref manualMainHandPositionsValues);
-        Scribe_Collections.Look(ref ManualOffHandPositions, "ManualOffHandPositions", LookMode.Value,
+        Scribe_Collections.Look(ref ManualOffHandPositions, nameof(ManualOffHandPositions), LookMode.Value,
             LookMode.Value,
             ref manualOffHandPositionsKeys, ref manualOffHandPositionsValues);
-        Scribe_Collections.Look(ref ManualWeaponPositions, "ManualWeaponPositions", LookMode.Value,
+        Scribe_Collections.Look(ref ManualWeaponPositions, nameof(ManualWeaponPositions), LookMode.Value,
             LookMode.Value,
             ref manualWeaponPositionsKeys, ref manualWeaponPositionsValues);
-        Scribe_Collections.Look(ref ManualAimedWeaponPositions, "ManualAimedWeaponPositions", LookMode.Value,
+        Scribe_Collections.Look(ref ManualAimedWeaponPositions, nameof(ManualAimedWeaponPositions), LookMode.Value,
             LookMode.Value,
             ref manualAimedWeaponPositionsKeys, ref manualAimedWeaponPositionsValues);
 
-        Scribe_Values.Look(ref UseHands, "UseHands", true);
-        Scribe_Values.Look(ref UseFeet, "UseFeet", true);
-        Scribe_Values.Look(ref UsePaws, "UsePaws", true);
-        Scribe_Values.Look(ref CutHair, "CutHair", true);
+        Scribe_Values.Look(ref UseHands, nameof(UseHands), true);
+        Scribe_Values.Look(ref UseFeet, nameof(UseFeet), true);
+        Scribe_Values.Look(ref UsePaws, nameof(UsePaws), true);
+        Scribe_Values.Look(ref CutHair, nameof(CutHair), true);
 
     }
 

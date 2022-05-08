@@ -928,7 +928,7 @@ namespace FacialStuff
             }
             else */
 
-            if (isFacingNorth && !carrying && !carriesWeaponOpenly)
+            if (isFacingNorth && !carrying && !carriesWeaponOpenly || isFacingNorth && isEating)
             {
                 matLeft = this.LeftHandShadowMat;
                 matRight = this.RightHandShadowMat;
@@ -958,7 +958,7 @@ namespace FacialStuff
 
                 if (this.IsMoving)
                 {
-                    if (!pawnIsAiming && carriesWeaponOpenly && (!hasSecondWeapon || offHandPosition != Vector3.zero))
+                    if (!pawnIsAiming && carriesWeaponOpenly && (!hasSecondWeapon || offHandPosition != Vector3.zero) && pawn.Faction == Faction.OfPlayer)
                     {
                         if (equipmentPrimary != null)
                         {
@@ -1044,7 +1044,7 @@ namespace FacialStuff
                         select weapon).First();
                     if ( offHandWeapon != null)
                     {
-                        if (this.IsMoving && !pawnIsAiming && carriesWeaponOpenly)
+                        if (this.IsMoving && !pawnIsAiming && carriesWeaponOpenly && pawn.Faction == Faction.OfPlayer)
                         {
                             ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(
                                 GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector,
@@ -2211,7 +2211,36 @@ namespace FacialStuff
                 return 0f;
             }
         }
-
+        public override void DrawGUIOverlay()
+        {
+            base.DrawGUIOverlay();
+           // if (this.CurrentWalkCycle != null)
+           // {
+           //     GenMapUI.DrawThingLabel(parent, this.CurrentWalkCycle.label);
+           // }
+        }
+        public override void PostDraw()
+        {
+            base.PostDraw();
+          //  Rot4 rotation = parent.Rotation;
+          //  Vector3 s = new Vector3(parent.def.graphicData.drawSize.x * 0.9f, 1f, parent.def.graphicData.drawSize.y * 0.9f);
+          //  Vector3 drawPos = parent.DrawPos;
+          //  drawPos.y -= 0.08108108f;
+            //Matrix4x4 matrix = default(Matrix4x4);
+            //matrix.SetTRS(drawPos, rotation.AsQuat, s);
+            //Graphics.DrawMesh(MeshPool.plane10, matrix, BackgroundMat, 0);
+            //if (State == BiosculpterPodState.Occupied)
+           // {
+           //     Pawn occupant = pawn;
+           //     Vector3 drawLoc = parent.DrawPos + new Vector3(-1f,0,0);
+           //     Rot4 rotation2 = parent.Rotation;
+           //     if (rotation2 == Rot4.East || rotation2 == Rot4.West)
+           //     {
+           //         drawLoc.z += 0.2f;
+           //     }
+           //     occupant.Drawer.renderer.RenderPawnAt(drawLoc, null, neverAimWeapon: true);
+           // }
+        }
         public Rot4 CurrentRotation
         {
             get => _currentRotationOverride ?? pawn.Rotation;
@@ -2692,7 +2721,7 @@ namespace FacialStuff
                 else if (ShowMeYourHandsMod.instance.Settings.ResizeHands)
                 {
                     bodySize = pawn.BodySize;
-                    bodySize = Mathf.Max(bodySize, 0.5f);
+                    bodySize = Mathf.Max(bodySize, 0.65f);
                     /*
                     if (pawn.RaceProps != null)
                     {

@@ -458,6 +458,11 @@ internal class ShowMeYourHandsMod : Mod
         GUI.DrawTexture(footRect2, FootTex.MatAt(drawRotation).mainTexture);
 
         float weaponRectSize = Mathf.Abs(bodyRect.width / 1.5f);
+
+        if (ShowMeYourHandsMain.OversizedWeaponLoaded || ShowMeYourHandsMain.EnableOversizedLoaded)
+        {
+            weaponRectSize *= thing.graphicData.drawSize.x;
+        }
         float middlePosWeapon = ((rect.width - weaponRectSize) / 2);
         float posXmodifier = 0f;
         float posYmodifier = 0f;
@@ -553,9 +558,9 @@ internal class ShowMeYourHandsMod : Mod
         if (flipped)
         {
             mainHandAngle *=  - 1f;
-            offHandAngle *=  - 1f;
+            offHandAngle  *=  - 1f;
             mainHandAngle -= 180f;
-            offHandAngle -= 180f;
+            offHandAngle  -= 180f;
         }
         mainHandAngle += weaponAngle;
         offHandAngle += weaponAngle;
@@ -587,6 +592,11 @@ internal class ShowMeYourHandsMod : Mod
 
         float scaling = rectWidthAbs / weaponSize.x;
         float handSize = rectWidthAbs / 4;
+        if (thing.graphicData.drawSize.x != 1f)
+        {
+            handSize /= thing.graphicData.drawSize.x;
+        }
+
 
         float weaponMiddle = rectWidthAbs / 2;
 

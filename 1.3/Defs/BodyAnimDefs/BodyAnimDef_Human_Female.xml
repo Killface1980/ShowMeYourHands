@@ -7,7 +7,7 @@
     <quadruped>False</quadruped>
     <bipedWithHands>True</bipedWithHands>
     <armLength>0.4</armLength>
-    <extraLegLength>0.125</extraLegLength>
+    <extraLegLength>0.25</extraLegLength>
     <extremitySize>0.925</extremitySize>
     <hipOffsets>
       <li>

@@ -152,17 +152,17 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
                     CompProperties_BodyAnimator bodyAnimator = new()
                     {
-                        compClass = typeof(CompBodyAnimator),
-                        handTexPath = pawnSets.handTexPath,
-                        footTexPath = pawnSets.footTexPath,
-                        hipOffsets = pawnSets.hipOffsets,
+                        compClass       = typeof(CompBodyAnimator),
+                        handTexPath     = pawnSets.handTexPath,
+                        footTexPath     = pawnSets.footTexPath,
+                        hipOffsets      = pawnSets.hipOffsets,
                         shoulderOffsets = pawnSets.shoulderOffsets,
-                        armLength = pawnSets.armLength,
-                        extraLegLength = pawnSets.extraLegLength,
-                        extremitySize = pawnSets.extremitySize,
-                        quadruped = pawnSets.quadruped,
-                        bipedWithHands = pawnSets.bipedWithHands,
-                        offCenterX = pawnSets.offCenterX
+                        armLength       = pawnSets.armLength,
+                        extraLegLength  = pawnSets.extraLegLength,
+                        extremitySize   = pawnSets.extremitySize,
+                        quadruped       = pawnSets.quadruped,
+                        bipedWithHands  = pawnSets.bipedWithHands,
+                        offCenterX      = pawnSets.offCenterX
                     };
                     thingDef.comps?.Add(bodyAnimator);
 
@@ -335,7 +335,8 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
     private static void LoadFromSettings()
     {
-        if (ShowMeYourHandsMod.instance.Settings.ManualMainHandPositions == null)
+        ShowMeYourHandsModSettings modSettings = ShowMeYourHandsMod.instance.Settings;
+        if (modSettings?.ManualMainHandPositions == null)
         {
             return;
         }
@@ -346,44 +347,42 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         //    ShowMeYourHandsMod.instance?.Settings?.ManualAimedPositions,
         //};
         //foreach (Dictionary<string, SaveableVector3> kvp in list)
-        foreach (KeyValuePair<string, SaveableVector3> keyValuePair in ShowMeYourHandsMod.instance?.Settings?.ManualMainHandPositions)
+        foreach (KeyValuePair<string, SaveableVector3> keyValuePair in modSettings.ManualMainHandPositions)
         {
-            ThingDef weapon = DefDatabase<ThingDef>.GetNamedSilentFail(keyValuePair.Key);
+            string defName = keyValuePair.Key;
+            ThingDef weapon = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
             if (weapon == null)
             {
                 continue;
             }
 
             WhandCompProps compProps = weapon.GetCompProperties<WhandCompProps>();
+            SaveableVector3 saveableVector3 = keyValuePair.Value;
             if (compProps == null)
             {
                 compProps = new WhandCompProps
 
                 {
                     compClass = typeof(WhandComp),
-                    MainHand = keyValuePair.Value.ToVector3(),
+                    MainHand = saveableVector3.ToVector3(),
                     SecHand =
-                        ShowMeYourHandsMod.instance?.Settings?.ManualOffHandPositions
-                            .ContainsKey(keyValuePair.Key) == true
-                            ? ShowMeYourHandsMod.instance.Settings.ManualOffHandPositions[keyValuePair.Key]
-                                .ToVector3()
+                        modSettings.ManualOffHandPositions
+                            .ContainsKey(defName) == true
+                            ? modSettings.ManualOffHandPositions[defName].ToVector3()
                             : Vector3.zero,
-                    MainHandAngle = keyValuePair.Value.ToAngleFloat(),
+                    MainHandAngle = saveableVector3.ToAngleFloat(),
                     SecHandAngle =
-                        ShowMeYourHandsMod.instance?.Settings?.ManualOffHandPositions
-                            .ContainsKey(keyValuePair.Key) == true
-                            ? ShowMeYourHandsMod.instance.Settings.ManualOffHandPositions[keyValuePair.Key]
-                                .ToAngleFloat()
+                        modSettings.ManualOffHandPositions
+                            .ContainsKey(defName) == true
+                            ? modSettings.ManualOffHandPositions[defName].ToAngleFloat()
                             : 0f,
-                    WeaponPositionOffset = ShowMeYourHandsMod.instance?.Settings?.ManualWeaponPositions
-                        .ContainsKey(keyValuePair.Key) == true
-                        ? ShowMeYourHandsMod.instance.Settings.ManualWeaponPositions[keyValuePair.Key]
-                            .ToVector3()
+                    WeaponPositionOffset = modSettings.ManualWeaponPositions
+                        .ContainsKey(defName) == true
+                        ? modSettings.ManualWeaponPositions[defName].ToVector3()
                         : Vector3.zero,
-                    AimedWeaponPositionOffset = ShowMeYourHandsMod.instance?.Settings?.ManualAimedWeaponPositions
-                    .ContainsKey(keyValuePair.Key) == true
-                    ? ShowMeYourHandsMod.instance.Settings.ManualAimedWeaponPositions[keyValuePair.Key]
-                    .ToVector3()
+                    AimedWeaponPositionOffset = modSettings.ManualAimedWeaponPositions
+                    .ContainsKey(defName) == true
+                    ? modSettings.ManualAimedWeaponPositions[defName].ToVector3()
                     : Vector3.zero,
 
                 };
@@ -391,37 +390,33 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
             }
             else
             {
-                compProps.MainHand      = keyValuePair.Value.ToVector3();
-                compProps.MainHandAngle = keyValuePair.Value.ToAngleFloat();
+                compProps.MainHand      = saveableVector3.ToVector3();
+                compProps.MainHandAngle = saveableVector3.ToAngleFloat();
 
                 // compProps.WeaponPositionOffset = keyValuePair.Value[1].ToVector3();
                 // compProps.AimedWeaponPositionOffset = keyValuePair.Value[2].ToVector3();
 
-                if (ShowMeYourHandsMod.instance?.Settings?.ManualOffHandPositions.ContainsKey(keyValuePair.Key) == true)
+                if (modSettings.ManualOffHandPositions.ContainsKey(defName) == true)
                 {
-                    compProps.SecHand = ShowMeYourHandsMod.instance.Settings.ManualOffHandPositions[keyValuePair.Key]
-                        .ToVector3();
-                    compProps.SecHandAngle = ShowMeYourHandsMod.instance.Settings.ManualOffHandPositions[keyValuePair.Key]
-                        .ToAngleFloat();
+                    compProps.SecHand      = modSettings.ManualOffHandPositions[defName].ToVector3();
+                    compProps.SecHandAngle = modSettings.ManualOffHandPositions[defName].ToAngleFloat();
                 }
                 else
                 {
-                    compProps.SecHand = Vector3.zero;
+                    compProps.SecHand      = Vector3.zero;
                     compProps.SecHandAngle = 0f;
                 }
-                if (ShowMeYourHandsMod.instance?.Settings?.ManualWeaponPositions.ContainsKey(keyValuePair.Key) == true)
+                if (modSettings.ManualWeaponPositions.ContainsKey(defName) == true)
                 {
-                    compProps.WeaponPositionOffset = ShowMeYourHandsMod.instance.Settings.ManualWeaponPositions[keyValuePair.Key]
-                        .ToVector3();
+                    compProps.WeaponPositionOffset = modSettings.ManualWeaponPositions[defName].ToVector3();
                 }
                 else
                 {
                     compProps.WeaponPositionOffset = Vector3.zero;
                 }
-                if (ShowMeYourHandsMod.instance?.Settings?.ManualAimedWeaponPositions.ContainsKey(keyValuePair.Key) == true)
+                if (modSettings.ManualAimedWeaponPositions.ContainsKey(defName) == true)
                 {
-                    compProps.AimedWeaponPositionOffset = ShowMeYourHandsMod.instance.Settings.ManualAimedWeaponPositions[keyValuePair.Key]
-                        .ToVector3();
+                    compProps.AimedWeaponPositionOffset = modSettings.ManualAimedWeaponPositions[defName].ToVector3();
                 }
                 else
                 {

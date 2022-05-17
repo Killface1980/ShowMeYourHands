@@ -20,6 +20,7 @@
     <Compile Remove="FSWalking\Drawer\ExtremityDrawer.cs" />
     <Compile Remove="FSWalking\Drawer\PawnBodyDrawer.cs" />
     <Compile Remove="FSWalking\Drawer\QuadrupedDrawer.cs" />
+    <Compile Remove="FSWalking\Harmony\DrawEquipmentAiming_Patch.cs" />
     <Compile Remove="FSWalking\Harmony\ModifyCarriedThingDrawPos_Postfix.cs" />
     <Compile Remove="FSWalking\SimpleCurve_Extension.cs" />
     <Compile Remove="HandDrawer.cs" />
@@ -36,6 +37,7 @@
     <None Include="FSWalking\Drawer\ExtremityDrawer.cs" />
     <None Include="FSWalking\Drawer\PawnBodyDrawer.cs" />
     <None Include="FSWalking\Drawer\QuadrupedDrawer.cs" />
+    <None Include="FSWalking\Harmony\DrawEquipmentAiming_Patch.cs" />
     <None Include="FSWalking\Harmony\ModifyCarriedThingDrawPos_Postfix.cs" />
     <None Include="FSWalking\SimpleCurve_Extension.cs" />
     <None Include="HandDrawer.cs" />

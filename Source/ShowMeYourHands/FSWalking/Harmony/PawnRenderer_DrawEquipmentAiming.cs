@@ -267,7 +267,9 @@ public class PawnRenderer_DrawEquipmentAiming
         {
             // CompProperties thingComp =
             //     eq.def.comps.FirstOrDefault(y => y.GetType().ToString().Contains("CompOversizedWeapon"));
-            if (eq.def.graphicData.drawSize.x != 1f)
+            if (!eq.def.IsMeleeWeapon) // oversized weapon
+
+              //  if (eq.def.graphicData.drawSize.x != 1f)
             {
                 newAimAngle -= eq.def.equippedAngleOffset * (flipped ? -1f : 1f);
             }

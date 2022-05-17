@@ -16,9 +16,9 @@ internal class SaveableVector3
 
     public SaveableVector3(Vector3 vector3, float? number)
     {
-        x = vector3.x;
-        y = vector3.y;
-        z = vector3.z;
+        this.x = vector3.x;
+        this.y = vector3.y;
+        this.z = vector3.z;
         this.angle = number.HasValue ? number.Value : 0f;
     }
 
@@ -34,10 +34,10 @@ internal class SaveableVector3
     {
         return string.Format("({0:F3}, {1:F3}, {2:F3}, {3:F3})", new object[]
         {
-            x,
-            y,
-            z,
-            angle
+            this.x,
+            this.y,
+            this.z,
+            this.angle
         });
     }
 
@@ -63,10 +63,10 @@ internal class SaveableVector3
 
     public Vector3 ToVector3()
     {
-        return new Vector3(x, y, z);
+        return new Vector3(this.x, this.y, this.z);
     }
     public float ToAngleFloat()
     {
-        return angle;
+        return this.angle;
     }
 }

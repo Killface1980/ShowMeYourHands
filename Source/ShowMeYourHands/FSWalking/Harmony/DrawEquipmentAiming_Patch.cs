@@ -14,13 +14,12 @@ internal static class DrawEquipmentAiming_Patch
 {
     private static readonly float angleStanding = 143f;
     private static readonly float angleStandingFlipped = 217f;
-    public static readonly Dictionary<Pawn, float> pawnBodySizes = new Dictionary<Pawn, float>();
+    public static readonly Dictionary<Pawn, float> pawnBodySizes = new();
 
     [HarmonyTranspiler]
     public static IEnumerable<CodeInstruction> Transpiler_DrawEquipmentAiming(IEnumerable<CodeInstruction> instructions)
     {
-        FieldInfo pawn =AccessTools.Field(typeof(PawnRenderer),
-            "pawn");
+        FieldInfo pawn =AccessTools.Field(typeof(PawnRenderer), "pawn");
         Pawn p = (Pawn)pawn?.GetValue(instructions);
         bool skip = p == null || (!p.GetCompAnim(out CompBodyAnimator ani) || !ani.IsMoving);
 
@@ -53,7 +52,10 @@ internal static class DrawEquipmentAiming_Patch
             {
                 yield return new CodeInstruction(OpCodes.Ldc_R4, 359);
             }
-            else yield return inst;
+            else
+            {
+                yield return inst;
+            }
         }
 
 

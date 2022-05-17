@@ -19,7 +19,6 @@ namespace ShowMeYourHands.FSWalking
             LongEventHandler.ExecuteWhenFinished(
                 () =>
                 {
-                    pawn.GetCompAnim()?.ClearCache();
                     pawn.GetCompAnim()?.pawnBodyGraphic?.Initialize();
                 });
 

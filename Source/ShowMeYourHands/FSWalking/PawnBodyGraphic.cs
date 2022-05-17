@@ -81,8 +81,8 @@ namespace FacialStuff.GraphicsFS
 
         private void InitializeGraphicsFeet()
         {
-            Pawn _pawn = CompAni.pawn;
-            string texNameFoot = CompAni.BodyAnim.footTexPath;
+            Pawn _pawn = this.CompAni.pawn;
+            string texNameFoot = this.CompAni.BodyAnim.footTexPath;
             string texNameArtificial = PawnExtensions.PathHumanlike + "Feet/Human_PegLeg";
 
             // no story, either animal or not humanoid biped
@@ -112,43 +112,43 @@ namespace FacialStuff.GraphicsFS
             Vector2 drawSize = new(1f, 1f);
             BodyPartStats stats = this.CompAni.BodyStat;
             this.FootGraphicRight = GraphicDatabase.Get<Graphic_Multi>(
-                CompAni.BodyStat.FootRight == PartStatus.Artificial ? texNameArtificial : texNameFoot,
-                GetShader(stats.FootRight),
+                this.CompAni.BodyStat.FootRight == PartStatus.Artificial ? texNameArtificial : texNameFoot,
+                this.GetShader(stats.FootRight),
                 drawSize,
                 animalOverride ? skinColor : this.CompAni.FootColorRight,
                 animalOverride ? skinColor : this.CompAni.FootColorRight);
 
             this.FootGraphicLeft = GraphicDatabase.Get<Graphic_Multi>(
-                CompAni.BodyStat.FootLeft == PartStatus.Artificial ? texNameArtificial : texNameFoot,
-                GetShader(stats.FootLeft),
+                this.CompAni.BodyStat.FootLeft == PartStatus.Artificial ? texNameArtificial : texNameFoot,
+                this.GetShader(stats.FootLeft),
                 drawSize,
                 animalOverride ? skinColor : this.CompAni.FootColorLeft,
                 animalOverride ? skinColor : this.CompAni.FootColorLeft);
 
             this.FootGraphicRightShadow = GraphicDatabase.Get<Graphic_Multi>(
-                CompAni.BodyStat.FootRight == PartStatus.Artificial ? texNameArtificial : texNameFoot,
-                GetShader(stats.FootRight),
+                this.CompAni.BodyStat.FootRight == PartStatus.Artificial ? texNameArtificial : texNameFoot,
+                this.GetShader(stats.FootRight),
                 drawSize,
                 rightFootShadowColor,
                 rightFootShadowColor);
 
             this.FootGraphicLeftShadow = GraphicDatabase.Get<Graphic_Multi>(
-                CompAni.BodyStat.FootLeft == PartStatus.Artificial ? texNameArtificial : texNameFoot,
-                GetShader(stats.FootLeft),
+                this.CompAni.BodyStat.FootLeft == PartStatus.Artificial ? texNameArtificial : texNameFoot,
+                this.GetShader(stats.FootLeft),
                 drawSize,
                 leftFootShadowColor,
                 leftFootShadowColor);
 
             this.FootGraphicRightCol = GraphicDatabase.Get<Graphic_Multi>(
                 texNameFoot,
-                GetShader(stats.FootRight),
+                this.GetShader(stats.FootRight),
                 drawSize,
                 animalOverride ? skinColor : rightColorFoot,
                 animalOverride ? skinColor : rightColorFoot);
 
             this.FootGraphicLeftCol = GraphicDatabase.Get<Graphic_Multi>(
                 texNameFoot,
-                GetShader(stats.FootLeft),
+                this.GetShader(stats.FootLeft),
                 drawSize,
                 animalOverride ? skinColor : leftColorFoot,
                 animalOverride ? skinColor : leftColorFoot);
@@ -277,28 +277,28 @@ namespace FacialStuff.GraphicsFS
             Vector2 drawSize = new(1f, 1f);
             this.HandGraphicRight = GraphicDatabase.Get<Graphic_Multi>(
                 texNameHand,
-                GetShader(stats.HandRight),
+                this.GetShader(stats.HandRight),
                 drawSize,
                 rightHandColor,
                 rightHandColor);
 
             this.HandGraphicLeft = GraphicDatabase.Get<Graphic_Multi>(
                 texNameHand,
-                GetShader(stats.HandLeft),
+                this.GetShader(stats.HandLeft),
                 drawSize,
                 leftHandColor,
                 leftHandColor);
 
             this.HandGraphicRightShadow = GraphicDatabase.Get<Graphic_Multi>(
                 texNameHand,
-                GetShader(stats.HandRight),
+                this.GetShader(stats.HandRight),
                 drawSize,
                 rightHandColorShadow,
                 rightHandColorShadow);
 
             this.HandGraphicLeftShadow = GraphicDatabase.Get<Graphic_Multi>(
                 texNameHand,
-                GetShader(stats.HandLeft),
+                this.GetShader(stats.HandLeft),
                 drawSize,
                 leftHandColorShadow,
                 leftHandColorShadow);
@@ -306,14 +306,14 @@ namespace FacialStuff.GraphicsFS
             // for development
             this.HandGraphicRightCol = GraphicDatabase.Get<Graphic_Multi>(
                 texNameHand,
-                GetShader(stats.HandRight),
+                this.GetShader(stats.HandRight),
                 drawSize,
                 rightColorHand,
                 rightColorHand);
 
             this.HandGraphicLeftCol = GraphicDatabase.Get<Graphic_Multi>(
                 texNameHand,
-                GetShader(stats.HandLeft),
+                this.GetShader(stats.HandLeft),
                 drawSize,
                 leftColorHand,
                 leftColorHand);
@@ -393,11 +393,11 @@ namespace FacialStuff.GraphicsFS
             {
                 return;
             }
-            handLeftHasColor  = false;
-            handRightHasColor = false;
-            footLeftHasColor  = false;
-            footRightHasColor = false;
-            colorBody         = new List<bool> { false, false, false, false };
+            this.handLeftHasColor  = false;
+            this.handRightHasColor = false;
+            this.footLeftHasColor  = false;
+            this.footRightHasColor = false;
+            this.colorBody         = new List<bool> { false, false, false, false };
 
             if (ShowMeYourHandsMod.instance.Settings.MatchHandAmounts ||
                 ShowMeYourHandsMod.instance.Settings.MatchArtificialLimbColor)
@@ -526,7 +526,7 @@ namespace FacialStuff.GraphicsFS
                                         if (ShowMeYourHandsMain.HediffColors.ContainsKey(diff.def))
                                         {
                                             anim.HandColorLeft = ShowMeYourHandsMain.HediffColors[diff.def];
-                                            handLeftHasColor = true;
+                                            this.handLeftHasColor = true;
                                         }
                                     }
 
@@ -536,7 +536,7 @@ namespace FacialStuff.GraphicsFS
                                         if (ShowMeYourHandsMain.HediffColors.ContainsKey(diff.def))
                                         {
                                             anim.HandColorRight = ShowMeYourHandsMain.HediffColors[diff.def];
-                                            handRightHasColor = true;
+                                            this.handRightHasColor = true;
                                         }
                                     }
                                 }
@@ -552,7 +552,7 @@ namespace FacialStuff.GraphicsFS
                                         if (ShowMeYourHandsMain.HediffColors.ContainsKey(diff.def))
                                         {
                                             anim.FootColorLeft = ShowMeYourHandsMain.HediffColors[diff.def];
-                                            footLeftHasColor = true;
+                                            this.footLeftHasColor = true;
                                         }
                                     }
 
@@ -562,7 +562,7 @@ namespace FacialStuff.GraphicsFS
                                         if (ShowMeYourHandsMain.HediffColors.ContainsKey(diff.def))
                                         {
                                             anim.FootColorRight = ShowMeYourHandsMain.HediffColors[diff.def];
-                                            footRightHasColor = true;
+                                            this.footRightHasColor = true;
                                         }
                                     }
                                 }
@@ -627,13 +627,13 @@ namespace FacialStuff.GraphicsFS
                             CompColorable comp = outerApparel.TryGetComp<CompColorable>();
                             if (comp.Active)
                             {
-                                SetHandColor(comp.Color);
+                                this.SetHandColor(comp.Color);
                             }
                         }
 
                         if (PawnExtensions.colorDictionary.ContainsKey(outerApparel))
                         {
-                            SetHandColor(PawnExtensions.colorDictionary[outerApparel]);
+                            this.SetHandColor(PawnExtensions.colorDictionary[outerApparel]);
                         }
                         // BUG Tried to get a resource "Things/Pawn/Humanlike/Apparel/Duster/Duster" from a different thread. All resources must be loaded in the main thread.
                         else
@@ -653,7 +653,7 @@ namespace FacialStuff.GraphicsFS
 
                             if (PawnExtensions.colorDictionary.ContainsKey(outerApparel))
                             {
-                                SetHandColor(PawnExtensions.colorDictionary[outerApparel]);
+                                this.SetHandColor(PawnExtensions.colorDictionary[outerApparel]);
                             }
                         }
                     }
@@ -692,7 +692,7 @@ namespace FacialStuff.GraphicsFS
                         }
                         if (PawnExtensions.colorDictionary.ContainsKey(outerApparel))
                         {
-                            SetFeetColor(PawnExtensions.colorDictionary[outerApparel]);
+                            this.SetFeetColor(PawnExtensions.colorDictionary[outerApparel]);
                         }
                         else
                         {
@@ -701,7 +701,7 @@ namespace FacialStuff.GraphicsFS
                                 CompColorable comp = outerApparel.TryGetComp<CompColorable>();
                                 if (comp.Active)
                                 {
-                                    SetFeetColor(comp.Color);
+                                    this.SetFeetColor(comp.Color);
                                 }
                             }
                             else if (outerApparel.Stuff != null && outerApparel.Graphic.Shader != ShaderDatabase.CutoutComplex)
@@ -720,7 +720,7 @@ namespace FacialStuff.GraphicsFS
 
                             if (PawnExtensions.colorDictionary.ContainsKey(outerApparel))
                             {
-                                SetFeetColor(PawnExtensions.colorDictionary[outerApparel]);
+                                this.SetFeetColor(PawnExtensions.colorDictionary[outerApparel]);
                             }
                         }
                     }
@@ -733,44 +733,44 @@ namespace FacialStuff.GraphicsFS
         private void SetHandColor(Color color)
         {
             CompBodyAnimator anim = this.CompAni;
-            if (!handLeftHasColor)
+            if (!this.handLeftHasColor)
             {
                 anim.HandColorLeft = color;
                 anim.BodyStat.HandLeft = anim.BodyStat.HandLeft != PartStatus.Missing
                     ? PartStatus.Apparel
                     : anim.BodyStat.HandLeft;
-                handLeftHasColor = true;
+                this.handLeftHasColor = true;
             }
 
-            if (!handRightHasColor)
+            if (!this.handRightHasColor)
             {
                 anim.HandColorRight = color;
                 anim.BodyStat.HandRight = anim.BodyStat.HandRight != PartStatus.Missing
                     ? PartStatus.Apparel
                     : anim.BodyStat.HandRight;
-                handRightHasColor = true;
+                this.handRightHasColor = true;
             }
         }
 
         private void SetFeetColor(Color color)
         {
             CompBodyAnimator anim = this.CompAni;
-            if (!footLeftHasColor)
+            if (!this.footLeftHasColor)
             {
                 anim.FootColorLeft = color;
                 anim.BodyStat.FootLeft = anim.BodyStat.FootLeft != PartStatus.Missing
                     ? PartStatus.Apparel
                     : anim.BodyStat.FootLeft;
-                footLeftHasColor = true;
+                this.footLeftHasColor = true;
             }
 
-            if (!footRightHasColor)
+            if (!this.footRightHasColor)
             {
                 anim.FootColorRight = color;
                 anim.BodyStat.FootRight = anim.BodyStat.FootRight != PartStatus.Missing
                     ? PartStatus.Apparel
                     : anim.BodyStat.FootRight;
-                footRightHasColor = true;
+                this.footRightHasColor = true;
             }
         }
 

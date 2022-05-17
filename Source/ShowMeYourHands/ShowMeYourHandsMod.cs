@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FacialStuff.AnimatorWindows;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -136,15 +137,15 @@ internal class ShowMeYourHandsMod : Mod
     {
         get
         {
-            if (settings == null)
+            if (this.settings == null)
             {
-                settings = GetSettings<ShowMeYourHandsModSettings>();
+                this.settings = this.GetSettings<ShowMeYourHandsModSettings>();
             }
 
-            return settings;
+            return this.settings;
         }
 
-        set => settings = value;
+        set => this.settings = value;
     }
 
     private static List<ThingDef> AllWeapons
@@ -245,9 +246,9 @@ internal class ShowMeYourHandsMod : Mod
 
         listing_Standard = new Listing_Standard();
 
-        DrawOptions(rect2);
-        DrawTabsList(rect2);
-        Settings.Write();
+        this.DrawOptions(rect2);
+        this.DrawTabsList(rect2);
+        this.Settings.Write();
     }
 
     /// <summary>
@@ -391,7 +392,7 @@ internal class ShowMeYourHandsMod : Mod
         {
             weaponAngle = thing.equippedAngleOffset;
         }
-        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, weaponAngle, false);
+        this.DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, weaponAngle, false);
 
         return true;
     }
@@ -512,7 +513,7 @@ internal class ShowMeYourHandsMod : Mod
         weaponAngle = drawAngle - 90;
         // if (thing.IsMeleeWeapon)
         {
-            weaponAngle += thing.equippedAngleOffset * (flipped?-1f: 1f);
+            weaponAngle += thing.equippedAngleOffset * (flipped? -1f: 1f);
 
         }
 
@@ -578,7 +579,7 @@ internal class ShowMeYourHandsMod : Mod
 
 
 
-        DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, weaponRect, texture, weaponAngle, flipped);
+        this.DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, weaponRect, texture, weaponAngle, flipped);
 
         return true;
     }
@@ -714,16 +715,16 @@ internal class ShowMeYourHandsMod : Mod
 
     private void DrawOptions(Rect rect)
     {
-        Rect optionsOuterContainer = rect.ContractedBy(10);
-        optionsOuterContainer.x += leftSideWidth + columnSpacer;
+        Rect optionsOuterContainer   = rect.ContractedBy(10);
+        optionsOuterContainer.x     += leftSideWidth + columnSpacer;
         optionsOuterContainer.width -= leftSideWidth + columnSpacer;
 
         Widgets.DrawBoxSolid(optionsOuterContainer, Color.grey);
         Rect optionsInnerContainer = optionsOuterContainer.ContractedBy(1);
         Widgets.DrawBoxSolid(optionsInnerContainer, new ColorInt(42, 43, 44).ToColor);
-        Rect frameRect = optionsInnerContainer.ContractedBy(10);
-        frameRect.x = leftSideWidth + columnSpacer + 25;
-        frameRect.y += 15;
+        Rect frameRect    = optionsInnerContainer.ContractedBy(10);
+        frameRect.x       = leftSideWidth + columnSpacer + 25;
+        frameRect.y      += 15;
         frameRect.height -= 15;
 
         int tabHeadRectHeight = 80;
@@ -737,7 +738,7 @@ internal class ShowMeYourHandsMod : Mod
         contentRect.y = 0;
         contentRect.width -= 24;
 
-        contentRect.height = scrollViewHeight;
+        contentRect.height = this.scrollViewHeight;
 
         float lineSpacing = Text.LineHeight;
         float curY = 0f;
@@ -755,24 +756,28 @@ internal class ShowMeYourHandsMod : Mod
                     Text.Font = GameFont.Medium;
                     lineSpacing = Text.LineHeight;
                     listing_Standard.Label("SMYH.settings".Translate());
-                    curY += lineSpacing;
-                    Text.Font = GameFont.Small;
+                    curY       += lineSpacing;
+                    Text.Font   = GameFont.Small;
                     lineSpacing = Text.LineHeight;
                     listing_Standard.Gap();
                     curY += lineSpacing;
 
                     //  fs
-                    listing_Standard.CheckboxLabeled("usehands.label".Translate(), ref Settings.UseHands,
+                    listing_Standard.CheckboxLabeled("usehands.label".Translate(), ref this.Settings.UseHands,
                         "usehands.tooltip".Translate());
                     curY += lineSpacing;
-                    listing_Standard.CheckboxLabeled("usefeet.label".Translate(), ref Settings.UseFeet,
+                    listing_Standard.CheckboxLabeled("usefeet.label".Translate(), ref this.Settings.UseFeet,
                         "usefeet.tooltip".Translate());
                     curY += lineSpacing;
-                    listing_Standard.CheckboxLabeled("usepaws.label".Translate(), ref Settings.UsePaws,
+                    listing_Standard.CheckboxLabeled("usepaws.label".Translate(), ref this.Settings.UsePaws,
                         "usepaws.tooltip".Translate());
                     curY += lineSpacing;
-                    listing_Standard.CheckboxLabeled("cuthair.label".Translate(), ref Settings.CutHair,
+                    listing_Standard.CheckboxLabeled("cuthair.label".Translate(), ref this.Settings.CutHair,
                         "cuthair.tooltip".Translate());
+                    listing_Standard.CheckboxLabeled("fsdevelop.label".Translate(), ref MainTabWindow_BaseAnimator.Develop,
+                        "fsdevelop.tooltip".Translate());
+                    listing_Standard.CheckboxLabeled("colored.label".Translate(), ref MainTabWindow_BaseAnimator.Colored,
+                        "fsdevelop.tooltip".Translate());
                     curY += lineSpacing;
 
                     // fs end
@@ -853,40 +858,40 @@ internal class ShowMeYourHandsMod : Mod
                         curY += lineSpacing;
                     }
 
-                    listing_Standard.CheckboxLabeled("SMYH.logging.label".Translate(), ref Settings.VerboseLogging,
+                    listing_Standard.CheckboxLabeled("SMYH.logging.label".Translate(), ref this.Settings.VerboseLogging,
                         "SMYH.logging.tooltip".Translate());
                     curY += lineSpacing;
-                    listing_Standard.CheckboxLabeled("SMYH.matcharmor.label".Translate(), ref Settings.MatchArmorColor,
+                    listing_Standard.CheckboxLabeled("SMYH.matcharmor.label".Translate(), ref this.Settings.MatchArmorColor,
                         "SMYH.matcharmor.tooltip".Translate());
                     curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("SMYH.matchartificiallimb.label".Translate(),
-                        ref Settings.MatchArtificialLimbColor,
+                        ref this.Settings.MatchArtificialLimbColor,
                         "SMYH.matchartificiallimb.tooltip".Translate());
                     curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("SMYH.matchhandamounts.label".Translate(),
-                        ref Settings.MatchHandAmounts,
+                        ref this.Settings.MatchHandAmounts,
                         "SMYH.matchhandamounts.tooltip".Translate());
                     curY += lineSpacing;
-                    listing_Standard.CheckboxLabeled("SMYH.resizehands.label".Translate(), ref Settings.ResizeHands,
+                    listing_Standard.CheckboxLabeled("SMYH.resizehands.label".Translate(), ref this.Settings.ResizeHands,
                         "SMYH.resizehands.tooltip".Translate());
                     curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("SMYH.repositionhands.label".Translate(),
-                        ref Settings.RepositionHands,
+                        ref this.Settings.RepositionHands,
                         "SMYH.repositionhands.tooltip".Translate());
                     curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("SMYH.showwhencarry.label".Translate(),
-                        ref Settings.ShowWhenCarry,
+                        ref this.Settings.ShowWhenCarry,
                         "SMYH.showwhencarry.tooltip".Translate());
                     curY += lineSpacing;
                     listing_Standard.CheckboxLabeled("SMYH.showothertimes.label".Translate(),
-                        ref Settings.ShowOtherTmes,
+                        ref this.Settings.ShowOtherTmes,
                         "SMYH.showothertimes.tooltip".Translate());
                     curY += lineSpacing;
                     listing_Standard.End();
 
                     if (Event.current.type == EventType.Layout)
                     {
-                        scrollViewHeight = curY + 15f;
+                        this.scrollViewHeight = curY + 15f;
                     }
                     Widgets.EndScrollView();
 
@@ -927,37 +932,6 @@ internal class ShowMeYourHandsMod : Mod
                     listing_Standard.End();
 
                     tabContentRect.height = extraweaponsHeight - 15;
-                    Widgets.BeginScrollView(tabFrameRect, ref summaryScrollPosition, tabContentRect);
-
-                    listing_Standard.Begin(tabContentRect);
-
-                    foreach (KeyValuePair<string, int> keyValuePair in totalWeaponsByMod)
-                    {
-                        int fixedWeapons = 0;
-                        if (fixedWeaponsByMod.ContainsKey(keyValuePair.Key))
-                        {
-                            fixedWeapons = fixedWeaponsByMod[keyValuePair.Key];
-                        }
-
-                        decimal percent = fixedWeapons / (decimal)keyValuePair.Value * 100;
-
-                        GUI.color = GetColorFromPercent(percent);
-
-                        if (listing_Standard.ListItemSelectable(
-                                $"{keyValuePair.Key} {Math.Round(percent)}% ({fixedWeapons}/{keyValuePair.Value})",
-                                Color.yellow,
-                                out _,
-                                selectedSubDef == keyValuePair.Key))
-                        {
-                            selectedSubDef = selectedSubDef == keyValuePair.Key ? null : keyValuePair.Key;
-                        }
-
-                        GUI.color = Color.white;
-                    }
-
-                    listing_Standard.End();
-
-                    Widgets.EndScrollView();
                     break;
                 }
 
@@ -966,13 +940,17 @@ internal class ShowMeYourHandsMod : Mod
                     List<TabRecord> list = new();
 
                     ;
+                    TabRecord item0 = new(
+                        "Mods", this.SetTabFaceStyle(WeaponeStyleTab.Mods),
+                        (bool)(this.Tab == WeaponeStyleTab.Mods));
+                    list.Add(item0);
                     TabRecord item = new(
-                        translateHandPosition, SetTabFaceStyle(WeaponeStyleTab.HandPositionOnWeapon),
-                        (bool)(Tab == WeaponeStyleTab.HandPositionOnWeapon));
+                        translateHandPosition, this.SetTabFaceStyle(WeaponeStyleTab.HandPositionOnWeapon),
+                        (bool)(this.Tab == WeaponeStyleTab.HandPositionOnWeapon));
                     list.Add(item);
                     TabRecord item2 = new(
-                        translateWeaponPosition, SetTabFaceStyle(WeaponeStyleTab.WeaponPositionOnPawn),
-                        (bool)(Tab == WeaponeStyleTab.WeaponPositionOnPawn));
+                        translateWeaponPosition, this.SetTabFaceStyle(WeaponeStyleTab.WeaponPositionOnPawn),
+                        (bool)(this.Tab == WeaponeStyleTab.WeaponPositionOnPawn));
                     list.Add(item2);
                     Rect tabRect = new(frameRect.x, frameRect.y + 10, frameRect.width, TabDrawer.TabHeight);
                     TabDrawer.DrawTabs(tabRect, list, (tabRect.width) / 2);
@@ -1005,14 +983,18 @@ internal class ShowMeYourHandsMod : Mod
                         currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
                     }
 
-                    if (Tab == WeaponeStyleTab.HandPositionOnWeapon)
+                    if (this.Tab == WeaponeStyleTab.Mods)
                     {
-                        DoSettingsWindowHandOnWeapon(frameRect, currentDef);
+                        this.DoSettingsMods(frameRect);
+                    }
+                    if (this.Tab == WeaponeStyleTab.HandPositionOnWeapon)
+                    {
+                        this.DoSettingsWindowHandOnWeapon(frameRect, currentDef);
                     }
 
-                    if (Tab == WeaponeStyleTab.WeaponPositionOnPawn)
+                    if (this.Tab == WeaponeStyleTab.WeaponPositionOnPawn)
                     {
-                        DoSettingsWindowWeaponOnPawn(frameRect, currentDef);
+                        this.DoSettingsWindowWeaponOnPawn(frameRect, currentDef);
                     }
                     break;
                 }
@@ -1024,8 +1006,45 @@ internal class ShowMeYourHandsMod : Mod
         HandPositionOnWeapon,
 
         WeaponPositionOnPawn,
+
+        Mods
     }
 
+    private void DoSettingsMods(Rect frameRect)
+    {
+        Rect tabContentRect = frameRect.ContractedBy(5f);
+        Widgets.BeginScrollView(frameRect, ref summaryScrollPosition, tabContentRect);
+
+        listing_Standard.Begin(tabContentRect);
+
+        foreach (KeyValuePair<string, int> keyValuePair in totalWeaponsByMod)
+        {
+            int fixedWeapons = 0;
+            if (fixedWeaponsByMod.ContainsKey(keyValuePair.Key))
+            {
+                fixedWeapons = fixedWeaponsByMod[keyValuePair.Key];
+            }
+
+            decimal percent = fixedWeapons / (decimal)keyValuePair.Value * 100;
+
+            GUI.color = GetColorFromPercent(percent);
+
+            if (listing_Standard.ListItemSelectable(
+                    $"{keyValuePair.Key} {Math.Round(percent)}% ({fixedWeapons}/{keyValuePair.Value})",
+                    Color.yellow,
+                    out _,
+                    selectedSubDef == keyValuePair.Key))
+            {
+                selectedSubDef = selectedSubDef == keyValuePair.Key ? null : keyValuePair.Key;
+            }
+
+            GUI.color = Color.white;
+        }
+
+        listing_Standard.End();
+
+        Widgets.EndScrollView();
+    }
     private void DoSettingsWindowHandOnWeapon(Rect frameRect, ThingDef currentDef )
     {
         listing_Standard.Begin(frameRect);
@@ -1062,7 +1081,7 @@ internal class ShowMeYourHandsMod : Mod
             weaponSize.y);
 
 
-        if (!DrawIcon(currentDef, weaponRect, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle))
+        if (!this.DrawIcon(currentDef, weaponRect, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle))
         {
             listing_Standard.Label("SMYH.error.texture".Translate(SelectedDef));
             listing_Standard.End();
@@ -1230,7 +1249,7 @@ internal class ShowMeYourHandsMod : Mod
 
 
 
-        if (!DrawIconPawnWeapon(currentDef, weaponRectSouth, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle, (currentAimAngle)))
+        if (!this.DrawIconPawnWeapon(currentDef, weaponRectSouth, currentMainHand, currentOffHand, currentMainHandAngle, currentOffHandAngle, (currentAimAngle)))
         {
             listing_Standard.Label("SMYH.error.texture".Translate(SelectedDef));
             listing_Standard.End();
@@ -1238,12 +1257,12 @@ internal class ShowMeYourHandsMod : Mod
         }
         if (currentShowAiming)
         {
-            DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
+            this.DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
                 currentOffHandAngle, (currentAimAngle - 90f));
         }        
         if (!currentShowAiming)
         {
-            DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
+            this.DrawIconPawnWeapon(currentDef, weaponRectEast, currentMainHand, currentOffHand, currentMainHandAngle,
                 currentOffHandAngle, (currentAimAngle), Rot4.East);
         }        
         listing_Standard.End();
@@ -1336,7 +1355,7 @@ internal class ShowMeYourHandsMod : Mod
     public WeaponeStyleTab Tab;
     public Action SetTabFaceStyle(WeaponeStyleTab tab)
     {
-        return delegate { Tab = tab; };
+        return delegate { this.Tab = tab; };
     }
 
     private static void CopyChangedWeapons(bool onlySelected = false)

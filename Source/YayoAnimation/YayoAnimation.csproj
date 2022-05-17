@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputPath>..\..\YayoAnimation\1.3\Assemblies</OutputPath>
     <TargetFramework>net472</TargetFramework>
@@ -27,7 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="yayoAni">
-      <HintPath>D:\SteamLibrary\steamapps\workshop\content\294100\2575938407\Assemblies\yayoAni.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2575938407\Assemblies\yayoAni.dll</HintPath>
       <CopyLocal>False</CopyLocal>
       <Private>false</Private>
     </Reference>

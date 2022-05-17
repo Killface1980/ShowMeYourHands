@@ -21,7 +21,7 @@ namespace FacialStuff.AnimatorWindows
 
         public static bool Develop;
 
-        public static bool Panic;
+        protected static bool Panic;
 
         public override void WindowUpdate()
         {
@@ -39,7 +39,7 @@ namespace FacialStuff.AnimatorWindows
 
         #region Protected Fields
 
-        public static Pawn pawn;
+        protected static Pawn pawn;
         protected readonly float SliderWidth = 420f;
         protected readonly float Spacing = 12f;
         [NotNull] protected CompBodyAnimator CompAnim;
@@ -90,7 +90,7 @@ namespace FacialStuff.AnimatorWindows
             }
         }
 
-        protected static Rot4 currentRotation
+        protected static Rot4 CurrentRotation
         {
             get => _currentRotation;
             set
@@ -145,7 +145,7 @@ namespace FacialStuff.AnimatorWindows
             }
         }
 
-        protected BodyAnimDef currentBodyAnimDef
+        protected BodyAnimDef CurrentBodyAnimDef
         {
             get
             {
@@ -183,7 +183,7 @@ namespace FacialStuff.AnimatorWindows
             this.SetKeyframes();
             this._frameLabel = CurrentFrameInt + 1;
 
-            Rot4 rotation = currentRotation;
+            Rot4 rotation = CurrentRotation;
 
             Rect topEditor = inRect.TopPart(0.52f);
             Rect basics = topEditor.LeftPart(0.375f).ContractedBy(this.Spacing);
@@ -345,13 +345,14 @@ namespace FacialStuff.AnimatorWindows
             }
         }
 
+
         protected virtual void BuildEditorCycle()
         {
         }
 
         protected virtual void DoBasicSettingsMenu(Listing_Standard listing)
         {
-            string label = pawn.LabelCap + " - " + this.Label + " - " + this.currentBodyAnimDef.LabelCap;
+            string label = pawn.LabelCap + " - " + this.Label + " - " + this.CurrentBodyAnimDef.LabelCap;
 
             listing.Label(label);
 
@@ -736,7 +737,7 @@ namespace FacialStuff.AnimatorWindows
 
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                currentRotation = rotation;
+                CurrentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;
@@ -744,21 +745,21 @@ namespace FacialStuff.AnimatorWindows
 
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                currentRotation = rotation;
+                CurrentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;
             rotation = Rot4.North;
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                currentRotation = rotation;
+                CurrentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;
             rotation = Rot4.South;
             if (Widgets.ButtonText(butt, rotation.ToStringHuman()))
             {
-                currentRotation = rotation;
+                CurrentRotation = rotation;
             }
 
             butt.x += butt.width + this.Spacing;

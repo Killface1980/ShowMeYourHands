@@ -4,7 +4,7 @@ using UnityEngine;
 using Verse;
 
 namespace ShowMeYourHands;
-
+[HotSwappable]
 public static class YayoAnimationCompatibility_DrawEquipmentAimingOverride
 {
     public static void SaveWeaponLocation(PawnRenderer __instance, ref Thing eq, ref Vector3 drawLoc, ref float aimAngle)
@@ -38,4 +38,8 @@ public static class YayoAnimationCompatibility_DrawEquipmentAimingOverride
         ShowMeYourHandsMain.LogMessage($"New angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 
     }
+}
+[AttributeUsage(AttributeTargets.Class)]
+public class HotSwappableAttribute : Attribute
+{
 }

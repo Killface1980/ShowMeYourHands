@@ -188,7 +188,6 @@ namespace FacialStuff.GraphicsFS
         }
 
 
-        private static readonly Texture2D _maskTexNarrowFrontBack;
         static FaceTextures()
         {
             MaskTexUppherheadFrontBack = MakeReadable(ContentFinder<Texture2D>.Get("MaskTex/MaskTex_Upperhead_south"));

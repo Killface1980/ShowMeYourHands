@@ -9,6 +9,8 @@ namespace ShowMeYourHands;
 [ShowMeYourHandsMod.HotSwappable]
 internal class ShowMeYourHandsModSettings : ModSettings
 {
+
+
     public Dictionary<string, SaveableVector3> ManualMainHandPositions = new();
 
     private List<string> manualMainHandPositionsKeys;
@@ -48,51 +50,51 @@ internal class ShowMeYourHandsModSettings : ModSettings
     public override void ExposeData()
     {
         base.ExposeData();
-        Scribe_Values.Look(ref VerboseLogging, nameof(VerboseLogging));
-        Scribe_Values.Look(ref MatchArmorColor, nameof(MatchArmorColor));
-        Scribe_Values.Look(ref MatchArtificialLimbColor, nameof(MatchArtificialLimbColor));
-        Scribe_Values.Look(ref MatchHandAmounts, nameof(MatchHandAmounts));
-        Scribe_Values.Look(ref ResizeHands, nameof(ResizeHands), true);
-        Scribe_Values.Look(ref RepositionHands, nameof(RepositionHands), true);
-        Scribe_Values.Look(ref ShowWhenCarry, nameof(ShowWhenCarry));
-        Scribe_Values.Look(ref ShowOtherTmes, nameof(ShowOtherTmes));
-        Scribe_Collections.Look(ref ManualMainHandPositions, nameof(ManualMainHandPositions), LookMode.Value,
+        Scribe_Values.Look(ref this.VerboseLogging, nameof(this.VerboseLogging));
+        Scribe_Values.Look(ref this.MatchArmorColor, nameof(this.MatchArmorColor));
+        Scribe_Values.Look(ref this.MatchArtificialLimbColor, nameof(this.MatchArtificialLimbColor));
+        Scribe_Values.Look(ref this.MatchHandAmounts, nameof(this.MatchHandAmounts));
+        Scribe_Values.Look(ref this.ResizeHands, nameof(this.ResizeHands), true);
+        Scribe_Values.Look(ref this.RepositionHands, nameof(this.RepositionHands), true);
+        Scribe_Values.Look(ref this.ShowWhenCarry, nameof(this.ShowWhenCarry));
+        Scribe_Values.Look(ref this.ShowOtherTmes, nameof(this.ShowOtherTmes));
+        Scribe_Collections.Look(ref this.ManualMainHandPositions, nameof(this.ManualMainHandPositions), LookMode.Value,
             LookMode.Value,
-            ref manualMainHandPositionsKeys, ref manualMainHandPositionsValues);
-        Scribe_Collections.Look(ref ManualOffHandPositions, nameof(ManualOffHandPositions), LookMode.Value,
+            ref this.manualMainHandPositionsKeys, ref this.manualMainHandPositionsValues);
+        Scribe_Collections.Look(ref this.ManualOffHandPositions, nameof(this.ManualOffHandPositions), LookMode.Value,
             LookMode.Value,
-            ref manualOffHandPositionsKeys, ref manualOffHandPositionsValues);
-        Scribe_Collections.Look(ref ManualWeaponPositions, nameof(ManualWeaponPositions), LookMode.Value,
+            ref this.manualOffHandPositionsKeys, ref this.manualOffHandPositionsValues);
+        Scribe_Collections.Look(ref this.ManualWeaponPositions, nameof(this.ManualWeaponPositions), LookMode.Value,
             LookMode.Value,
-            ref manualWeaponPositionsKeys, ref manualWeaponPositionsValues);
-        Scribe_Collections.Look(ref ManualAimedWeaponPositions, nameof(ManualAimedWeaponPositions), LookMode.Value,
+            ref this.manualWeaponPositionsKeys, ref this.manualWeaponPositionsValues);
+        Scribe_Collections.Look(ref this.ManualAimedWeaponPositions, nameof(this.ManualAimedWeaponPositions), LookMode.Value,
             LookMode.Value,
-            ref manualAimedWeaponPositionsKeys, ref manualAimedWeaponPositionsValues);
+            ref this.manualAimedWeaponPositionsKeys, ref this.manualAimedWeaponPositionsValues);
 
-        Scribe_Values.Look(ref UseHands, nameof(UseHands), true);
-        Scribe_Values.Look(ref UseFeet, nameof(UseFeet), true);
-        Scribe_Values.Look(ref UsePaws, nameof(UsePaws), true);
-        Scribe_Values.Look(ref CutHair, nameof(CutHair), true);
+        Scribe_Values.Look(ref this.UseHands, nameof(this.UseHands), true);
+        Scribe_Values.Look(ref this.UseFeet, nameof(this.UseFeet), true);
+        Scribe_Values.Look(ref this.UsePaws, nameof(this.UsePaws), true);
+        Scribe_Values.Look(ref this.CutHair, nameof(this.CutHair), true);
 
     }
 
     public void ResetManualValues()
     {
-        ManualMainHandPositions       = new Dictionary<string, SaveableVector3>();
-        manualMainHandPositionsKeys = new List<string>();
-        manualMainHandPositionsValues = new List<SaveableVector3>();
+        this.ManualMainHandPositions       = new Dictionary<string, SaveableVector3>();
+        this.manualMainHandPositionsKeys = new List<string>();
+        this.manualMainHandPositionsValues = new List<SaveableVector3>();
 
-        ManualOffHandPositions        = new Dictionary<string, SaveableVector3>();
-        manualOffHandPositionsKeys = new List<string>();
-        manualOffHandPositionsValues  = new List<SaveableVector3>();
+        this.ManualOffHandPositions        = new Dictionary<string, SaveableVector3>();
+        this.manualOffHandPositionsKeys = new List<string>();
+        this.manualOffHandPositionsValues  = new List<SaveableVector3>();
 
-        ManualWeaponPositions          = new Dictionary<string, SaveableVector3>();
-        manualWeaponPositionsKeys      = new List<string>();
-        manualWeaponPositionsValues    = new List<SaveableVector3>();
+        this.ManualWeaponPositions          = new Dictionary<string, SaveableVector3>();
+        this.manualWeaponPositionsKeys      = new List<string>();
+        this.manualWeaponPositionsValues    = new List<SaveableVector3>();
 
-        ManualAimedWeaponPositions       = new Dictionary<string, SaveableVector3>();
-        manualAimedWeaponPositionsKeys   = new List<string>();
-        manualAimedWeaponPositionsValues = new List<SaveableVector3>();
+        this.ManualAimedWeaponPositions       = new Dictionary<string, SaveableVector3>();
+        this.manualAimedWeaponPositionsKeys   = new List<string>();
+        this.manualAimedWeaponPositionsValues = new List<SaveableVector3>();
 
 
         RimWorld_MainMenuDrawer_MainMenuOnGUI.UpdateHandDefinitions();

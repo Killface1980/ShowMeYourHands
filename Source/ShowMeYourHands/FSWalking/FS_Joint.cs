@@ -14,7 +14,5 @@ public class FS_Joint
     public float jointLength;
     public Color color = Color.white;
 
-    static void est()
-    {
-    }
+
 }

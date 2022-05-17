@@ -18,6 +18,6 @@ public class WhandCompProps : CompProperties
 
     public WhandCompProps()
     {
-        compClass = typeof(WhandComp);
+        this.compClass = typeof(WhandComp);
     }
 }

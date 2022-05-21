@@ -9,7 +9,7 @@ public static class YayoAnimationCompatibility_DrawEquipmentAimingOverride
 {
     public static void SaveWeaponLocation(PawnRenderer __instance, ref Thing eq, ref Vector3 drawLoc, ref float aimAngle)
     {
-        PawnRenderer_DrawEquipmentAiming.SaveWeaponLocationsAndDoOffsets(__instance.graphics.pawn, eq, ref drawLoc, ref aimAngle);
+        PawnRenderer_DrawEquipmentAiming.SaveWeaponLocationsAndDoOffsets(__instance?.graphics?.pawn, eq, ref drawLoc, ref aimAngle);
         return;
         //ShowMeYourHandsMain.LogMessage($"Saving from dual wield {eq.def.defName}, {drawLoc}, {aimAngle}");
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(drawLoc, aimAngle);

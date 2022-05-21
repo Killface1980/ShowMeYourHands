@@ -813,13 +813,12 @@ namespace FacialStuff
                             if (curDriver?.ActiveSkill != null)
                             {
                                 skillDef = curDriver.ActiveSkill;
-                                Log.Message(skillDef.defName);
                             }
                             if (skillDef != null)
                             {
-                                Log.Message(skillDef.defName);
                                 if (HasReleventStatModifiers(eq, skillDef))
                                 {
+
                                     drawWeapon = true;
                                 }
                             }
@@ -989,11 +988,6 @@ namespace FacialStuff
                 matRight = this.RightHandShadowMat;
             }
 
-            if (this.pawn.IsInvisible())
-            {
-                matLeft = InvisibilityMatPool.GetInvisibleMat(matLeft);
-                matRight = InvisibilityMatPool.GetInvisibleMat(matRight);
-            }
             bool drawLeft = matLeft != null && this.BodyStat.HandLeft != PartStatus.Missing;
             bool drawRight = matRight != null && this.BodyStat.HandRight != PartStatus.Missing;
 
@@ -1018,8 +1012,7 @@ namespace FacialStuff
                     {
                         if (equipmentPrimary != null)
                         {
-                            ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(
-                                GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector,
+                            ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector,
                                     handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - MainHandPosition, handSwingAngle[1] - shoulderAngle);
                             ignoreRight = true;
                         }
@@ -1041,9 +1034,11 @@ namespace FacialStuff
                     }
                 }
 
+                float quatAngle;
                 if (MainHandPosition != Vector3.zero && !ignoreRight)
                 {
-                    quat = Quaternion.AngleAxis(this.MainHandAngle - 90f + mainHandAngle, Vector3.up);
+                    quatAngle = this.MainHandAngle - 90f;
+                    quat = Quaternion.AngleAxis(quatAngle, Vector3.up);
                     position = MainHandPosition;
                     if (this.CurrentRotation == Rot4.West) // put the second hand behind while turning right
                     {
@@ -1058,16 +1053,19 @@ namespace FacialStuff
                 }
                 else // standard
                 {
+                    
                     position = GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
                     if (carrying && !isEating) // grabby angle
                     {
-                        quat = Quaternion.AngleAxis(bodyAngle - 115f, Vector3.up);
+                        quatAngle = bodyAngle - 115f;
                     }
                     else
                     {
-                        quat = Quaternion.AngleAxis(bodyAngle + handSwingAngle[1] - shoulderAngle, Vector3.up);
+                        quatAngle = bodyAngle + handSwingAngle[1] - shoulderAngle;
                     }
-                    quat *= Quaternion.AngleAxis(animationAngle * 1.25f, Vector3.up);
+                    quatAngle += animationAngle*1.25f;
+
+                    quat = Quaternion.AngleAxis(quatAngle, Vector3.up);
 
                     /*else if (CurrentRotation.IsHorizontal)
                     {
@@ -1075,12 +1073,27 @@ namespace FacialStuff
                     }*/
                 }
 
+                if (drawWeapon)
+                {
+                    //TODO: Not working as intended
+                     // WhandCompProps extensions = eq?.def?.GetCompProperties<WhandCompProps>();
+                     // quatAngle -= eq.def.equippedAngleOffset;
+                     // pawn.Drawer.renderer.DrawEquipmentAiming(eq,  position+(extensions.MainHand).RotatedBy(quatAngle) +new Vector3(0,1f,0), quatAngle+ 90f);
+
+                    // Material centerMat = GraphicDatabase.Get<Graphic_Single>(
+                    //     "Hands/Human_Hand_dev",
+                    //     ShaderDatabase.CutoutSkin,
+                    //     Vector2.one,
+                    //     Color.white).MatSingle;
+                    // Graphics.DrawMesh(MeshPool.plane10, position- extensions.MainHand, quat, centerMat, 0);
+
+                }
                 TweenThing handRight = TweenThing.HandRight;
                 //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
                 noTween = true;
                 this.DrawTweenedHand(position, handMeshRight, matRight, quat, handRight, noTween);
 
-                if (drawWeapon)
+                if (false)
                 {
                     float aimAngle = animationAngle * 1.25f;
                     Mesh mesh = null;
@@ -1101,8 +1114,9 @@ namespace FacialStuff
                         mesh = MeshPool.plane10;
                         num += eq.def.equippedAngleOffset;
                     }
-                    Graphics.DrawMesh(material: (!(eq.Graphic is Graphic_StackCount graphic_StackCount)) ? eq.Graphic.MatSingleFor(eq) : graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingleFor(eq), mesh: mesh, position: position + new Vector3(1f,  0.1f, 0f), rotation: Quaternion.AngleAxis(num, Vector3.up) * quat, layer: 0);
-                    Log.Message("Drawn");
+
+                    DoHandOffsetsOnWeapon(eq, out _, out _, out _, out _, out _);
+                    Graphics.DrawMesh(material: (!(eq.Graphic is Graphic_StackCount graphic_StackCount)) ? eq.Graphic.MatSingleFor(eq) : graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingleFor(eq), mesh: mesh, position: position + MainHandPosition, rotation:  Quaternion.AngleAxis(quatAngle - mainHandAngle, Vector3.up), layer: 0);
 
                 }
                 // GenDraw.DrawMeshNowOrLater(

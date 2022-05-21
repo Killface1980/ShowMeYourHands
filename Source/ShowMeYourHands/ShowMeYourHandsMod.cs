@@ -731,7 +731,7 @@ internal class ShowMeYourHandsMod : Mod
         float extraweaponsHeight = (totalWeaponsByMod.Count * 24f) + 15;
 
         Rect settingsRect = frameRect;
-        settingsRect.height -= extraweaponsHeight + tabHeadRectHeight;
+        settingsRect.height -= tabHeadRectHeight;
 
         Rect contentRect = frameRect;
         contentRect.x = 0;
@@ -742,6 +742,11 @@ internal class ShowMeYourHandsMod : Mod
 
         float lineSpacing = Text.LineHeight;
         float curY = 0f;
+
+        if (totalWeaponsByMod.Count == 0)
+        {
+            UpdateWeaponStatistics();
+        }
 
         switch (SelectedDef)
         {
@@ -910,10 +915,6 @@ internal class ShowMeYourHandsMod : Mod
                     tabContentRect.y = 0;
                     tabContentRect.width -= 24;
                     tabContentRect.height -= 24;
-                    if (totalWeaponsByMod.Count == 0)
-                    {
-                        UpdateWeaponStatistics();
-                    }
 
                     listing_Standard.Begin(tabHeadRect);
 
@@ -925,10 +926,10 @@ internal class ShowMeYourHandsMod : Mod
                         GUI.contentColor = Color.white;
                     }
                     listing_Standard.GapLine();
-                    Text.Font = GameFont.Medium;
-                    listing_Standard.Label("SMYH.summary".Translate(), -1F, "SMYH.summary.tooltip".Translate());
-                    Text.Font = GameFont.Small;
-                    listing_Standard.Gap();
+                    // Text.Font = GameFont.Medium;
+                    // listing_Standard.Label("SMYH.summary".Translate(), -1F, "SMYH.summary.tooltip".Translate());
+                    // Text.Font = GameFont.Small;
+                    // listing_Standard.Gap();
                     listing_Standard.End();
 
                     tabContentRect.height = extraweaponsHeight - 15;

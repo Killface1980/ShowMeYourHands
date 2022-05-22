@@ -11,7 +11,7 @@ internal class SaveableVector3
         this.x = x;
         this.y = y;
         this.z = z;
-        this.angle = angle.HasValue ? angle.Value : 0f;
+        this.angle = angle ?? 0f;
     }
 
     public SaveableVector3(Vector3 vector3, float? number)
@@ -19,7 +19,7 @@ internal class SaveableVector3
         this.x = vector3.x;
         this.y = vector3.y;
         this.z = vector3.z;
-        this.angle = number.HasValue ? number.Value : 0f;
+        this.angle = number ?? 0f;
     }
 
 

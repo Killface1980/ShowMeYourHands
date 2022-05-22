@@ -471,6 +471,7 @@ internal class ShowMeYourHandsMod : Mod
         // y is the posX modifier when turning east
 
         Vector3 positionOffset = currentShowAiming ? currentAimedWeaponPositionOffset : currentWeaponPositionOffset;
+        //positionOffset *= Prefs.UIScale;
 
         if (drawRotation == Rot4.South)
         {
@@ -509,8 +510,7 @@ internal class ShowMeYourHandsMod : Mod
         }
         posYmodifier += positionOffset.z;
 
-        float weaponAngle = 0f;
-        weaponAngle = drawAngle - 90;
+        float weaponAngle = drawAngle - 90;
         // if (thing.IsMeleeWeapon)
         {
             weaponAngle += thing.equippedAngleOffset * (flipped? -1f: 1f);
@@ -524,9 +524,17 @@ internal class ShowMeYourHandsMod : Mod
             posYmodifier += veccie.y;
         }
 
-        Rect weaponRect = new(rect.x + middlePosWeapon + (posXmodifier * weaponRectSize),
-            rect.y + middlePosWeapon - (posYmodifier * weaponRectSize), weaponRectSize, weaponRectSize);
+        //posXmodifier *= Prefs.UIScale;
+        //posYmodifier *= Prefs.UIScale;
+        //middlePosWeapon *= Prefs.UIScale;
 
+        //posXmodifier = posYmodifier = 0f;
+        //middlePosWeapon = 0f;
+
+        float x = rect.x + middlePosWeapon * Prefs.UIScale + (posXmodifier * weaponRectSize);
+        float y = rect.y + middlePosWeapon * Prefs.UIScale - (posYmodifier * weaponRectSize);
+
+        Rect weaponRect = new(x, y, weaponRectSize, weaponRectSize);
         /*
          if (drawRotation == Rot4.West) // TODO: + angle for aime position offsets
         {
@@ -552,7 +560,6 @@ internal class ShowMeYourHandsMod : Mod
 
                 mainHandPosition.x *= -1f;
                 offHandPosition.x *= -1f;
-            
         }
 
 
@@ -575,8 +582,6 @@ internal class ShowMeYourHandsMod : Mod
         }
         mainHandPosition = mainHandPosition.RotatedBy(newAngle);
         offHandPosition  = offHandPosition.RotatedBy(newAngle);
-
-
 
 
         this.DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, weaponRect, texture, weaponAngle, flipped);
@@ -604,6 +609,7 @@ internal class ShowMeYourHandsMod : Mod
         Vector2 mainHandCoords = new(
             weaponMiddle + (mainHandPosition.x * rectWidthAbs) - (handSize / 2),
             weaponMiddle - (mainHandPosition.z * rectWidthAbs) - (handSize / 2));
+       
         Vector2 offHandCoords = new(
             weaponMiddle + (offHandPosition.x * rectWidthAbs) - (handSize / 2),
             weaponMiddle - (offHandPosition.z * rectWidthAbs) - (handSize / 2));
@@ -617,6 +623,20 @@ internal class ShowMeYourHandsMod : Mod
             flipped ? handSize : handSize,
             handSize);
 
+        //Widgets.DrawHighlightIfMouseover(mainHandRect);
+        //
+        //if (mainHandRect.Contains(Input.mousePosition))
+        //{
+        //    if (Event.current.type == EventType.MouseDown)
+        //    {
+        //        mainHandPosition.x += Event.current.delta.x;
+        //        mainHandPosition.z += Event.current.delta.y;
+        //
+        //    }
+        //
+        //}
+        
+
         bool mainBehind = currentMainBehind;
         bool offBehind = currentOffBehind;
 
@@ -625,6 +645,7 @@ internal class ShowMeYourHandsMod : Mod
             mainBehind = !mainBehind;
             offBehind = !offBehind;
         }
+       // GUI.BeginGroup(new Rect(0, 0, Screen.width, Screen.height));
 
         if (mainBehind)
         {
@@ -647,10 +668,14 @@ internal class ShowMeYourHandsMod : Mod
         {
             DrawTextureRotatedLocal(offHandRect, HandTex.MatSouth.mainTexture, offHandAngle);
         }
+       // GUI.EndGroup();
+
     }
 
     public static void DrawTextureRotatedLocal(Rect rect, Texture texture, float angle)
     {
+        //Widgets.DrawBox(rect);
+
         if (angle == 0f)
         {
             GUI.DrawTexture(rect, texture);
@@ -665,12 +690,17 @@ internal class ShowMeYourHandsMod : Mod
             }
         }
         */
-        
         Matrix4x4 matrix = GUI.matrix;
+
+
         GUIUtility.RotateAroundPivot(angle, rect.center);
 
         GUI.DrawTexture(rect, texture);
+        //Widgets.DrawBox(rect, 2);
+        //Widgets.DrawBox(new(0f,0f, 20f,20f), 5);
+
         GUI.matrix = matrix;
+
     }
 
     private static void DrawWeapon(ThingDef thing, Rect rect)
@@ -936,15 +966,21 @@ internal class ShowMeYourHandsMod : Mod
                     break;
                 }
 
+            case "Filter":
+            {
+                this.DoShowModFilter(settingsRect);
+
+                    break;
+            }
             default:
                 {
                     List<TabRecord> list = new();
 
                     ;
-                    TabRecord item0 = new(
-                        "Mods", this.SetTabFaceStyle(WeaponeStyleTab.Mods),
-                        (bool)(this.Tab == WeaponeStyleTab.Mods));
-                    list.Add(item0);
+                    //TabRecord item0 = new(
+                    //    "Mods", this.SetTabFaceStyle(WeaponeStyleTab.Mods),
+                    //    (bool)(this.Tab == WeaponeStyleTab.Mods));
+                    //list.Add(item0);
                     TabRecord item = new(
                         translateHandPosition, this.SetTabFaceStyle(WeaponeStyleTab.HandPositionOnWeapon),
                         (bool)(this.Tab == WeaponeStyleTab.HandPositionOnWeapon));
@@ -984,10 +1020,7 @@ internal class ShowMeYourHandsMod : Mod
                         currentAimedWeaponPositionOffset = compProperties.AimedWeaponPositionOffset;
                     }
 
-                    if (this.Tab == WeaponeStyleTab.Mods)
-                    {
-                        this.DoSettingsMods(frameRect);
-                    }
+
                     if (this.Tab == WeaponeStyleTab.HandPositionOnWeapon)
                     {
                         this.DoSettingsWindowHandOnWeapon(frameRect, currentDef);
@@ -1008,10 +1041,10 @@ internal class ShowMeYourHandsMod : Mod
 
         WeaponPositionOnPawn,
 
-        Mods
+        //Mods
     }
 
-    private void DoSettingsMods(Rect frameRect)
+    private void DoShowModFilter(Rect frameRect)
     {
         Rect tabContentRect = frameRect.ContractedBy(5f);
         Widgets.BeginScrollView(frameRect, ref summaryScrollPosition, tabContentRect);
@@ -1476,6 +1509,17 @@ internal class ShowMeYourHandsMod : Mod
             SelectedDef = SelectedDef == "Settings" ? null : "Settings";
         }
 
+        if (selectedSubDef != null)
+        {
+            GUI.color = Color.yellow;
+        }
+
+        if (listing_Standard.ListItemSelectable("SMYH.filter".Translate(), Color.yellow,
+                out _, SelectedDef == "Filter"))
+        {
+            SelectedDef = SelectedDef == "Filter" ? null : "Filter";
+        }
+        GUI.color =Color.white;
         listing_Standard.ListItemSelectable(null, Color.yellow, out _);
         selectedHasManualDefs = new List<string>();
         foreach (ThingDef thingDef in weaponsToShow)

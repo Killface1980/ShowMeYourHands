@@ -817,18 +817,7 @@ internal class ShowMeYourHandsMod : Mod
 
                     // fs end
 
-                    if (Prefs.UIScale != 1f)
-                    {
-                        GUI.color = Color.yellow;
-                        listing_Standard.Label(
-                            "SMYH.uiscale.label".Translate(),
-                            -1F,
-                            "SMYH.uiscale.tooltip".Translate());
-                        curY += lineSpacing;
-                        listing_Standard.Gap();
-                        curY += lineSpacing;
-                        GUI.color = Color.white;
-                    }
+
 
                     if (!instance.Settings.ManualMainHandPositions.NullOrEmpty())
                     {
@@ -940,11 +929,6 @@ internal class ShowMeYourHandsMod : Mod
                     tabFrameRect.y += 80;
                     tabFrameRect.height -= 80;
 
-                    Rect tabContentRect = tabFrameRect;
-                    tabContentRect.x = 0;
-                    tabContentRect.y = 0;
-                    tabContentRect.width -= 24;
-                    tabContentRect.height -= 24;
 
                     listing_Standard.Begin(tabHeadRect);
 
@@ -962,7 +946,6 @@ internal class ShowMeYourHandsMod : Mod
                     // listing_Standard.Gap();
                     listing_Standard.End();
 
-                    tabContentRect.height = extraweaponsHeight - 15;
                     break;
                 }
 
@@ -1474,18 +1457,63 @@ internal class ShowMeYourHandsMod : Mod
 
     private void DrawTabsList(Rect rect)
     {
+
+
+
         Rect scrollContainer = rect.ContractedBy(10);
         scrollContainer.width = leftSideWidth;
         Widgets.DrawBoxSolid(scrollContainer, Color.grey);
+
         Rect innerContainer = scrollContainer.ContractedBy(1);
         Widgets.DrawBoxSolid(innerContainer, new ColorInt(42, 43, 44).ToColor);
         Rect tabFrameRect = innerContainer.ContractedBy(5);
         tabFrameRect.y += 15;
         tabFrameRect.height -= 15;
-        Rect tabContentRect = tabFrameRect;
-        tabContentRect.x = 0;
-        tabContentRect.y = 0;
-        tabContentRect.width -= 24;
+        
+
+        listing_Standard.Begin(tabFrameRect);
+        listing_Standard.ColumnWidth = tabFrameRect.width;
+
+        var curY = 0f;
+        if (Prefs.UIScale != 1f)
+        {
+            GUI.color = Color.yellow;
+            listing_Standard.Label(
+                "SMYH.uiscale.label".Translate(),
+                -1F,
+                "SMYH.uiscale.tooltip".Translate());
+
+            listing_Standard.Gap();
+
+            GUI.color = Color.white;
+            curY += Text.LineHeight *3;
+        }
+        if (listing_Standard.ListItemSelectable("SMYH.settings".Translate(), Color.yellow,
+                out _, SelectedDef == "Settings"))
+        {
+            SelectedDef = SelectedDef == "Settings" ? null : "Settings";
+        }
+        curY += Text.LineHeight;
+
+        if (selectedSubDef != null)
+        {
+            //GUI.color = Color.yellow;
+        }
+
+        if (listing_Standard.ListItemSelectable("SMYH.filter".Translate(), Color.yellow,
+                out _, SelectedDef == "Filter", true))
+        {
+            SelectedDef = SelectedDef == "Filter" ? null : "Filter";
+        }
+        //GUI.color = Color.white;
+        curY += Text.LineHeight;
+        listing_Standard.GapLine();
+        curY += Text.LineHeight ;
+
+        listing_Standard.End();
+
+
+
         List<ThingDef> weaponsToShow = AllWeapons;
         int listAddition = 24;
         if (!string.IsNullOrEmpty(selectedSubDef))
@@ -1495,32 +1523,30 @@ internal class ShowMeYourHandsMod : Mod
                                    selectedSubDef == "SMYH.unknown".Translate() ||
                                    weapon.modContentPack?.Name == selectedSubDef
                              select weapon).ToList();
-            listAddition = 60;
+            //listAddition +=36;
+        }
+        Rect tabContentRect = new Rect(tabFrameRect);
+        Rect weaponList = new Rect(tabFrameRect);
+        weaponList.y += curY;
+        weaponList.height -= curY;
+
+        tabContentRect.width -= 24;
+
+        tabContentRect.height = (weaponsToShow.Count * 24f) + listAddition;
+        listing_Standard.ColumnWidth = tabContentRect.width;
+
+        if (!string.IsNullOrEmpty(selectedSubDef))
+        {
+            weaponList.height -= 2 * Text.LineHeight;
         }
 
-        tabContentRect.height = (weaponsToShow.Count * 25f) + listAddition;
-        Widgets.BeginScrollView(tabFrameRect, ref tabsScrollPosition, tabContentRect);
-        listing_Standard.ColumnWidth = tabContentRect.width;
+        Widgets.BeginScrollView(weaponList, ref tabsScrollPosition, tabContentRect);
         listing_Standard.Begin(tabContentRect);
         //Text.Font = GameFont.Tiny;
-        if (listing_Standard.ListItemSelectable("SMYH.settings".Translate(), Color.yellow,
-                out _, SelectedDef == "Settings"))
-        {
-            SelectedDef = SelectedDef == "Settings" ? null : "Settings";
-        }
 
-        if (selectedSubDef != null)
-        {
-            GUI.color = Color.yellow;
-        }
 
-        if (listing_Standard.ListItemSelectable("SMYH.filter".Translate(), Color.yellow,
-                out _, SelectedDef == "Filter"))
-        {
-            SelectedDef = SelectedDef == "Filter" ? null : "Filter";
-        }
-        GUI.color =Color.white;
-        listing_Standard.ListItemSelectable(null, Color.yellow, out _);
+
+        //listing_Standard.ListItemSelectable(null, Color.yellow, out _);
         selectedHasManualDefs = new List<string>();
         foreach (ThingDef thingDef in weaponsToShow)
         {
@@ -1561,20 +1587,30 @@ internal class ShowMeYourHandsMod : Mod
             DrawWeapon(thingDef, new Rect(position, iconSize));
         }
 
+        listing_Standard.End();
+        //Text.Font = GameFont.Small;
+        Widgets.EndScrollView();
+
         if (!string.IsNullOrEmpty(selectedSubDef))
         {
-            listing_Standard.ListItemSelectable(null, Color.yellow, out _);
+            Rect bottomRect = new(tabFrameRect)
+            {
+                y = weaponList.yMax + Text.LineHeight * 0.5f,
+                height = Text.LineHeight*1.5f
+
+            };
+
+            listing_Standard.Begin(bottomRect);
             if (listing_Standard.ListItemSelectable(
                     "SMYH.showhidden".Translate(AllWeapons.Count - weaponsToShow.Count), Color.yellow,
                     out _))
             {
                 selectedSubDef = string.Empty;
             }
+
+            listing_Standard.End();
         }
 
-        listing_Standard.End();
-        //Text.Font = GameFont.Small;
-        Widgets.EndScrollView();
     }
 
     private static void ResetOneWeapon(ThingDef currentDef, ref WhandCompProps compProperties)

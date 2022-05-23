@@ -206,7 +206,13 @@ public class PawnRenderer_DrawEquipmentAiming
                 break;
         }
 #endif
-
+        if (compAnim.CurrentRotation == Rot4.West || compAnim.CurrentRotation == Rot4.North)
+        {
+            if (drawLoc.y > pawn.DrawPos.y)
+            {
+                drawLoc.y = pawn.DrawPos.y - 0.01f;
+            }
+        }
         Vector3 newDrawLoc = drawLoc;
         float newAimAngle  = aimAngle;
         float currentY     = newDrawLoc.y;

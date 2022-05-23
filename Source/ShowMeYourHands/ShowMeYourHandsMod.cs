@@ -1501,7 +1501,7 @@ internal class ShowMeYourHandsMod : Mod
         }
 
         if (listing_Standard.ListItemSelectable("SMYH.filter".Translate(), Color.yellow,
-                out _, SelectedDef == "Filter", true))
+                out _, SelectedDef == "Filter"))
         {
             SelectedDef = SelectedDef == "Filter" ? null : "Filter";
         }

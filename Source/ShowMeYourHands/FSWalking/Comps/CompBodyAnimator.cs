@@ -721,44 +721,6 @@ namespace FacialStuff
 // CM_Grab_Your_Tool.ToolMemoryTracker
 
 
-        public static bool HasReleventStatModifiers(Thing weapon, SkillDef skill)
-        {
-            if (weapon == null)
-            {
-                return false;
-            }
-            List<StatModifier> equippedStatOffsets = weapon.def.equippedStatOffsets;
-            if (skill != null && equippedStatOffsets != null)
-            {
-                foreach (StatModifier item in equippedStatOffsets)
-                {
-                    List<SkillNeed> skillNeedOffsets = item.stat.skillNeedOffsets;
-                    List<SkillNeed> skillNeedFactors = item.stat.skillNeedFactors;
-                    if (skillNeedOffsets != null)
-                    {
-                        foreach (SkillNeed item2 in skillNeedOffsets)
-                        {
-                            if (skill == item2.skill)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    if (skillNeedFactors == null)
-                    {
-                        continue;
-                    }
-                    foreach (SkillNeed item3 in skillNeedFactors)
-                    {
-                        if (skill == item3.skill)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
 
     // off for now
     public void DrawHands(float bodyAngle, Vector3 drawPos, Thing carriedThing = null, bool flip = false)
@@ -804,24 +766,6 @@ namespace FacialStuff
                         {
                             this.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
                             carriesWeaponOpenly = true;
-                        }
-                        else
-                        {
-                            SkillDef skillDef = pawn.CurJob?.RecipeDef?.workSkill;
-                            JobDriver curDriver = pawn.jobs?.curDriver;
-                        
-                            if (curDriver?.ActiveSkill != null)
-                            {
-                                skillDef = curDriver.ActiveSkill;
-                            }
-                            if (skillDef != null)
-                            {
-                                if (HasReleventStatModifiers(eq, skillDef))
-                                {
-
-                                    drawWeapon = true;
-                                }
-                            }
                         }
                     }
                 }
@@ -1185,12 +1129,12 @@ namespace FacialStuff
                 else // standard
                 {
                     position = GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
-                    if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal && ShowMeYourHandsMain.weaponLocations.ContainsKey(equipmentPrimary)) // pawn has free left hand
+                    if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal && ShowMeYourHandsMain.weaponLocations.ContainsKey(equipmentPrimary) && !carrying) // pawn has free left hand
                     {
                         position.y = ShowMeYourHandsMain.weaponLocations[equipmentPrimary].Item1.y - 0.01f;
                     }
 
-                    if (carriesWeaponOpenly && hasSecondWeapon && offHandWeapon!= null && ShowMeYourHandsMain.weaponLocations.ContainsKey(offHandWeapon) && this.IsMoving && this.CurrentRotation.IsHorizontal)
+                    if (carriesWeaponOpenly && hasSecondWeapon && offHandWeapon!= null && ShowMeYourHandsMain.weaponLocations.ContainsKey(offHandWeapon) && this.IsMoving && this.CurrentRotation.IsHorizontal && !carrying)
                     {
                         if (this.CurrentRotation == Rot4.East)
                         {

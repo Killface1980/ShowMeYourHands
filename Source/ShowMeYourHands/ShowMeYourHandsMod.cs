@@ -387,12 +387,20 @@ internal class ShowMeYourHandsMod : Mod
         Rect rectLine = rect.ExpandedBy(2);
         Widgets.DrawBoxSolid(rectOuter, Color.grey);
         Widgets.DrawBoxSolid(rectLine, new ColorInt(42, 43, 44).ToColor);
-        float weaponAngle = 0f;
-        if (thing.IsRangedWeapon)
+        var texAngle = 0f;
+        float sizeX = thing.graphicData.drawSize.x;
+        if (sizeX != 1f)
         {
-            weaponAngle = thing.equippedAngleOffset;
+            texAngle += thing.equippedAngleOffset != 0 ? -45 : 0;
+            // rect = rect.ScaledBy(1/sizeX);
+
+            // var diff = rect.size.x;
+            // rect.size /= sizeX* sizeX * sizeX;
+            // diff -= rect.size.x;
+            // rect.x += diff / 2;
+            // rect.y += diff / 2;
         }
-        this.DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, weaponAngle, false);
+        this.DrawWeaponWithHands(thing, mainHandAngle, offHandAngle, mainHandPosition, offHandPosition, rect, texture, texAngle, false);
 
         return true;
     }
@@ -511,7 +519,7 @@ internal class ShowMeYourHandsMod : Mod
         posYmodifier += positionOffset.z;
 
         float weaponAngle = drawAngle - 90;
-        // if (thing.IsMeleeWeapon)
+        // if (thing.graphicData.drawSize.x != 1f)
         {
             weaponAngle += thing.equippedAngleOffset * (flipped? -1f: 1f);
 
@@ -574,11 +582,13 @@ internal class ShowMeYourHandsMod : Mod
         offHandAngle += weaponAngle;
 
         float newAngle = weaponAngle;
-        if (!thing.IsMeleeWeapon) // oversized weapon
+        if (thing.graphicData.drawSize.x != 1f) // oversized weapon
         {
-            newAngle      -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
-            mainHandAngle -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
-            offHandAngle  -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
+            // newAngle      -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
+            // mainHandAngle -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
+            // offHandAngle  -= thing.equippedAngleOffset * (flipped ? -1f : 1f);
+            // weaponRect.width /= thing.graphicData.drawSize.x;
+            // weaponRect.height /= thing.graphicData.drawSize.y;
         }
         mainHandPosition = mainHandPosition.RotatedBy(newAngle);
         offHandPosition  = offHandPosition.RotatedBy(newAngle);
@@ -594,9 +604,7 @@ internal class ShowMeYourHandsMod : Mod
     {
 
         float rectWidthAbs = Mathf.Abs(rect.width);
-        float rectWidth = rect.width;
 
-        float scaling = rectWidthAbs / weaponSize.x;
         float handSize = rectWidthAbs / 4;
         if (thing.graphicData.drawSize.x != 1f)
         {

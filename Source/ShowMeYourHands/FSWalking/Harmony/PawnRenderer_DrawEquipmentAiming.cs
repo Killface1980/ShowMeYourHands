@@ -216,10 +216,11 @@ public class PawnRenderer_DrawEquipmentAiming
         Vector3 newDrawLoc = drawLoc;
         float newAimAngle  = aimAngle;
         float currentY     = newDrawLoc.y;
-
+        bool passOriginal = false;
         if (ShowMeYourHandsMain.rightHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.rightHandLocations[eq].Item1 != Vector3.zero)
         {
-            drawLoc += ShowMeYourHandsMain.rightHandLocations[eq].Item1;
+
+            drawLoc += ShowMeYourHandsMain.rightHandLocations[eq].Item1 ;
             if (compAnim.CurrentRotation.IsHorizontal)
             {
                 if (compAnim.CurrentRotation == Rot4.West)
@@ -232,13 +233,15 @@ public class PawnRenderer_DrawEquipmentAiming
 
                 }
             }
-             // aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2;
+            aimAngle += ShowMeYourHandsMain.rightHandLocations[eq].Item2;
+            passOriginal = true;
         }
         else
         {
             if (ShowMeYourHandsMain.leftHandLocations.ContainsKey(eq) && ShowMeYourHandsMain.leftHandLocations[eq].Item1 != Vector3.zero)
             {
                 drawLoc += ShowMeYourHandsMain.leftHandLocations[eq].Item1;
+
                 if (compAnim.CurrentRotation.IsHorizontal)
                 {
                     if (compAnim.CurrentRotation == Rot4.West)
@@ -252,8 +255,15 @@ public class PawnRenderer_DrawEquipmentAiming
                     }
                 }
 
-                 //  aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2 ;
+                aimAngle += ShowMeYourHandsMain.leftHandLocations[eq].Item2;
+                passOriginal |= true;
             }
+        }
+
+        if (passOriginal)
+        {
+            newDrawLoc = drawLoc;
+            newAimAngle = aimAngle;
         }
 
         CompEquippable compEquippable = eq.TryGetComp<CompEquippable>();

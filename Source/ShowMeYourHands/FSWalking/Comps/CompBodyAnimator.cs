@@ -734,6 +734,7 @@ namespace FacialStuff
                 return;
             }
 
+            var newDrawPos = drawPos;
             BodyAnimDef body = this.BodyAnim;
 
             if (body is not { bipedWithHands: true })
@@ -779,7 +780,7 @@ namespace FacialStuff
                 if (this.pawn.Position.DistanceTo(((IntVec3)curJob.targetB)) > 0.65f)
                 {
                     isEating = true;
-                    if (this.pawn.Drawer != null) drawPos = this.pawn.Drawer.DrawPos;
+                    if (this.pawn.Drawer != null) newDrawPos = this.pawn.Drawer.DrawPos;
                 }
             }
 
@@ -792,7 +793,7 @@ namespace FacialStuff
                 if (this.CurrentRotation != Rot4.North)
                 {
                     //drawPos.y += Offsets.YOffset_CarriedThing;
-                    drawPos.z -= 0.1f * bodySizeScaling;
+                    newDrawPos.z -= 0.1f * bodySizeScaling;
                 }
 
                 /*    this.DoHandOffsetsOnWeapon(carriedThing,
@@ -827,7 +828,7 @@ namespace FacialStuff
 
             if (animationPosOffset != Vector3.zero)
             {
-                drawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
+                newDrawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
 
                 //this.FirstHandPosition += animationPosOffset.RotatedBy(animationAngle);
                 //this.SecondHandPosition += animationPosOffset.RotatedBy(-animationAngle);
@@ -848,7 +849,7 @@ namespace FacialStuff
             {
                 // this.ApplyEquipmentWobble(ref drawPos);
 
-                Vector3 handVector = drawPos;
+                Vector3 handVector = newDrawPos;
                 // handVector.z += 0.2f; // hands too high on carriedthing - edit: looks good on smokeleaf joints
 
                 //handVector.y += Offsets.YOffset_CarriedThing;
@@ -873,21 +874,21 @@ namespace FacialStuff
                     }
 
                     // carriedThing.DrawAt(drawPos, flip);
-                    handVector.y = drawPos.y;
+                    handVector.y = newDrawPos.y;
 
-                    drawPos = handVector;
+                    newDrawPos = handVector;
 
                     // DoAnimationHands(ref animationPosOffset, ref animationAngle);
                     animationPosOffset.y     = 0f;
                     animationAngle          *= 3.8f;
                     bodyAngle               += animationAngle * 2;
-                    drawPos                 += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
+                    newDrawPos += animationPosOffset.RotatedBy(animationAngle) * 1.35f * bodySizeScaling;
                     shoulperPosLeftJoint.x  -= animationPosOffset.z * 0.75f;
                     shoulperPosRightJoint.x -= animationPosOffset.z * 0.75f;
                 }
                 if (isFacingNorth) // put the hands behind the pawn
                 {
-                    drawPos.y = Offsets.YOffset_Behind;
+                    newDrawPos.y = Offsets.YOffset_Behind;
                 }
             }
 
@@ -925,8 +926,7 @@ namespace FacialStuff
                 matLeft = this.pawnBodyGraphic?.HandGraphicLeftCol?.MatSingle;
                 matRight = this.pawnBodyGraphic?.HandGraphicRightCol?.MatSingle;
             }
-            else
-            if (isFacingNorth && !carrying && !carriesWeaponOpenly || isFacingNorth && isEating)
+            else if (isFacingNorth && !carrying && !carriesWeaponOpenly || isFacingNorth && isEating)
             {
                 matLeft = this.LeftHandShadowMat;
                 matRight = this.RightHandShadowMat;
@@ -942,7 +942,7 @@ namespace FacialStuff
             bool ignoreRight = false;
             ThingWithComps equipmentPrimary = this.pawn.equipment.Primary;
 
-            bool shouldWeaponFollowHand = false; // pawn.Faction == Faction.OfPlayer; // TODO needs more work
+            bool shouldWeaponFollowHand =  carriesWeaponOpenly && animationPosOffset != Vector3.zero; // pawn.Faction == Faction.OfPlayer; // TODO needs more work
             if (drawRight)
             {
                 Quaternion quat;
@@ -950,36 +950,10 @@ namespace FacialStuff
                 bool noTween = carrying || this.pawn.Aiming();
                 
 
-                if (this.IsMoving)
-                {
-                    if (shouldWeaponFollowHand && !pawnIsAiming && carriesWeaponOpenly && (!hasSecondWeapon || offHandPosition != Vector3.zero))
-                    {
-                        if (equipmentPrimary != null)
-                        {
-                            ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector,
-                                    handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - MainHandPosition, handSwingAngle[1] - shoulderAngle);
-                            ignoreRight = true;
-                        }
-                    }
-                    else
-                    {
-                        if (equipmentPrimary != null)
-                        {
-                            ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(Vector3.zero, 0f);
-                            ignoreRight = false;
-                        }                }
-                }
-                else
-                {
-                    if (carriesWeaponOpenly && equipmentPrimary != null)
-                    {
-                        ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(Vector3.zero, 0f);
-                        ignoreRight = false;
-                    }
-                }
+
 
                 float quatAngle;
-                if (MainHandPosition != Vector3.zero && !ignoreRight)
+                if (MainHandPosition != Vector3.zero)
                 {
                     quatAngle = this.MainHandAngle - 90f;
                     quat = Quaternion.AngleAxis(quatAngle, Vector3.up);
@@ -998,7 +972,7 @@ namespace FacialStuff
                 else // standard
                 {
                     
-                    position = GetRightHandPosition(bodyAngle, drawPos, shoulperPosRightJoint, rightHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
+                    position = GetRightHandPosition(bodyAngle, newDrawPos, shoulperPosRightJoint, rightHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
                     if (carrying && !isEating) // grabby angle
                     {
                         quatAngle = bodyAngle - 115f;
@@ -1017,25 +991,27 @@ namespace FacialStuff
                     }*/
                 }
 
-                if (drawWeapon)
-                {
-                    //TODO: Not working as intended
-                     // WhandCompProps extensions = eq?.def?.GetCompProperties<WhandCompProps>();
-                     // quatAngle -= eq.def.equippedAngleOffset;
-                     // pawn.Drawer.renderer.DrawEquipmentAiming(eq,  position+(extensions.MainHand).RotatedBy(quatAngle) +new Vector3(0,1f,0), quatAngle+ 90f);
-
-                    // Material centerMat = GraphicDatabase.Get<Graphic_Single>(
-                    //     "Hands/Human_Hand_dev",
-                    //     ShaderDatabase.CutoutSkin,
-                    //     Vector2.one,
-                    //     Color.white).MatSingle;
-                    // Graphics.DrawMesh(MeshPool.plane10, position- extensions.MainHand, quat, centerMat, 0);
-
-                }
                 TweenThing handRight = TweenThing.HandRight;
                 //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
                 noTween = true;
                 this.DrawTweenedHand(position, handMeshRight, matRight, quat, handRight, noTween);
+
+                if (shouldWeaponFollowHand)
+                {
+                    if (equipmentPrimary != null)
+                    {
+                        var flippie = animationPosOffset;
+                        flippie.z *= -1f;
+                        ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(flippie, animationAngle/2);
+                        ignoreRight = true;
+                    }
+                }
+                else
+                {
+                    if (equipmentPrimary != null)
+                    ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(Vector3.zero, 0f);
+                    ignoreRight = false;
+                }
 
                 if (false)
                 {
@@ -1080,21 +1056,7 @@ namespace FacialStuff
                     offHandWeapon = (from weapon in listForReading
                         where this.pawn.equipment?.Primary != null && weapon != this.pawn.equipment.Primary
                         select weapon).First();
-                    if ( offHandWeapon != null)
-                    {
-                        if (shouldWeaponFollowHand && this.IsMoving && !pawnIsAiming && carriesWeaponOpenly)
-                        {
-                            ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(
-                                GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector,
-                                    handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling) - offHandPosition,
-                                handSwingAngle[0] - shoulderAngle);
-                            ignoreLeft = true;
-                        }
-                        else
-                        {
-                            ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(Vector3.zero, 0f);
-                        }
-                    }
+
                 }
 
                 Quaternion quat;
@@ -1128,7 +1090,7 @@ namespace FacialStuff
                 }
                 else // standard
                 {
-                    position = GetLeftHandPosition(bodyAngle, drawPos, shoulperPosLeftJoint, leftHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
+                    position = GetLeftHandPosition(bodyAngle, newDrawPos, shoulperPosLeftJoint, leftHandVector, handSwingAngle, shoulderAngle, animationAngle, bodySizeScaling);
                     if (carriesWeaponOpenly && !pawnIsAiming && !this.CurrentRotation.IsHorizontal && ShowMeYourHandsMain.weaponLocations.ContainsKey(equipmentPrimary) && !carrying) // pawn has free left hand
                     {
                         position.y = ShowMeYourHandsMain.weaponLocations[equipmentPrimary].Item1.y - 0.01f;
@@ -1155,7 +1117,7 @@ namespace FacialStuff
                     {
                         quat = Quaternion.AngleAxis(bodyAngle - handSwingAngle[0] - shoulderAngle, Vector3.up);
                     }
-                    quat *= Quaternion.AngleAxis(animationAngle * 1.25f, Vector3.up);
+                    quat *= Quaternion.AngleAxis(animationAngle, Vector3.up);
                 }
 
                 TweenThing handLeft = TweenThing.HandLeft;
@@ -1163,14 +1125,30 @@ namespace FacialStuff
                 //ToDo: tweening is too general, use it only for animation stuff and not for correcting positions
                 noTween = true;
                 this.DrawTweenedHand(position, handMeshLeft, matLeft, quat, handLeft, noTween);
+
+                if (offHandWeapon != null)
+                {
+                    if (shouldWeaponFollowHand && !this.IsMoving)
+                    {
+                        var flippie = animationPosOffset;
+                        flippie.z *= -1f;
+                        ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(flippie, animationAngle/2);
+                        ignoreLeft = true;
+                    }
+                    else
+                    {
+                        ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(Vector3.zero, 0f);
+                    }
+                }
+
                 //GenDraw.DrawMeshNowOrLater(
                 //                           handMeshLeft, position,
                 //                           quat,
                 //                           matLeft,
                 //                           portrait);
 
-            
-            if (MainTabWindow_BaseAnimator.Develop)
+
+                if (MainTabWindow_BaseAnimator.Develop)
             {
                 // for debug
                 Material centerMat = GraphicDatabase.Get<Graphic_Single>(
@@ -1180,15 +1158,15 @@ namespace FacialStuff
                                                                          Color.white).MatSingle;
 
                 Graphics.DrawMesh(
-                                           handMeshLeft,
-                                           drawPos + shoulperPos.LeftJoint + new Vector3(0, -0.301f, 0),
-                                           quat * Quaternion.AngleAxis(-shoulderAngle, Vector3.up),
-                                           centerMat,
-                                           0);
+                    handMeshLeft,
+                    newDrawPos + shoulperPos.LeftJoint + new Vector3(0, -0.301f, 0),
+                    quat * Quaternion.AngleAxis(-shoulderAngle, Vector3.up),
+                    centerMat,
+                    0);
 
                 Graphics.DrawMesh(
                                            handMeshRight,
-                                           drawPos + shoulperPos.RightJoint + new Vector3(0, 0.301f, 0),
+                                           newDrawPos + shoulperPos.RightJoint + new Vector3(0, 0.301f, 0),
                                            quat * Quaternion.AngleAxis(shoulderAngle, Vector3.up),
                                            centerMat,
                                            0);
@@ -2605,6 +2583,7 @@ namespace FacialStuff
                 float propertiesMainHandAngle = compProperties.MainHandAngle;
                 propertiesMainHandAngle *= mainHandFlipped ? -1f : 1f;
                 propertiesMainHandAngle += mainHandFlipped ? 180f : 0f;
+                //propertiesMainHandAngle += eq.def.equippedAngleOffset * (mainHandFlipped ? -1f : 1f);
                 //   propertiesMainHandAngle += mainMelee && mainHandFlipped ? 180f : 0f;
                 propertiesMainHandAngle %= 360f;
 
@@ -2761,11 +2740,12 @@ namespace FacialStuff
                     Vector2 sizePaws = this.pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
                     bodySize = sizePaws.x / maxSize.x;
                 }
+                /*
                 else if (ShowMeYourHandsMod.instance.Settings.ResizeHands)
                 {
                     bodySize = this.pawn.BodySize;
                     bodySize = Mathf.Max(bodySize, 0.8f);
-                    /*
+
                     if (pawn.RaceProps != null)
                     {
                         bodySize = pawn.RaceProps.baseBodySize;
@@ -2775,9 +2755,8 @@ namespace FacialStuff
                     {
                         bodySize = (float)ShowMeYourHandsMain.GetBodySizeScaling.Invoke(null, new object[] { pawn });
                     }
-                    */
                 }
-
+                */
                 PawnExtensions.pawnBodySizes[this.pawn] = bodySize;
                 // FS walks & so need 1f for regular pawns; 80% drawsize looks fine
                 this.pawnBodyMesh = MeshMakerPlanes.NewPlaneMesh(bodySize * this.BodyAnim.extremitySize * 0.8f);

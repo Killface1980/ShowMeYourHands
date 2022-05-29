@@ -23,7 +23,7 @@
   </loadAfter>
   <incompatibleWith>
     <li>Mlie.ClutterWeaponHands</li>
-    <li>Mlie.ShowMeYourHands</li>
+    <li>Killface.ShowMeYourHands</li>
   </incompatibleWith>
   <description>
 

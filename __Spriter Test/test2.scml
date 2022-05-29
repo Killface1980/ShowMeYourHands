@@ -173,7 +173,7 @@
             </timeline>
             <timeline id="1" obj="1" name="actor1_headb" object_type="bone">
                 <key id="0" spin="0">
-                    <bone y="10.888446" angle="0" scale_x="1.000001" scale_y="2.742898"/>
+                    <bone x="0" y="10.888446" scale_x="1.000001" scale_y="2.742898"/>
                 </key>
             </timeline>
             <timeline id="2" obj="2" name="actor1_handrb" object_type="bone">
@@ -204,7 +204,7 @@
             </timeline>
             <timeline id="3" obj="3" name="actor1_handlb" object_type="bone">
                 <key id="0" spin="-1">
-                    <bone x="17.498361" y="-5.529522" angle="124.695154" scale_x="1.000001" scale_y="1.601242" a="0.866667"/>
+                    <bone x="17.498361" y="-5.529522" angle="104.061369" scale_x="1.000001" scale_y="1.601242" a="0.866667"/>
                 </key>
                 <key id="1" time="125" spin="-1">
                     <bone x="11.523998" y="-8.55991" angle="53.022367" scale_x="1.000001" scale_y="1.601242" a="0.866667"/>
@@ -283,17 +283,17 @@
             </timeline>
             <timeline id="8" name="actor1_handl">
                 <key id="0" spin="0">
-                    <object folder="3" file="0" angle="0" scale_x="0.446642" scale_y="0.2" a="0.8"/>
+                    <object folder="3" file="0" x="0" y="-0" scale_x="0.446642" scale_y="0.2" a="0.8"/>
                 </key>
             </timeline>
             <timeline id="9" name="actor1_body">
                 <key id="0" spin="0">
-                    <object folder="0" file="0" angle="0" scale_x="0.446642" scale_y="0.320248"/>
+                    <object folder="0" file="0" scale_x="0.446642" scale_y="0.320248"/>
                 </key>
             </timeline>
             <timeline id="10" name="actor1_head">
                 <key id="0" spin="0">
-                    <object folder="1" file="0" angle="0" scale_x="0.446642" scale_y="0.116755"/>
+                    <object folder="1" file="0" scale_x="0.446642" scale_y="0.116755"/>
                 </key>
             </timeline>
             <timeline id="11" name="actor1_footr">
@@ -315,7 +315,7 @@
             </timeline>
             <timeline id="12" name="actor1_handr">
                 <key id="0" spin="0">
-                    <object folder="3" file="0" angle="0" scale_x="0.446642" scale_y="0.2"/>
+                    <object folder="3" file="0" scale_x="0.446642" scale_y="0.2"/>
                 </key>
             </timeline>
         </animation>

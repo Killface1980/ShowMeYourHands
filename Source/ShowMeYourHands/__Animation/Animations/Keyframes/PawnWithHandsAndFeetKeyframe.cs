@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Verse;
 
 namespace Rimworld_Animations {
-    public class PawnKeyframe : Keyframe
+    public class PawnWithHandsAndFeetKeyframe : Keyframe
     {
         public float? bodyAngle;
         public float? headAngle;
@@ -23,6 +23,21 @@ namespace Rimworld_Animations {
         public int? headFacing;
 
         public bool? quiver;
+
+        public float? handlAngle;
+        public float? handrAngle;
+        public float? footlAngle;
+        public float? footrAngle;
+       
+        public float? handlOffsetX;
+        public float? handrOffsetX;
+        public float? footlOffsetX;
+        public float? footrOffsetX;
+
+        public float? handlOffsetZ;
+        public float? handrOffsetZ;
+        public float? footlOffsetZ;
+        public float? footrOffsetZ;
 
     }
 }

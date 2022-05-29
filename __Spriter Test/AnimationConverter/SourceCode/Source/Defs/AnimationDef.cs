@@ -25,7 +25,7 @@ namespace AnimationConverter
     public class PawnAnimationClip
     {
         [XmlAttribute("Class")]
-        public string className = "Rimworld_Animations.PawnAnimationClip";
+        public string className = "Rimworld_Animations.PawnWithHandsAndFeetAnimationClip";
 
         public string layer = "Pawn";
 

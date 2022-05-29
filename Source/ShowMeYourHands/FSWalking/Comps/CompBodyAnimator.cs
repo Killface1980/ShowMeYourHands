@@ -756,14 +756,17 @@ namespace FacialStuff
             Job curJob = this.pawn?.CurJob;
             if (eq != null && curJob?.def != null)// && !curJob.def.neverShowWeapon)
             {
-                Type baseType = this.pawn?.Drawer?.renderer?.GetType();
-                if (baseType != null)
+                bool showWeapon = this.pawn.Drawer.renderer.CarryWeaponOpenly();
+                // Type baseType = this.pawn?.Drawer?.renderer?.GetType();
+                // if (baseType != null)
+                //if (showWeapon != null && showWeapon.HasValue)
                 {
-                    MethodInfo methodInfo = baseType.GetMethod("CarryWeaponOpenly", BindingFlags.NonPublic | BindingFlags.Instance);
-                    object result = methodInfo?.Invoke(this.pawn.Drawer.renderer, null);
-                    if (result != null)
+                    // MethodInfo methodInfo = baseType.GetMethod("CarryWeaponOpenly", BindingFlags.NonPublic | BindingFlags.Instance);
+                    // object result = methodInfo?.Invoke(this.pawn.Drawer.renderer, null);
+                    //if (result != null)
                     {
-                        if ((bool)result)
+                        //if ((bool)result)
+                        if (showWeapon)
                         {
                             this.DoHandOffsetsOnWeapon(eq, out hasSecondWeapon, out leftBehind, out rightBehind, out rightHandFlipped, out leftHandFlipped);
                             carriesWeaponOpenly = true;
@@ -838,12 +841,24 @@ namespace FacialStuff
             JointLister shoulperPos = this.GetJointPositions(JointType.Shoulder,
                 body.shoulderOffsets[rot.AsInt],
                 body.shoulderOffsets[Rot4.North.AsInt].x,
-                carrying && !isEating, this.pawn.ShowWeaponOpenly());
+                carrying && !isEating, this.pawn.Drawer.renderer.CarryWeaponOpenly());
 
             Vector3 shoulperPosLeftJoint  = shoulperPos.LeftJoint;
             Vector3 shoulperPosRightJoint = shoulperPos.RightJoint;
             Vector3 MainHandPosition      = this.MainHandPosition;
             Vector3 offHandPosition       = this.SecondHandPosition;
+            var originalAnimationPos = animationPosOffset;
+            var originalAnimationAngle = animationAngle;
+            
+            //if (this.CurrentRotation == Rot4.West)
+            //{
+            //    originalAnimationAngle += 30f;
+            //}
+            //else
+            //{
+            //    originalAnimationAngle -= 30f;
+            //}
+
             float mainHandAngle           = 0f;
             if (carrying && !isEating)
             {
@@ -942,15 +957,13 @@ namespace FacialStuff
             bool ignoreRight = false;
             ThingWithComps equipmentPrimary = this.pawn.equipment.Primary;
 
-            bool shouldWeaponFollowHand =  carriesWeaponOpenly && animationPosOffset != Vector3.zero; // pawn.Faction == Faction.OfPlayer; // TODO needs more work
+            bool shouldWeaponFollowHand = carriesWeaponOpenly && originalAnimationPos != Vector3.zero; // pawn.Faction == Faction.OfPlayer; // TODO needs more work
             if (drawRight)
             {
                 Quaternion quat;
                 Vector3 position;
                 bool noTween = carrying || this.pawn.Aiming();
                 
-
-
 
                 float quatAngle;
                 if (MainHandPosition != Vector3.zero)
@@ -984,7 +997,6 @@ namespace FacialStuff
                     quatAngle += animationAngle*1.25f;
 
                     quat = Quaternion.AngleAxis(quatAngle, Vector3.up);
-
                     /*else if (CurrentRotation.IsHorizontal)
                     {
                         quat *= Quaternion.AngleAxis(CurrentRotation == Rot4.West ? +90f : -90f, Vector3.up);
@@ -1000,9 +1012,9 @@ namespace FacialStuff
                 {
                     if (equipmentPrimary != null)
                     {
-                        var flippie = animationPosOffset;
+                        var flippie = originalAnimationPos;
                         flippie.z *= -1f;
-                        ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(flippie, animationAngle/2);
+                        ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(flippie, originalAnimationAngle/2 );
                         ignoreRight = true;
                     }
                 }
@@ -1128,19 +1140,19 @@ namespace FacialStuff
 
                 if (offHandWeapon != null)
                 {
-                    if (shouldWeaponFollowHand && !this.IsMoving)
+                    if (shouldWeaponFollowHand)
                     {
-                        var flippie = animationPosOffset;
+                        var flippie = originalAnimationPos;
                         flippie.z *= -1f;
-                        ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(flippie, animationAngle/2);
+                        ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(flippie, originalAnimationAngle/2);
                         ignoreLeft = true;
                     }
                     else
                     {
                         ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(Vector3.zero, 0f);
                     }
-                }
 
+                }
                 //GenDraw.DrawMeshNowOrLater(
                 //                           handMeshLeft, position,
                 //                           quat,

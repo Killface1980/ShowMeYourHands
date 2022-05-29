@@ -1,20 +1,35 @@
 ﻿using System;
 using FacialStuff;
+using HarmonyLib;
+using ShowMeYourHands.Harmony;
 using UnityEngine;
 using Verse;
+using yayoAni;
 
 namespace ShowMeYourHands;
 [HotSwappable]
+[HarmonyPatch( "yayoAni.patch_DrawEquipmentAiming", "Prefix")]
 public static class YayoAnimationCompatibility_DrawEquipmentAimingOverride
 {
-    public static void SaveWeaponLocation(PawnRenderer __instance, ref Thing eq, ref Vector3 drawLoc, ref float aimAngle)
+    public static void Prefix(PawnRenderer __instance, ref Thing eq, ref Vector3 drawLoc, ref float aimAngle)
     {
-        PawnRenderer_DrawEquipmentAiming.SaveWeaponLocationsAndDoOffsets(__instance?.graphics?.pawn, eq, ref drawLoc, ref aimAngle);
+        if (!core.val_combat)
+        {
+            return;
+        }
+        if (aimAngle > 200f && aimAngle < 340f)
+        {
+            drawLoc.y = -0.01f;
+
+        }
+        Pawn pawn = __instance?.graphics?.pawn;
+        // pawn is null, __instance is null ...
+        PawnRenderer_DrawEquipmentAiming.SaveWeaponLocationsAndDoOffsets(pawn, eq, ref drawLoc, ref aimAngle);
+
         return;
         //ShowMeYourHandsMain.LogMessage($"Saving from dual wield {eq.def.defName}, {drawLoc}, {aimAngle}");
         ShowMeYourHandsMain.weaponLocations[eq] = new Tuple<Vector3, float>(drawLoc, aimAngle);
         return;
-        Pawn pawn = __instance.graphics.pawn;
 
         //ShowMeYourHandsMain.LogMessage($"Saving from vanilla {eq.def.defName}, {drawLoc}, {aimAngle}");
         if (pawn == null || !pawn.GetCompAnim(out CompBodyAnimator compAnim))
@@ -38,8 +53,4 @@ public static class YayoAnimationCompatibility_DrawEquipmentAimingOverride
         ShowMeYourHandsMain.LogMessage($"New angle and position {eq.def.defName}, {drawLoc}, {aimAngle}");
 
     }
-}
-[AttributeUsage(AttributeTargets.Class)]
-public class HotSwappableAttribute : Attribute
-{
 }

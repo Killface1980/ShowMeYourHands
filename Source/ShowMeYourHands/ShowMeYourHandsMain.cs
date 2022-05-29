@@ -29,7 +29,7 @@ public static class ShowMeYourHandsMain
 
     [NotNull] public static readonly List<ThingDef> IsColorable;
 
-    public static readonly Harmony harmony;
+    public static readonly HarmonyLib.Harmony harmony;
 
     public static readonly bool BabysAndChildrenLoaded;
     public static readonly bool BabysAndChildrenLoaded2;
@@ -159,7 +159,7 @@ public static class ShowMeYourHandsMain
         IsColorable = DefDatabase<ThingDef>.AllDefsListForReading.Where(def => def.HasComp(typeof(CompColorable)))
             .ToList();
 
-        harmony = new Harmony("Killface.ShowMeYourHands");
+        harmony = new HarmonyLib.Harmony("Killface.ShowMeYourHands");
 
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 

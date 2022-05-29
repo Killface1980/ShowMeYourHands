@@ -5,12 +5,14 @@ using yayoAni;
 
 namespace ShowMeYourHands;
 
+[HotSwappable]
+[HarmonyLib.HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt))]
 public static class RenderPawnAt_Patch
 {
     static pawnDrawData pdd;
 
     // ReSharper disable once UnusedParameter.Global
-    public static void RenderPawnAt_Patch_Prefix(PawnRenderer __instance, Vector3 drawLoc, Rot4? rotOverride = null, bool neverAimWeapon = false)
+    public static void Prefix(PawnRenderer __instance, Vector3 drawLoc, Rot4? rotOverride = null, bool neverAimWeapon = false)
     {
         Pawn pawn = __instance.graphics.pawn;
 

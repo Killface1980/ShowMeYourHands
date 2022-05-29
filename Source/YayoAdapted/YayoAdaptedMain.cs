@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using HarmonyLib;
 using Verse;
 
@@ -9,7 +10,11 @@ public static class YayoAdaptedMain
 {
     static YayoAdaptedMain()
     {
-        Harmony harmony = new("Mlie.ShowMeYourHands.YayoAdaptedCompatibility");
+        HarmonyLib.Harmony harmony = new("Mlie.ShowMeYourHands.YayoAdaptedCompatibility");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
     }
+}
+[AttributeUsage(AttributeTargets.Class)]
+public class HotSwappableAttribute : Attribute
+{
 }

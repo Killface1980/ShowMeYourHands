@@ -389,9 +389,9 @@ internal class ShowMeYourHandsMod : Mod
         Widgets.DrawBoxSolid(rectLine, new ColorInt(42, 43, 44).ToColor);
         var texAngle = 0f;
         float sizeX = thing.graphicData.drawSize.x;
-        if (sizeX != 1f)
+        if (sizeX > 1f)
         {
-            texAngle += thing.equippedAngleOffset != 0 ? -45 : 0;
+            texAngle += thing.equippedAngleOffset;// != 0 ? -45 : 0;
             // rect = rect.ScaledBy(1/sizeX);
 
             // var diff = rect.size.x;

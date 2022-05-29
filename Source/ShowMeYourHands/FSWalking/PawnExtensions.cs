@@ -20,13 +20,6 @@ namespace FacialStuff
         public const string STR_Hand = "_Hand";
         public static Dictionary<Thing, Color> colorDictionary;
 
-        public static bool ShowWeaponOpenly(this Pawn pawn)
-        {
-            return pawn.carryTracker?.CarriedThing == null && pawn.equipment?.Primary != null &&
-                   (pawn.Drafted ||
-                    (pawn.CurJob != null && pawn.CurJob.def.alwaysShowWeapon) ||
-                    (pawn.mindState.duty != null && pawn.mindState.duty.def.alwaysShowWeapon));
-        }
         static float piHalf = Mathf.PI / 2f;
         static float angleReduce = 0.5f;
         static float angleToPos = 0.01f;

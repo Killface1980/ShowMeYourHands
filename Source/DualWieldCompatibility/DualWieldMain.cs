@@ -9,7 +9,7 @@ public static class DualWieldMain
 {
     static DualWieldMain()
     {
-        Harmony harmony = new("Mlie.ShowMeYourHands.DualWieldCompatibility");
+        HarmonyLib.Harmony harmony = new("Mlie.ShowMeYourHands.DualWieldCompatibility");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
     }
 }

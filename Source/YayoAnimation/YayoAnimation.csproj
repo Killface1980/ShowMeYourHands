@@ -18,6 +18,11 @@
       <Version>*</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
+    <PackageReference Include="Krafs.Publicizer" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ShowMeYourHands\ShowMeYourHands.csproj">
@@ -32,4 +37,8 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Publicize Include="Assembly-CSharp;0Harmony" />
+  </ItemGroup>
+
 </Project>

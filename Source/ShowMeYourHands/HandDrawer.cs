@@ -107,14 +107,6 @@ public class HandDrawer : ThingComp
         }
     }
 
-    private bool CarryWeaponOpenly(Pawn pawn)
-    {
-        return pawn.carryTracker?.CarriedThing == null && (pawn.Drafted ||
-                                                           pawn.CurJob != null &&
-                                                           pawn.CurJob.def.alwaysShowWeapon ||
-                                                           pawn.mindState.duty != null &&
-                                                           pawn.mindState.duty.def.alwaysShowWeapon);
-    }
 
     private void AngleCalc()
     {

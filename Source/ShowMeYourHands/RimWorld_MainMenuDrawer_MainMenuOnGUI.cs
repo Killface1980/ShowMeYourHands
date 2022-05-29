@@ -7,7 +7,7 @@ using FacialStuff.Defs;
 using FacialStuff.GraphicsFS;
 using HarmonyLib;
 using RimWorld;
-using ShowMeYourHands.FSWalking;
+using ShowMeYourHands.Harmony;
 using UnityEngine;
 using Verse;
 using WHands;
@@ -40,7 +40,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
 
         MethodInfo original                 = typeof(PawnRenderer).GetMethod("DrawEquipmentAiming");
-        Patches drawEquipmentAimingPatches  = Harmony.GetPatchInfo(original);
+        Patches drawEquipmentAimingPatches  = HarmonyLib.Harmony.GetPatchInfo(original);
         MethodInfo saveWeaponLocationMethod = typeof(PawnRenderer_DrawEquipmentAiming).GetMethod(nameof(PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingPrefix));
 
         if (drawEquipmentAimingPatches is null)
@@ -70,7 +70,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
         harmony.Patch(original, new HarmonyMethod(saveWeaponLocationMethod, Priority.Last));
 
-        drawEquipmentAimingPatches = Harmony.GetPatchInfo(original);
+        drawEquipmentAimingPatches = HarmonyLib.Harmony.GetPatchInfo(original);
 
         if (drawEquipmentAimingPatches.Prefixes.Count > 0)
         {

@@ -112,7 +112,7 @@ internal class ShowMeYourHandsMod : Mod
 
         currentVersion =
             VersionFromManifest.GetVersionFromModMetaData(
-                ModLister.GetActiveModWithIdentifier("Killface.ShowMeYourHands"));
+                ModLister.GetActiveModWithIdentifier("Mlie.ShowMeYourHands"));
     }
 
     private static string SelectedDef

@@ -159,7 +159,7 @@ public static class ShowMeYourHandsMain
         IsColorable = DefDatabase<ThingDef>.AllDefsListForReading.Where(def => def.HasComp(typeof(CompColorable)))
             .ToList();
 
-        harmony = new HarmonyLib.Harmony("Killface.ShowMeYourHands");
+        harmony = new HarmonyLib.Harmony("Mlie.ShowMeYourHands");
 
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 

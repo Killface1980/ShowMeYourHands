@@ -276,8 +276,12 @@ namespace AnimationConverter
                         // Head bob
                         var bodyBX = bodyData.X + bodybData.X;
                         var bodyBY = bodyData.Y + bodybData.Y;
-                        double bob = Math.Sqrt(Math.Pow((headData.X / this.scaleXZ - bodyBX / this.scaleXZ), 2) + Math.Pow((headData.Y / this.scaleXZ - bodyBY / this.scaleXZ), 2));
-                        this.animationDef.animationStages[i].animationClips[actorData.id].keyframes[k].headBob = (float)(bob);
+                        var headBX = headData.X + headbData.X;
+                        var headBY = headData.Y + headbData.Y;
+                        double bob = Math.Sqrt(Math.Pow(((headBX - bodyBX) / this.scaleXZ), 2) + Math.Pow(((headBY - bodyBY) / this.scaleXZ), 2));
+
+                        // double bob = (headBY) ;
+                        this.animationDef.animationStages[i].animationClips[actorData.id].keyframes[k].headBob = (float)(bob -0.34);
                     }
                 }
 

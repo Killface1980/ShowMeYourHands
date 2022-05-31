@@ -45,7 +45,7 @@ public class PawnRenderer_DrawEquipmentAiming
             return;
         }
 
-        Log.Message("Läuft");
+        // Log.Message("Läuft");
         // flips the weapon display
 
         if (compAnim.CurrentRotation == Rot4.North && !pawn.Aiming())

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<Defs>
+  <MainButtonDef>
+    <defName>OffsetManager</defName>
+    <label>offset manager</label>
+    <description>Control pawn offsets</description>
+    <tabWindowClass>Rimworld_Animations.MainTabWindow_OffsetConfigure</tabWindowClass>
+    <order>54</order>
+    <buttonVisible>false</buttonVisible>
+    <iconPath>UI/MainTab</iconPath>
+    <minimized>true</minimized>
+  </MainButtonDef>
+
+</Defs>

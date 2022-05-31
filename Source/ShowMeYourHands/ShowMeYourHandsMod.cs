@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using FacialStuff.AnimatorWindows;
+using Rimworld_Animations;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -263,6 +264,8 @@ internal class ShowMeYourHandsMod : Mod
     public override void WriteSettings()
     {
         base.WriteSettings();
+        OffsetMainButtonDefOf.OffsetManager.buttonVisible = ShowMeYourHandsModSettings.offsetTab;
+
         RimWorld_MainMenuDrawer_MainMenuOnGUI.UpdateHandDefinitions();
     }
 
@@ -804,6 +807,9 @@ internal class ShowMeYourHandsMod : Mod
                     lineSpacing = Text.LineHeight;
                     listing_Standard.Gap();
                     curY += lineSpacing;
+
+                    listing_Standard.CheckboxLabeled("Enable Animation Manager Tab", ref ShowMeYourHandsModSettings.offsetTab);
+                    listing_Standard.CheckboxLabeled("Debug Mode", ref ShowMeYourHandsModSettings.debugMode);
 
                     //  fs
                     listing_Standard.CheckboxLabeled("usehands.label".Translate(), ref this.Settings.UseHands,

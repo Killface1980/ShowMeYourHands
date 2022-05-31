@@ -28,7 +28,6 @@
     <Compile Remove="HandDrawer.cs" />
     <Compile Remove="SaveableFloat.cs" />
     <Compile Remove="__Animation\Animations\Clips\ThingAnimationClip.cs" />
-    <Compile Remove="__Animation\AnimationUtility.cs" />
     <Compile Remove="__Animation\CompBodyAnimator.cs" />
     <Compile Remove="__Animation\HarmonyPatch_JobDriver_SexBaseInitiator.cs" />
   </ItemGroup>
@@ -50,7 +49,6 @@
     <None Include="HandDrawer.cs" />
     <None Include="SaveableFloat.cs" />
     <None Include="__Animation\Animations\Clips\ThingAnimationClip.cs" />
-    <None Include="__Animation\AnimationUtility.cs" />
     <None Include="__Animation\CompBodyAnimator.cs" />
     <None Include="__Animation\HarmonyPatch_JobDriver_SexBaseInitiator.cs" />
   </ItemGroup>

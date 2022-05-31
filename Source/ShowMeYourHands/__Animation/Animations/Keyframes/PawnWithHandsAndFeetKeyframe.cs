@@ -22,6 +22,12 @@ namespace Rimworld_Animations {
         public int? bodyFacing;
         public int? headFacing;
 
+        public int? handlFacing;
+        public int? handrFacing;
+        public int? footlFacing;
+        public int? footrFacing;
+
+
         public bool? quiver;
 
         public float? handlAngle;

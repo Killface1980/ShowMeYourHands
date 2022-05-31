@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace ShowMeYourHands;
@@ -9,7 +10,10 @@ namespace ShowMeYourHands;
 [ShowMeYourHandsMod.HotSwappable]
 internal class ShowMeYourHandsModSettings : ModSettings
 {
+    public static Dictionary<string, Vector2> offsets = new Dictionary<string, Vector2>();
+    public static Dictionary<string, float> rotation = new Dictionary<string, float>();
 
+    public static bool offsetTab = false, debugMode = false;
 
     public Dictionary<string, SaveableVector3> ManualMainHandPositions = new();
 
@@ -75,6 +79,14 @@ internal class ShowMeYourHandsModSettings : ModSettings
         Scribe_Values.Look(ref this.UseFeet, nameof(this.UseFeet), true);
         Scribe_Values.Look(ref this.UsePaws, nameof(this.UsePaws), true);
         Scribe_Values.Look(ref this.CutHair, nameof(this.CutHair), true);
+
+        Scribe_Collections.Look(ref offsets, "SMYHAnimations-animationOffsets");
+        Scribe_Collections.Look(ref rotation, "RJWAnimations-rotationOffsets");
+
+        Scribe_Values.Look(ref offsetTab, "SMYHAnimations-EnableOffsetTab", false);
+      
+        Scribe_Values.Look(ref debugMode, "SMYHAnimations-AnimsDebugMode", false);
+
 
     }
 

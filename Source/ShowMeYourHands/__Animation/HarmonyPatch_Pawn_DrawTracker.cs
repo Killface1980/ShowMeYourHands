@@ -22,7 +22,7 @@ namespace Rimworld_Animations
             if (bodyAnim != null && bodyAnim.isAnimating)
             {
                 Vector3? anchorVec = ___pawn.TryGetComp<CompBodyAnimator>().anchor;
-                __result = (anchorVec.HasValue ? anchorVec.Value : __result) + ___pawn.TryGetComp<CompBodyAnimator>().deltaPos;
+                __result = (anchorVec ?? __result) + ___pawn.TryGetComp<CompBodyAnimator>().deltaPos;
 
                 return false;
             }

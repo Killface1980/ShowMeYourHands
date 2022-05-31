@@ -1702,7 +1702,8 @@ namespace FacialStuff
 
                         if (!this.IsMoving)
                         {
-                            pawnsToAnimate[i].TryGetComp<CompBodyAnimator>().setAnchor(pos);
+/*                            pawnsToAnimate[i].TryGetComp<CompBodyAnimator>().setAnchor(pos);
+*/                            pawnsToAnimate[i].TryGetComp<CompBodyAnimator>().setAnchor(IntVec3.Zero);
                         }
                     }
 
@@ -1743,6 +1744,11 @@ namespace FacialStuff
         private bool Animating = false;
         public void setAnchor(IntVec3 pos)
         {
+            if (pos == IntVec3.Zero)
+            {
+                anchor = null;
+                return;
+            }
             anchor = pos.ToVector3Shifted();
         }
 

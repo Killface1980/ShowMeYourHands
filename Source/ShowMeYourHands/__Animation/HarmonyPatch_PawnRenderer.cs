@@ -38,7 +38,7 @@ namespace Rimworld_Animations
 			CompBodyAnimator bodyAnim = pawn.TryGetComp<CompBodyAnimator>();
 
 
-			if (bodyAnim != null && bodyAnim.isAnimating && pawn.Map == Find.CurrentMap)
+			if (bodyAnim is { isAnimating: true } && pawn.Map == Find.CurrentMap)
 			{
 				bodyAnim.animatePawnBody(ref rootLoc, ref angle, ref bodyFacing);
 

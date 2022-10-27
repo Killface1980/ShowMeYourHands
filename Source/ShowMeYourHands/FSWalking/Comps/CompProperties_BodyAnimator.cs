@@ -1,11 +1,10 @@
-﻿using JetBrains.Annotations;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace FacialStuff
+namespace PawnAnimator
 {
     // ReSharper disable UnassignedField.Global
     // ReSharper disable StyleCop.SA1307

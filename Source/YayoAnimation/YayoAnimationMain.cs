@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Reflection;
-using HarmonyLib;
 using Verse;
 
-namespace ShowMeYourHands;
+namespace ShowMeYourHandsYayoAni;
 
 [StaticConstructorOnStartup]
 public static class YayoAnimationMain
 {
     static YayoAnimationMain()
     {
-        HarmonyLib.Harmony harmony = new("Mlie.ShowMeYourHands.YayoAnimationCompatibility");
+        HarmonyLib.Harmony harmony = new("Killface.PawnAnimator.YayoAnimationCompatibility");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
     }

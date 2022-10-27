@@ -2,14 +2,13 @@
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
-using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace FacialStuff
+namespace PawnAnimator
 {
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [StaticConstructorOnStartup]
     public static class PawnExtensions
     {
@@ -240,8 +239,30 @@ namespace FacialStuff
             return pawn.GetComp<CompBodyAnimator>();
         }
 
+        // Avoiding ThingWithComps.GetComp<T> and implementing a specific non-generic version of it here.
+        // That method is slow because the `isinst` instruction with generic type arg operands is very slow,
+        // while `isinst` instruction against non-generic type operand like used below is fast.
         public static bool GetCompAnim([NotNull] this Pawn pawn, [NotNull] out CompBodyAnimator compAnim)
         {
+            compAnim = null;
+            List<ThingComp> comps = pawn.AllComps;
+            if (comps.NullOrEmpty()) return false;
+
+            foreach (ThingComp comp in comps)
+            {
+                if (comp is not CompBodyAnimator bodyComp) continue;
+                compAnim = bodyComp;
+                return true;
+            }
+            return false;
+
+            for (int i = 0, count = comps.Count; i < count; i++)
+            {
+                if (comps[i] is CompBodyAnimator comp)
+                    compAnim = comp;
+                    return true;
+            }
+            return false;
             compAnim = pawn.GetComp<CompBodyAnimator>();
             return compAnim != null;
         }

@@ -1,11 +1,10 @@
-﻿using FacialStuff;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands.Harmony;
+namespace PawnAnimator.Harmony;
 
-[ShowMeYourHandsMod.HotSwappable]
+[PawnAnimatorMod.HotSwappable]
 [HarmonyPatch(typeof(PawnRenderer), "DrawCarriedThing")]
 public static class PawnRenderer_DrawCarriedThing
 {
@@ -17,7 +16,7 @@ public static class PawnRenderer_DrawCarriedThing
             return;
         }
 
-        if (!ShowMeYourHandsMod.instance.Settings.ShowWhenCarry)
+        if (!PawnAnimatorMod.instance.Settings.ShowWhenCarry)
         {
             return;
         }

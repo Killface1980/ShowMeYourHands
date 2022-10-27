@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Verse;
 
-namespace ShowMeYourHands;
+namespace PawnAnimator;
 
 /// <summary>
 ///     Definition of the settings for the mod
 /// </summary>
-[ShowMeYourHandsMod.HotSwappable]
-internal class ShowMeYourHandsModSettings : ModSettings
+[PawnAnimatorMod.HotSwappable]
+internal class PawnAnimatorModSettings : ModSettings
 {
 
 

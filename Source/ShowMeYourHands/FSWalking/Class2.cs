@@ -1,4 +1,4 @@
-﻿namespace FacialStuff.FaceEditor
+﻿namespace PawnAnimator.FaceEditor
 {
     public partial class Dialog_FaceStyling
     {

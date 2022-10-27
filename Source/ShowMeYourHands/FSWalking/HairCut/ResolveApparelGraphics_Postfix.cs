@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FacialStuff;
-using FacialStuff.HairCut;
+using PawnAnimator.HairCut;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands.FSWalking.HairCut
+namespace PawnAnimator.FSWalking.HairCut
 {
     [HarmonyPatch(typeof(PawnGraphicSet), nameof(PawnGraphicSet.ResolveApparelGraphics))]
     internal static class ResolveApparelGraphics_Postfix
     {
         public static void Postfix(PawnGraphicSet __instance)
         {
-            if (!ShowMeYourHandsMod.instance.Settings.CutHair)
+            if (!PawnAnimatorMod.instance.Settings.CutHair)
             {
                 return;
             }

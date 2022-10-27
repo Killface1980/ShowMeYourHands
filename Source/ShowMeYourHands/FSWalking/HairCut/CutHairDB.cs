@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FacialStuff.GraphicsFS;
+using PawnAnimator.GraphicsFS;
 using JetBrains.Annotations;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace FacialStuff.HairCut
+namespace PawnAnimator.HairCut
 {
     // ReSharper disable once InconsistentNaming
     [StaticConstructorOnStartup]

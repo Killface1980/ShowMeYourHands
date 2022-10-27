@@ -2,7 +2,7 @@
 using RimWorld;
 using Verse;
 
-namespace ShowMeYourHands.FSWalking.Animator
+namespace PawnAnimator.FSWalking.Animator
 {
     [HarmonyPatch(typeof(Prefs), nameof(Prefs.Save))]
     class DrawAt_Patch

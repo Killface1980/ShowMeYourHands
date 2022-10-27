@@ -1,13 +1,12 @@
 ﻿using System;
-using FacialStuff;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands.Harmony;
+namespace PawnAnimator.Harmony;
 
 // [HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming", typeof(Thing), typeof(Vector3), typeof(float))]
-[ShowMeYourHandsMod.HotSwappable]
+[PawnAnimatorMod.HotSwappable]
 public class PawnRenderer_DrawEquipmentAiming
 {
     //[HarmonyPrefix]
@@ -30,7 +29,7 @@ public class PawnRenderer_DrawEquipmentAiming
     public static void SaveWeaponLocationsAndDoOffsets(Pawn pawn, Thing eq, ref Vector3 drawLoc,
         ref float aimAngle)
     {
-        if (!ShowMeYourHandsMod.instance.Settings.UseHands)
+        if (!PawnAnimatorMod.instance.Settings.UseHands)
         {
             return;
         }
@@ -45,7 +44,7 @@ public class PawnRenderer_DrawEquipmentAiming
             return;
         }
 
-        Log.Message("Läuft");
+        //Log.Message("Läuft");
         // flips the weapon display
 
         if (compAnim.CurrentRotation == Rot4.North && !pawn.Aiming())
@@ -101,9 +100,10 @@ public class PawnRenderer_DrawEquipmentAiming
         compAnim.CalculatePositionsWeapon(extensions, out Vector3 weaponOffset, flipped);
         // Log.Message(eq.def + " - " + weaponOffset.x.ToString("N3") + "-" + weaponOffset.y.ToString("N3") + "-" +
         //             weaponOffset.z.ToString("N3"));
-
+        bool isOffHand = false;
         if (pawn?.equipment?.AllEquipmentListForReading != null && pawn.equipment.AllEquipmentListForReading.Count == 2)
         {
+            isOffHand = true;
             drawLoc.z += weaponOffset.z;
             drawLoc.x += weaponOffset.x * 0.5f * (isFirstHandWeapon ? -1f : 1f);
         }
@@ -208,7 +208,7 @@ public class PawnRenderer_DrawEquipmentAiming
                 break;
         }
 #endif
-        if (compAnim.CurrentRotation == Rot4.West || compAnim.CurrentRotation == Rot4.North)
+        if (compAnim.CurrentRotation == Rot4.West && !isOffHand || compAnim.CurrentRotation == Rot4.North)
         {
             if (drawLoc.y > pawn.DrawPos.y)
             {

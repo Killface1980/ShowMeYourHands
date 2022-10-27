@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FacialStuff;
+namespace PawnAnimator;
 
 public struct JointLister
 {

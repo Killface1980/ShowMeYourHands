@@ -1,4 +1,4 @@
-﻿namespace FacialStuff
+﻿namespace PawnAnimator
 {
     public struct BodyPartStats
     {

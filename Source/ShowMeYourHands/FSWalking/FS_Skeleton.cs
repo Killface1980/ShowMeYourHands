@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FacialStuff.Animator
+namespace PawnAnimator.Animator
 {
     public class FS_Skeleton
     {

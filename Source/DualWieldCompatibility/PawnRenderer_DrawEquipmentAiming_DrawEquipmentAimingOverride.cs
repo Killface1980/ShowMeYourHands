@@ -1,9 +1,10 @@
 ﻿using System;
 using HarmonyLib;
+using PawnAnimator;
 using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands;
+namespace ShowMeYourHandsDualWield;
 
 [HarmonyPatch(typeof(DualWield.Harmony.PawnRenderer_DrawEquipmentAiming), "DrawEquipmentAimingOverride",
     typeof(Thing), typeof(Vector3),

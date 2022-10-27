@@ -1,17 +1,16 @@
 ﻿using HarmonyLib;
 using RimWorld;
-using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 
-namespace FacialStuff.HairCut;
+namespace PawnAnimator.HairCut;
 
 [HarmonyPatch(typeof(PawnGraphicSet), nameof(PawnGraphicSet.HairMatAt))]
 public class HairCutPawnPatch
 {
     public static void Postfix(PawnGraphicSet __instance, Rot4 facing, bool portrait, bool cached, ref Material __result)
     {
-        if (!ShowMeYourHandsMod.instance.Settings.CutHair)
+        if (!PawnAnimatorMod.instance.Settings.CutHair)
         {
             return;
         }

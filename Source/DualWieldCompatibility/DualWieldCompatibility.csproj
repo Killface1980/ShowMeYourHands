@@ -24,14 +24,14 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ShowMeYourHands\ShowMeYourHands.csproj">
+    <ProjectReference Include="..\ShowMeYourHands\PawnAnimator.csproj">
       <Private>false</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DualWield">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\1628211313\1.3\Assemblies\DualWield.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\1628211313\1.3\Assemblies\DualWield.dll</HintPath>
       <CopyLocal>False</CopyLocal>
       <Private>false</Private>
     </Reference>

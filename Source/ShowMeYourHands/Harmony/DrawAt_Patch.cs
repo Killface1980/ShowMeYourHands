@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using FacialStuff;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands.Harmony;
+namespace PawnAnimator.Harmony;
 
-[ShowMeYourHandsMod.HotSwappable]
+[PawnAnimatorMod.HotSwappable]
 [HarmonyPriority(0)]
 [HarmonyPatch(typeof(Pawn_DrawTracker), nameof(Pawn_DrawTracker.DrawAt))]
 class DrawAt_Patch
@@ -158,15 +157,15 @@ class DrawAt_Patch
         animator.CheckMovement();
 
         // feet shouldn't rotate while standing. 
-        if (ShowMeYourHandsMod.instance.Settings.UseFeet)
+        if (PawnAnimatorMod.instance.Settings.UseFeet)
         {
             animator?.DrawFeet(footAngle, __state, loc);
         }
-        if (ShowMeYourHandsMod.instance.Settings.UsePaws )
+        if (PawnAnimatorMod.instance.Settings.UsePaws )
         {
             animator?.DrawAnimalFeet(footAngle, __state, loc);
         }
-        if (ShowMeYourHandsMod.instance.Settings.UseHands && (!ShowMeYourHandsMod.instance.Settings.ShowWhenCarry ||  pawn.carryTracker?.CarriedThing == null))
+        if (PawnAnimatorMod.instance.Settings.UseHands && (!PawnAnimatorMod.instance.Settings.ShowWhenCarry ||  pawn.carryTracker?.CarriedThing == null))
         {
             animator?.DrawHands(handAngle, loc);
         }

@@ -6,22 +6,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using FacialStuff.AnimatorWindows;
+using PawnAnimator.AnimatorWindows;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
-using static ShowMeYourHands.__ToDo_Translations;
+using static PawnAnimator.__ToDo_Translations;
 
-namespace ShowMeYourHands;
+namespace PawnAnimator;
 
 [HotSwappable]
 [StaticConstructorOnStartup]
-internal class ShowMeYourHandsMod : Mod
+internal class PawnAnimatorMod : Mod
 {
     /// <summary>
     ///     The instance of the settings to be read by the mod
     /// </summary>
-    [NotNull] public static ShowMeYourHandsMod instance;
+    [NotNull] public static PawnAnimatorMod instance;
 
     private static readonly Vector2 buttonSize = new(120f, 25f);
 
@@ -91,13 +91,13 @@ internal class ShowMeYourHandsMod : Mod
     /// <summary>
     ///     The private settings
     /// </summary>
-    private ShowMeYourHandsModSettings settings;
+    private PawnAnimatorModSettings settings;
 
     /// <summary>
     ///     Constructor
     /// </summary>
     /// <param name="content"></param>
-    public ShowMeYourHandsMod(ModContentPack content)
+    public PawnAnimatorMod(ModContentPack content)
         : base(content)
     {
         instance = this;
@@ -112,7 +112,7 @@ internal class ShowMeYourHandsMod : Mod
 
         currentVersion =
             VersionFromManifest.GetVersionFromModMetaData(
-                ModLister.GetActiveModWithIdentifier("Mlie.ShowMeYourHands"));
+                ModLister.GetActiveModWithIdentifier("Killface.PawnAnimator"));
     }
 
     private static string SelectedDef
@@ -133,13 +133,13 @@ internal class ShowMeYourHandsMod : Mod
     ///     The instance-settings for the mod
     /// </summary>
     [NotNull]
-    internal ShowMeYourHandsModSettings Settings
+    internal PawnAnimatorModSettings Settings
     {
         get
         {
             if (this.settings == null)
             {
-                this.settings = this.GetSettings<ShowMeYourHandsModSettings>();
+                this.settings = this.GetSettings<PawnAnimatorModSettings>();
             }
 
             return this.settings;
@@ -222,12 +222,13 @@ internal class ShowMeYourHandsMod : Mod
     {
         get
         {
-            if (headTex == null)
+          //TODO: Add custom/random headgraphic for 1.4
+/*            if (headTex == null)
             {
                 Color skinColor = PawnSkinColors.GetSkinColor(0.5f);
                 headTex = GraphicDatabaseHeadRecords.GetHeadRandom(Gender.Male, skinColor, CrownType.Average, false);
             }
-
+*/
             return headTex;
         }
         set => headTex = value;
@@ -387,7 +388,7 @@ internal class ShowMeYourHandsMod : Mod
         Rect rectLine = rect.ExpandedBy(2);
         Widgets.DrawBoxSolid(rectOuter, Color.grey);
         Widgets.DrawBoxSolid(rectLine, new ColorInt(42, 43, 44).ToColor);
-        var texAngle = 0f;
+        float texAngle = 0f;
         float sizeX = thing.graphicData.drawSize.x;
         if (sizeX > 1f)
         {
@@ -1482,7 +1483,7 @@ internal class ShowMeYourHandsMod : Mod
         listing_Standard.Begin(tabFrameRect);
         listing_Standard.ColumnWidth = tabFrameRect.width;
 
-        var curY = 0f;
+        float curY = 0f;
         if (Prefs.UIScale != 1f)
         {
             GUI.color = Color.yellow;
@@ -1533,8 +1534,8 @@ internal class ShowMeYourHandsMod : Mod
                              select weapon).ToList();
             //listAddition +=36;
         }
-        Rect tabContentRect = new Rect(tabFrameRect);
-        Rect weaponList = new Rect(tabFrameRect);
+        Rect tabContentRect = new(tabFrameRect);
+        Rect weaponList = new(tabFrameRect);
         weaponList.y += curY;
         weaponList.height -= curY;
 

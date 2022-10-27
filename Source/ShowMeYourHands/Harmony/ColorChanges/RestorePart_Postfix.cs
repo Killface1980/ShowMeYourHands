@@ -1,8 +1,7 @@
-﻿using FacialStuff;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Verse;
 
-namespace ShowMeYourHands.Harmony.ColorChanges
+namespace PawnAnimator.Harmony.ColorChanges
 {
     [StaticConstructorOnStartup]
     [HarmonyPatch(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.RestorePart))]

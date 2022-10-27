@@ -1,12 +1,12 @@
 ﻿using System;
-using FacialStuff;
+using PawnAnimator;
 using HarmonyLib;
-using ShowMeYourHands.Harmony;
+using PawnAnimator.Harmony;
 using UnityEngine;
 using Verse;
 using yayoAni;
 
-namespace ShowMeYourHands;
+namespace ShowMeYourHandsYayoAni;
 [HotSwappable]
 [HarmonyPatch( "yayoAni.patch_DrawEquipmentAiming", "Prefix")]
 public static class YayoAnimationCompatibility_DrawEquipmentAimingOverride

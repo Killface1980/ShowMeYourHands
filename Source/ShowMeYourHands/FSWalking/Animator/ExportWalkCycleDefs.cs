@@ -2,7 +2,7 @@
 
 // ReSharper disable CheckNamespace
 
-namespace FacialStuff.ExportWalkCycleDefs
+namespace PawnAnimator.ExportWalkCycleDefs
 {
     // ReSharper disable StyleCop.SA1307
     // ReSharper disable StyleCop.SA1401

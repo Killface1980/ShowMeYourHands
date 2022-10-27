@@ -1,11 +1,10 @@
-﻿using System;
-using HarmonyLib;
-using ShowMeYourHands.Harmony;
+﻿using HarmonyLib;
+using PawnAnimator.Harmony;
 using UnityEngine;
 using Verse;
 using yayoCombat;
 
-namespace ShowMeYourHands;
+namespace ShowMeYourHandsYayoAdapted;
 
 [HotSwappable]
 [HarmonyPatch(typeof(PawnRenderer_override), nameof(PawnRenderer_override.DrawEquipmentAiming))]

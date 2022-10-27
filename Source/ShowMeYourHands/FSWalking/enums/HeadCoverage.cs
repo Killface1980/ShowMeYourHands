@@ -1,4 +1,4 @@
-﻿namespace FacialStuff
+﻿namespace PawnAnimator
 {
     public enum HeadCoverage : byte
     {

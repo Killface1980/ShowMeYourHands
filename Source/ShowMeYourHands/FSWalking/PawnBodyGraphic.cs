@@ -1,16 +1,15 @@
 ﻿// ReSharper disable StyleCop.SA1401
 
 using RimWorld;
-using ShowMeYourHands;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
-namespace FacialStuff.GraphicsFS
+namespace PawnAnimator.GraphicsFS
 {
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [StaticConstructorOnStartup]
     public class PawnBodyGraphic
     {
@@ -399,16 +398,16 @@ namespace FacialStuff.GraphicsFS
             this.footRightHasColor = false;
             this.colorBody         = new List<bool> { false, false, false, false };
 
-            if (ShowMeYourHandsMod.instance.Settings.MatchHandAmounts ||
-                ShowMeYourHandsMod.instance.Settings.MatchArtificialLimbColor)
+            if (PawnAnimatorMod.instance.Settings.MatchHandAmounts ||
+                PawnAnimatorMod.instance.Settings.MatchArtificialLimbColor)
             {
                 List<BodyPartRecord> allParts = pawn.RaceProps?.body?.AllParts;
 
                 if (!allParts.NullOrEmpty())
                 {
-                    if (ShowMeYourHandsMod.instance.Settings.MatchHandAmounts)
+                    if (PawnAnimatorMod.instance.Settings.MatchHandAmounts)
                     {
-                        List<Hediff> hediffs = pawn?.health?.hediffSet?.hediffs?.Where(x => x?.def != null && !x.def.defName.NullOrEmpty()).ToList();
+                        List<Hediff> hediffs = pawn?.health?.hediffSet?.hediffs?.ToList();
                         if (!hediffs.NullOrEmpty())
                         {
                             foreach (Hediff diff in hediffs.Where(diff => diff?.def == HediffDefOf.MissingBodyPart))
@@ -483,12 +482,12 @@ namespace FacialStuff.GraphicsFS
                         }
                     }
 
-                    if (ShowMeYourHandsMod.instance.Settings.MatchArtificialLimbColor)
+                    if (PawnAnimatorMod.instance.Settings.MatchArtificialLimbColor)
                     {
-                        List<Hediff_AddedPart> addedhediffs = pawn?.health?.hediffSet?.GetHediffs<Hediff_AddedPart>()
-                            .Where(x => x?.def != null && !x.def.defName.NullOrEmpty()).ToList();
+                        List<Hediff_AddedPart> addedhediffs = new();
+                          pawn?.health?.hediffSet?.GetHediffs<Hediff_AddedPart>(ref addedhediffs);
 
-                        if (addedhediffs != null)
+                        if (!addedhediffs.NullOrEmpty())
                         {
                             foreach (Hediff_AddedPart diff in addedhediffs)
                             {
@@ -576,13 +575,14 @@ namespace FacialStuff.GraphicsFS
                     }
                 }
             }
+            List<Apparel> wornApparel = pawn?.apparel?.WornApparel;
 
-            if (ShowMeYourHandsMod.instance.Settings.MatchArmorColor)
+            if (PawnAnimatorMod.instance.Settings.MatchArmorColor && !wornApparel.NullOrEmpty())
             {
-                IEnumerable<Apparel> handApparel = pawn.apparel.WornApparel.Where(apparel =>
+                IEnumerable<Apparel> handApparel = wornApparel.Where(apparel =>
                     apparel.def.apparel.bodyPartGroups.Contains(
                         DefDatabase<BodyPartGroupDef>.GetNamedSilentFail("Hands")));
-                IEnumerable<Apparel> footApparel = pawn.apparel.WornApparel
+                IEnumerable<Apparel> footApparel = wornApparel
                     .Where(apparel => apparel.def.apparel.bodyPartGroups.Contains(
                         DefDatabase<BodyPartGroupDef>.GetNamedSilentFail(
                             "Feet")));

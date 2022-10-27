@@ -1,15 +1,14 @@
 ﻿using System.Reflection;
-using HarmonyLib;
 using Verse;
 
-namespace ShowMeYourHands;
+namespace ShowMeYourHandsDualWield;
 
 [StaticConstructorOnStartup]
 public static class DualWieldMain
 {
     static DualWieldMain()
     {
-        HarmonyLib.Harmony harmony = new("Mlie.ShowMeYourHands.DualWieldCompatibility");
+        HarmonyLib.Harmony harmony = new("Killface.PawnAnimator.DualWieldCompatibility");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
     }
 }

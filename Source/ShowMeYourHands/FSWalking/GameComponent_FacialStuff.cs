@@ -1,14 +1,13 @@
-﻿using FacialStuff.Defs;
+﻿using PawnAnimator.Defs;
 using JetBrains.Annotations;
 using RimWorld;
-using ShowMeYourHands;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
-namespace FacialStuff
+namespace PawnAnimator
 {
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     public class GameComponent_FacialStuff : GameComponent
     {
         #region Public Constructors

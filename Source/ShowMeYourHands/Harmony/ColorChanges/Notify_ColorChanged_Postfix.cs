@@ -1,9 +1,8 @@
-﻿using FacialStuff;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using Verse;
 
-namespace ShowMeYourHands.Harmony.ColorChanges
+namespace PawnAnimator.Harmony.ColorChanges
 {
     [StaticConstructorOnStartup]
     [HarmonyPatch(typeof(Apparel), nameof(Apparel.Notify_ColorChanged))]

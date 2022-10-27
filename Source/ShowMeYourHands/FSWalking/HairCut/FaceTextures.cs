@@ -2,12 +2,11 @@
 using System.Linq;
 using ColorMine.ColorSpaces;
 using ColorMine.ColorSpaces.Comparisons;
-using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 using static System.Byte;
 
-namespace FacialStuff.GraphicsFS
+namespace PawnAnimator.GraphicsFS
 {
     [StaticConstructorOnStartup]
     public static class FaceTextures

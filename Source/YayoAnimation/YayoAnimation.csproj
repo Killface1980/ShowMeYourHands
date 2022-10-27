@@ -25,7 +25,7 @@
 
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ShowMeYourHands\ShowMeYourHands.csproj">
+    <ProjectReference Include="..\ShowMeYourHands\PawnAnimator.csproj">
       <Private>false</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
     </ProjectReference>

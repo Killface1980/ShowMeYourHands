@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FacialStuff.Animator;
+namespace PawnAnimator.Animator;
 
 public class FS_Joint
 {

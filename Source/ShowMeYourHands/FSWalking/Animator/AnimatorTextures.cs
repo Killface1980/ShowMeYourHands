@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands.FSWalking.Animator
+namespace PawnAnimator.FSWalking.Animator
 {
     [StaticConstructorOnStartup]
     public static class AnimatorTextures

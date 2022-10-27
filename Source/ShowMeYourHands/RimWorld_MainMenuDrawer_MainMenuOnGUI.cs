@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FacialStuff;
-using FacialStuff.Defs;
-using FacialStuff.GraphicsFS;
+using PawnAnimator.Defs;
+using PawnAnimator.GraphicsFS;
 using HarmonyLib;
 using RimWorld;
-using ShowMeYourHands.Harmony;
+using PawnAnimator.Harmony;
 using UnityEngine;
 using Verse;
 using WHands;
-using static ShowMeYourHands.ShowMeYourHandsMain;
+using static PawnAnimator.ShowMeYourHandsMain;
 
-namespace ShowMeYourHands;
+namespace PawnAnimator;
 
 [HarmonyPatch(typeof(MainMenuDrawer), "MainMenuOnGUI")]
 public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
@@ -287,7 +286,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
                        !doneWeapons.Contains(weapon)
                  select weapon)
         {
-            if (ShowMeYourHandsMod.IsShield(weapon))
+            if (PawnAnimatorMod.IsShield(weapon))
             {
                 LogMessage($"Ignoring {weapon.defName} is probably a shield");
                 continue;
@@ -335,7 +334,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
     private static void LoadFromSettings()
     {
-        ShowMeYourHandsModSettings modSettings = ShowMeYourHandsMod.instance.Settings;
+        PawnAnimatorModSettings modSettings = PawnAnimatorMod.instance.Settings;
         if (modSettings?.ManualMainHandPositions == null)
         {
             return;
@@ -433,7 +432,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
         List<ClutterHandsTDef> defs = DefDatabase<ClutterHandsTDef>.AllDefsListForReading;
         if (specificDef == null)
         {
-            ShowMeYourHandsMod.DefinedByDef = new HashSet<string>();
+            PawnAnimatorMod.DefinedByDef = new HashSet<string>();
         }
 
         foreach (ClutterHandsTDef handsTDef in defs)
@@ -498,7 +497,7 @@ public static class RimWorld_MainMenuDrawer_MainMenuOnGUI
 
                     }
 
-                    ShowMeYourHandsMod.DefinedByDef.Add(weapon.defName);
+                    PawnAnimatorMod.DefinedByDef.Add(weapon.defName);
                     if (specificDef != null)
                     {
                         return;

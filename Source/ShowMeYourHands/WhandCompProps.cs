@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands;
+namespace PawnAnimator;
 
 public class WhandCompProps : CompProperties
 {

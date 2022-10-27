@@ -1,21 +1,19 @@
-﻿using FacialStuff.GraphicsFS;
-using FacialStuff.Tweener;
+﻿using PawnAnimator.GraphicsFS;
 using JetBrains.Annotations;
 using RimWorld;
-using ShowMeYourHands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FacialStuff.AnimatorWindows;
+using PawnAnimator.AnimatorWindows;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
 
-namespace FacialStuff
+namespace PawnAnimator
 {
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [StaticConstructorOnStartup]
     public class CompBodyAnimator : ThingComp
     {
@@ -734,7 +732,7 @@ namespace FacialStuff
                 return;
             }
 
-            var newDrawPos = drawPos;
+            Vector3 newDrawPos = drawPos;
             BodyAnimDef body = this.BodyAnim;
 
             if (body is not { bipedWithHands: true })
@@ -847,8 +845,8 @@ namespace FacialStuff
             Vector3 shoulperPosRightJoint = shoulperPos.RightJoint;
             Vector3 MainHandPosition      = this.MainHandPosition;
             Vector3 offHandPosition       = this.SecondHandPosition;
-            var originalAnimationPos = animationPosOffset;
-            var originalAnimationAngle = animationAngle;
+            Vector3 originalAnimationPos = animationPosOffset;
+            float originalAnimationAngle = animationAngle;
             
             //if (this.CurrentRotation == Rot4.West)
             //{
@@ -1012,7 +1010,7 @@ namespace FacialStuff
                 {
                     if (equipmentPrimary != null)
                     {
-                        var flippie = originalAnimationPos;
+                        Vector3 flippie = originalAnimationPos;
                         flippie.z *= -1f;
                         ShowMeYourHandsMain.rightHandLocations[equipmentPrimary] = new Tuple<Vector3, float>(flippie, originalAnimationAngle/2 );
                         ignoreRight = true;
@@ -1142,7 +1140,7 @@ namespace FacialStuff
                 {
                     if (shouldWeaponFollowHand)
                     {
-                        var flippie = originalAnimationPos;
+                        Vector3 flippie = originalAnimationPos;
                         flippie.z *= -1f;
                         ShowMeYourHandsMain.leftHandLocations[offHandWeapon] = new Tuple<Vector3, float>(flippie, originalAnimationAngle/2);
                         ignoreLeft = true;
@@ -2231,7 +2229,7 @@ namespace FacialStuff
         {
             get
             {
-                if (ShowMeYourHandsMod.instance.Settings.UseFeet)
+                if (PawnAnimatorMod.instance.Settings.UseFeet)
                 {
                     SimpleCurve curve = this.CurrentWalkCycle.BodyOffsetZ;
                     if (curve.PointsCount > 0)
@@ -2287,7 +2285,7 @@ namespace FacialStuff
         {
             get
             {
-                if (ShowMeYourHandsMod.instance.Settings.UseFeet)
+                if (PawnAnimatorMod.instance.Settings.UseFeet)
                 {
                     WalkCycleDef walkCycle = this.CurrentWalkCycle;
                     if (walkCycle != null)
@@ -2308,7 +2306,7 @@ namespace FacialStuff
         {
             get
             {
-                if (ShowMeYourHandsMod.instance.Settings.UseFeet)
+                if (PawnAnimatorMod.instance.Settings.UseFeet)
                 {
                     WalkCycleDef walkCycle = this.CurrentWalkCycle;
                     if (walkCycle != null)
@@ -2329,7 +2327,7 @@ namespace FacialStuff
         {
             get
             {
-                if (ShowMeYourHandsMod.instance.Settings.UseFeet)
+                if (PawnAnimatorMod.instance.Settings.UseFeet)
                 {
                     WalkCycleDef walkCycle = this.CurrentWalkCycle;
                     if (walkCycle != null)
@@ -2438,10 +2436,10 @@ namespace FacialStuff
 
             if (!ShowMeYourHandsMain.weaponLocations.ContainsKey(mainHandWeapon))
             {
-                if (ShowMeYourHandsMod.instance.Settings.VerboseLogging)
+                if (PawnAnimatorMod.instance.Settings.VerboseLogging)
                 {
                     Log.ErrorOnce(
-                        $"[ShowMeYourHands]: Could not find the position for {mainHandWeapon.def.label} from the mod {mainHandWeapon.def.modContentPack.Name}, equipped by {___pawn.Name}. Please report this issue to the author of Show Me Your Hands if possible.",
+                        $"[PawnAnimator]: Could not find the position for {mainHandWeapon.def.label} from the mod {mainHandWeapon.def.modContentPack.Name}, equipped by {___pawn.Name}. Please report this issue to the author of Show Me Your Hands if possible.",
                         mainHandWeapon.def.GetHashCode());
                 }
 
@@ -2495,10 +2493,10 @@ namespace FacialStuff
 
             if (!ShowMeYourHandsMain.weaponLocations.ContainsKey(mainHandWeapon))
             {
-                if (ShowMeYourHandsMod.instance.Settings.VerboseLogging)
+                if (PawnAnimatorMod.instance.Settings.VerboseLogging)
                 {
                     Log.ErrorOnce(
-                        $"[ShowMeYourHands]: Could not find the position for {mainHandWeapon.def.label} from the mod {mainHandWeapon.def.modContentPack.Name}, equipped by {___pawn.Name}. Please report this issue to the author of Show Me Your Hands if possible.",
+                        $"[PawnAnimator]: Could not find the position for {mainHandWeapon.def.label} from the mod {mainHandWeapon.def.modContentPack.Name}, equipped by {___pawn.Name}. Please report this issue to the author of Show Me Your Hands if possible.",
                         mainHandWeapon.def.GetHashCode());
                 }
 
@@ -2528,10 +2526,10 @@ namespace FacialStuff
             {
                 if (!ShowMeYourHandsMain.weaponLocations.ContainsKey(offHandWeapon))
                 {
-                    if (ShowMeYourHandsMod.instance.Settings.VerboseLogging)
+                    if (PawnAnimatorMod.instance.Settings.VerboseLogging)
                     {
                         Log.ErrorOnce(
-                            $"[ShowMeYourHands]: Could not find the position for {offHandWeapon.def.label} from the mod {offHandWeapon.def.modContentPack.Name}, equipped by {___pawn.Name}. Please report this issue to the author of Show Me Your Hands if possible.",
+                            $"[PawnAnimator]: Could not find the position for {offHandWeapon.def.label} from the mod {offHandWeapon.def.modContentPack.Name}, equipped by {___pawn.Name}. Please report this issue to the author of Show Me Your Hands if possible.",
                             offHandWeapon.def.GetHashCode());
                     }
                 }
@@ -2555,7 +2553,7 @@ namespace FacialStuff
             float drawSize = 1f;
             LastDrawn = GenTicks.TicksAbs;
 
-            if (ShowMeYourHandsMod.instance.Settings.RepositionHands && mainHandWeapon?.def?.graphicData != null &&
+            if (PawnAnimatorMod.instance.Settings.RepositionHands && mainHandWeapon?.def?.graphicData != null &&
                 mainHandWeapon?.def?.graphicData?.drawSize.x != 1f)
             {
                 drawSize = mainHandWeapon.def.graphicData.drawSize.x;
@@ -2622,7 +2620,7 @@ namespace FacialStuff
                     propsOffHandAngle = offhandComp.MainHandAngle;
                     //rotation        = offHandFlipped ? Rot4.West : Rot4.East;
 
-                    if (ShowMeYourHandsMod.instance.Settings.RepositionHands && offHandWeapon.def.graphicData != null &&
+                    if (PawnAnimatorMod.instance.Settings.RepositionHands && offHandWeapon.def.graphicData != null &&
                         offHandWeapon.def?.graphicData?.drawSize.x != 1f)
                     {
                         drawSize = offHandWeapon.def.graphicData.drawSize.x;
@@ -2859,7 +2857,7 @@ namespace FacialStuff
         private float CostToPayThisTick(float nextCellCostTotal)
         {
             float num = 1f;
-            if (this.pawn.stances.Staggered)
+            if (this.pawn.stances.stagger.Staggered)
             {
                 num *= 0.17f;
             }

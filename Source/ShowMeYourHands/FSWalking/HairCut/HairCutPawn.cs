@@ -1,9 +1,7 @@
 ﻿using JetBrains.Annotations;
-using ShowMeYourHands.FSWalking.HairCut;
-using UnityEngine;
 using Verse;
 
-namespace FacialStuff.HairCut
+namespace PawnAnimator.HairCut
 {
     public class HairCutPawn
     {

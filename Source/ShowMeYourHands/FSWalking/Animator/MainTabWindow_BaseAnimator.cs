@@ -1,18 +1,17 @@
-﻿using FacialStuff.DefOfs;
-using FacialStuff.Defs;
+﻿using PawnAnimator.DefOfs;
+using PawnAnimator.Defs;
 using JetBrains.Annotations;
 using RimWorld;
-using ShowMeYourHands.FSWalking.Animator;
+using PawnAnimator.FSWalking.Animator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ShowMeYourHands;
 using UnityEngine;
 using Verse;
 
-namespace FacialStuff.AnimatorWindows
+namespace PawnAnimator.AnimatorWindows
 {
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     public class MainTabWindow_BaseAnimator : MainTabWindow
     {
         #region Public Fields

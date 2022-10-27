@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-  <name>Show Me Your Hands</name>
-  <packageId>Mlie.ShowMeYourHands</packageId>
+  <name>Pawn Animator</name>
+  <packageId>Killface.PawnAnimator</packageId>
   <author>Mlie, Killface</author>
-  <url>https://github.com/emipa606/ShowMeYourHands</url>
+  <url>https://github.com/Killface1980/ShowMeYourHands</url>
   <supportedVersions>
     <li>1.1</li>
     <li>1.2</li>
     <li>1.3</li>
+    <li>1.4</li>
   </supportedVersions>
   <modDependencies>
     <li>
@@ -23,21 +24,47 @@
   </loadAfter>
   <incompatibleWith>
     <li>Mlie.ClutterWeaponHands</li>
+    <li>Mlie.ShowMeYourHands</li>
+    <li>Killface.FacialStuff</li>
     <li>Killface.ShowMeYourHands</li>
   </incompatibleWith>
-  <description>
+  <description>The spiritual successor to Facial Stuff.
 
-Pawns show their hands on their weapon when drafted. 
-Should work with most weapons, vanilla and modded.
+Adds hands and feet to pawns (currently only humans, haven't worked on Alien Races yet) including basic animations for work and walk cycles depending on the walk speed.
+Also displays hands on weapons and carried things and can change the way weapons/carried stuff is displayed, meaning things will render behind if the pawn is facing north or west.
 
-Based on &lt;b&gt;Clutter Weapon Hands&lt;/b&gt; but dynamically sets the hands based on the graphics of the weapon. It will however still use the old hand-definitions if they exist.
+Features
+Built upon Mlies SMYH mod, this version includes:
+· FS animation for hands and feet for walking and working (WIP)
+· New hand shape for making use of angles
+· Fully colored hands n feet depending on the apparel coverage
+· Weapons mostly following hands and will be drwan behind a pawn if facing east or north
+· Smoother walk cycle animations by blending various speeds together
+· Walk cycle selection depending on the actual speed and not the job urgency
+· Preparations for a new animation system (WIP)
+· Was working with Children School and Pregnancy the last time I tested (please avoid toddlers, they are basic quadrupeds not bipeds ;c) )
+· There is also support for &lt;b&gt;Enable Oversized Weapons, Yayo's Combat 3, Yayo's Combat 3 Adopted, Yayo's Animation, RunAndGun&lt;/b&gt; and &lt;b&gt;Dual Wield.&lt;/b&gt; Hands and feet will follow the weapons even during the extra animations. 
+Verified to work with &lt;b&gt;Combat Extended&lt;/b&gt;
+Also shows hands when using &lt;b&gt;Grab your Tool&lt;/b&gt; (some mods like yayoAnimation might override this, I might release a tweaked build for yayo)
+
+
+Replacements if you're coming from FS // Additions for Noobs :cP
+As not all functionality of FS is included, these are the things missing and their replacement.
+· Facial Animations: they are gone but there's a mod with the same name doing exactly that.
+· https://steamcommunity.com/workshop/filedetails/?id=1635901197 [NL] Facial Animation - WIP by NAls used together with
+· https://steamcommunity.com/sharedfiles/filedetails/?id=2555107849 Faces of the Rim - Facial Animationby Capi to get the RW vanilla style faces
+· Additional skin colors:the 10 skin colors are gone.
+    https://steamcommunity.com/sharedfiles/filedetails/?id=2788534838 Misc Melanin by Lugaru adds 20.
+· 39 Beards and moustaches were stripped and released as vanilla beards here https://steamcommunity.com/sharedfiles/filedetails/?id=2793411141
+
+History
+This mod is based on Mlie's &lt;b&gt;Show Me Your Hands&lt;/b&gt; which is based on &lt;b&gt;Clutter Weapon Hands&lt;/b&gt; by mrofa. The initial hand features of Facial Stuff were also based on Clutter, so using SMYH as a new and improved base with its better compatibility--and working with RW 1.3 from scratch--seemed to be the best option.
+
+    Based on &lt;b&gt;Clutter Weapon Hands&lt;/b&gt; but dynamically sets the hands based on the graphics of the weapon. It will however still use the old hand-definitions if they exist.
 
 There is also mod-settings where you can modify the settings for each weapon. These settings can be exported and included in a mod to add native support.
 All my "Continued"-mods should have native support.
 
-There is also support for &lt;b&gt;Enable Oversized Weapons, Yayo's Combat 3, Yayo's Combat 3 Adopted, Yayo's Animation, RunAndGun&lt;/b&gt; and &lt;b&gt;Dual Wield.&lt;/b&gt; Hands will follow the weapons even during the extra animations. 
-Verified to work with &lt;b&gt;Combat Extended&lt;/b&gt;
-Also shows hands when using &lt;b&gt;Grab your Tool&lt;/b&gt;
 
 &lt;size=24&gt;Settings&lt;/size&gt;
 · Coloring the hands based on apparel/armor color

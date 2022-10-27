@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <WHands.ClutterHandsTDef>
+    <defName>ClutterHandsSettings_YayosCombat3_</defName>
+    <label>Weapon hand settings</label>
+    <thingClass>Thing</thingClass>
+    <WeaponCompLoader>
+      <li>
+        <MainHand>(0.123, 0.100, -0.050)</MainHand>
+        <SecHand>(0.301, -0.100, -0.050)</SecHand>
+        <ThingTargets>
+          <li>Gun_AntiArmor_Rocket</li>
+          <!-- anti-armor rocket launcher -->
+        </ThingTargets>
+      </li>
+    </WeaponCompLoader>
+  </WHands.ClutterHandsTDef>
+  <WHands.ClutterHandsTDef>
+    <defName>ClutterHandsSettings_MiscellaneousCORE_</defName>
+    <label>Weapon hand settings</label>
+    <thingClass>Thing</thingClass>
+    <WeaponCompLoader>
+      <li>
+        <MainHand>(-0.204, 0.100, -0.050)</MainHand>
+        <SecHand>(0.200, -0.100, -0.050)</SecHand>
+        <ThingTargets>
+          <li>Gun_RailgunMKI</li>
+          <!-- railgun -->
+        </ThingTargets>
+      </li>
+    </WeaponCompLoader>
+  </WHands.ClutterHandsTDef>
+  <WHands.ClutterHandsTDef>
+    <defName>ClutterHandsSettings_MiscTurretBaseObjects</defName>
+    <label>Weapon hand settings</label>
+    <thingClass>Thing</thingClass>
+    <WeaponCompLoader>
+      <li>
+        <MainHand>(-0.227, 0.100, -0.087)</MainHand>
+        <SecHand>(0.200, -0.100, -0.073)</SecHand>
+        <ThingTargets>
+          <li>Gun_MicroTurretLauncher</li>
+          <!-- Micro turret launcher -->
+        </ThingTargets>
+      </li>
+    </WeaponCompLoader>
+  </WHands.ClutterHandsTDef>
+  <WHands.ClutterHandsTDef>
+    <defName>ClutterHandsSettings_FireWardenContinued</defName>
+    <label>Weapon hand settings</label>
+    <thingClass>Thing</thingClass>
+    <WeaponCompLoader>
+      <li>
+        <MainHand>(-0.218, 0.100, -0.225)</MainHand>
+        <SecHand>(0.018, -0.100, 0.000)</SecHand>
+        <ThingTargets>
+          <li>Firebeater</li>
+          <!-- Firebeater -->
+        </ThingTargets>
+      </li>
+    </WeaponCompLoader>
+  </WHands.ClutterHandsTDef>
+  <WHands.ClutterHandsTDef>
+    <defName>ClutterHandsSettings_FireExtinguisherContinued</defName>
+    <label>Weapon hand settings</label>
+    <thingClass>Thing</thingClass>
+    <WeaponCompLoader>
+      <li>
+        <MainHand>(0.074, 0.100, 0.344)</MainHand>
+        <ThingTargets>
+          <li>Gun_Fire_Ext</li>
+          <!-- Fire Extinguisher -->
+        </ThingTargets>
+      </li>
+    </WeaponCompLoader>
+  </WHands.ClutterHandsTDef>
+</Defs>

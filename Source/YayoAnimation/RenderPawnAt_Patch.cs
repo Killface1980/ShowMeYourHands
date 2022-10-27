@@ -1,31 +1,30 @@
-﻿using FacialStuff;
+﻿using PawnAnimator;
 using UnityEngine;
 using Verse;
 using yayoAni;
 
-namespace ShowMeYourHands;
+namespace ShowMeYourHandsYayoAni;
 
 [HotSwappable]
-[HarmonyLib.HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt))]
-public static class RenderPawnAt_Patch
+[HarmonyLib.HarmonyPatch(typeof(yayo), nameof(yayo.checkAni))]
+public static class checkAni_Patch
 {
     static pawnDrawData pdd;
 
     // ReSharper disable once UnusedParameter.Global
-    public static void Prefix(PawnRenderer __instance, Vector3 drawLoc, Rot4? rotOverride = null, bool neverAimWeapon = false)
+    public static void Postfix(Pawn pawn, ref Vector3 pos, Rot4 rot)
     {
-        Pawn pawn = __instance.graphics.pawn;
-
-        //CompFace compFace = pawn.GetCompFace();
-        if (pawn != null)
+        if (pawn == null || pawn.Dead)
         {
-
-        };
+            return;
+        }
+        //CompFace compFace = pawn.GetCompFace();
         if (!pawn.GetCompAnim(out CompBodyAnimator compAnim))
         {
             return;
         }
         pdd = dataUtility.GetData(pawn);
+        if (pdd == null) return;
         compAnim.CurrentRotation = pdd.fixed_rot ?? pawn.Rotation;
         compAnim.Offset_Angle = pdd.offset_angle;
         compAnim.Offset_Pos = pdd.offset_pos;

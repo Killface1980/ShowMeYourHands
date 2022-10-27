@@ -11,7 +11,7 @@
 using RimWorld;
 // ReSharper disable UnusedMember.Global
 
-namespace FacialStuff.DefOfs
+namespace PawnAnimator.DefOfs
 {
     [DefOf]
     public static class WalkCycleDefOf

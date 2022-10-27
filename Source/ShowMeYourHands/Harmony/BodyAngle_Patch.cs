@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using FacialStuff;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace ShowMeYourHands.Harmony
+namespace PawnAnimator.Harmony
 {
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), "DrawHeadHair")]
     class DrawHeadHair_Patch
     {
@@ -26,7 +25,7 @@ namespace ShowMeYourHands.Harmony
         }
     }
 
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.BodyAngle))]
     class BodyAngle_Patch
     {
@@ -45,7 +44,7 @@ namespace ShowMeYourHands.Harmony
         }
     }
 
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), "DrawDynamicParts")]
     public class Patch_PawnRenderer_DrawDynamicParts
     {
@@ -65,7 +64,7 @@ namespace ShowMeYourHands.Harmony
         }
     }
 
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [HarmonyPatch(typeof(PawnRenderer), "RenderPawnInternal")]
     public class Patch_PawnRenderer_RenderPawnInternal
     {
@@ -90,7 +89,7 @@ namespace ShowMeYourHands.Harmony
             }
         }
     }
-    [ShowMeYourHandsMod.HotSwappable]
+    [PawnAnimatorMod.HotSwappable]
     [HarmonyBefore("com.yayo.yayoAni")]
     [HarmonyPatch(typeof(PawnRenderer), "RenderCache")]
     public class Patch_PawnRenderer_RenderCache

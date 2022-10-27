@@ -2,7 +2,7 @@
 using System.Globalization;
 using UnityEngine;
 
-namespace ShowMeYourHands;
+namespace PawnAnimator;
 
 internal class SaveableVector3
 {
